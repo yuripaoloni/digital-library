@@ -48,7 +48,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   })
 );
 
-const Navbar = styled(MuiAppBar, {
+const NavbarElement = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   transition: theme.transitions.create(["margin", "width"], {
@@ -74,7 +74,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft() {
+export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -87,9 +87,10 @@ export default function PersistentDrawerLeft() {
   };
 
   return (
-    <Box>
+    <Box data-testid={test}>
       <CssBaseline />
-      <Navbar
+      <NavbarElement
+        data-testid="navbar"
         position="fixed"
         open={open}
         style={{ background: "#222C4A", elevation: 2 }}
@@ -119,7 +120,7 @@ export default function PersistentDrawerLeft() {
             <img src={LogoUnicam} style={{ maxWidth: 35 }} />
           </Grid>
         </Toolbar>
-      </Navbar>
+      </NavbarElement>
       <Drawer
         sx={{
           width: drawerWidth,
