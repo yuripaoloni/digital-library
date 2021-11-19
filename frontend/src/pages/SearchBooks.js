@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import {
-  Typography,
-  Grid,
-  Stack,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
+import { Typography, Grid } from "@mui/material";
+
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import NativeSelect from "@mui/material/NativeSelect";
+import FormHelperText from "@mui/material/FormHelperText";
 
 import { getBooks } from "api/index";
 import useAlert from "hooks/use-alert";
@@ -20,6 +18,8 @@ const SearchBooks = () => {
   const libraries = useSelector((state) => state.global.libraries);
   const [loading, setLoading] = useState(false);
   const [books, setBooks] = useState([]);
+
+  const [value, setValue] = useState(false);
 
   const { alert, alertMessage, closeAlert, showAlert } = useAlert(setLoading);
 
@@ -40,32 +40,38 @@ const SearchBooks = () => {
   return (
     <PageWrapper alert={alert} alertMessage={alertMessage} onClose={closeAlert}>
       <Grid container rowSpacing={3} px={4} mt={3} align="center">
-        <Grid item md={12}>
-          <Typography variant="h3">Catalogo libri</Typography>
+        <Grid item xs={12}>
+          <Typography variant="h4">Catalogo libri</Typography>
         </Grid>
-        <Grid item md={12} mb={5}>
+        <Grid container mb={5} justifyContent="center" columnSpacing={2}>
+          <Grid item lg={3} sm={2}>
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel id="demo-simple-select-helper-label">
+                Biblioteca
+              </InputLabel>
+              <NativeSelect
+                value={value}
+                label="Biblioteca"
+                onChange={(e) => setValue(e.target.value)}
+                inputProps={{
+                  name: "library",
+                  id: "uncontrolled-native",
+                }}
+              >
+                <option value="all">Tutte le biblioteche</option>
+                {libraries.map((library) => (
+                  <option value={library.id}>{library.name}</option>
+                ))}
+              </NativeSelect>
+              <FormHelperText>Seleziona biblioteca</FormHelperText>
+            </FormControl>
+          </Grid>
           <SearchInput onSearch={fetchBooks} />
         </Grid>
-        <Grid item md={3}>
-          <Stack spacing={2} alignItems="center">
-            <Typography variant="h5">Filtri</Typography>
-            <FormGroup>
-              {libraries.map((library, index) => (
-                <FormControlLabel
-                  key={index}
-                  control={<Checkbox checked={false} /*onChange={} */ />}
-                  label={library.name}
-                />
-              ))}
-            </FormGroup>
-          </Stack>
-        </Grid>
-        <Grid item md={8}>
-          <Grid container spacing={2}>
-            {books.map((book, index) => (
-              <BookItem key={index} book={book} />
-            ))}
-          </Grid>
+        <Grid container mb={5} justifyContent="center" spacing={2}>
+          {books.map((book, index) => (
+            <BookItem key={index} book={book} />
+          ))}
         </Grid>
       </Grid>
     </PageWrapper>

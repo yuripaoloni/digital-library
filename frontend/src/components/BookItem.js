@@ -7,7 +7,9 @@ import {
   Card,
   CardContent,
   CardActions,
+  CardHeader,
   Link,
+  Avatar,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -17,10 +19,20 @@ const Img = styled("img")({
 
 const BookItem = ({ book }) => {
   return (
-    <Grid item xs={3}>
+    <Grid item lg={3} columnSpacing={2}>
       <Card sx={{ minWidth: 275 }}>
+        <CardHeader
+          avatar={
+            <Avatar
+              sx={{ bgcolor: "purple", height: 25, width: 25 }}
+              aria-label="recipe"
+            >
+              R
+            </Avatar>
+          }
+        />
+        <Img alt="book-logo" src={Logo} />
         <CardContent>
-          <Img alt="book-logo" src={Logo} />
           <Typography variant="h5" component="div">
             {book.title}
           </Typography>

@@ -13,7 +13,7 @@ const SearchInput = ({ onSearch }) => {
   const [title, setTitle] = useState("");
 
   return (
-    <Grid item md={4}>
+    <Grid item lg={4} sm={4}>
       <FormControl variant="standard" fullWidth>
         <InputLabel>Cerca libro</InputLabel>
         <Input
