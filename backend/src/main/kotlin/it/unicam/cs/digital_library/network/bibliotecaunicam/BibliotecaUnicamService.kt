@@ -2,14 +2,13 @@ package it.unicam.cs.digital_library.network.bibliotecaunicam
 
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.model.Library
-import it.unicam.cs.digital_library.network.LibraryManager.BIBLIOTECA_UNICAM_ID
 import it.unicam.cs.digital_library.network.ILibraryService
+import it.unicam.cs.digital_library.network.LibraryService.Companion.BIBLIOTECA_UNICAM_ID
 import it.unicam.cs.digital_library.network.bibliotecaunicam.model.RemoteBook
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForEntity
 
 class BibliotecaUnicamService : ILibraryService {
     private val restTemplate: RestTemplate

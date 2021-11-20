@@ -1,15 +1,21 @@
 package it.unicam.cs.digital_library.network
 
 import it.unicam.cs.digital_library.model.Book
+import it.unicam.cs.digital_library.model.Library
+import it.unicam.cs.digital_library.network.bibliotecaunicam.BibliotecaUnicamService
 
 class LibraryService {
-    private val libraryManager = LibraryManager
+    companion object {
+        const val BIBLIOTECA_UNICAM_ID: Long = 0
 
-    fun getLibraries() = libraryManager.getLibraries()
+        private fun getLibraryServices(): List<ILibraryService> = listOf(BibliotecaUnicamService())
+    }
+
+    fun getLibraries(): List<Library> = getLibraryServices().map { it.getLibrary() }
 
     fun searchBook(query: String, libraryIds: List<Long>?): List<Book> {
-        return if (libraryIds == null) libraryManager.getLibraryServices().flatMap { it.search(query) }
-        else libraryManager.getLibraryServices().filter {
+        return if (libraryIds == null) getLibraryServices().flatMap { it.search(query) }
+        else getLibraryServices().filter {
             it.getLibrary().id in libraryIds
         }.flatMap {
             it.search(query)
