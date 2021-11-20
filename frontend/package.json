@@ -28,7 +28,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "CI=true react-scripts test",
+    "test": "react-scripts test",
+    "test:ci": "CI=true react-scripts test",
     "test:coverage": "CI=true react-scripts test -- --env=jsdom --coverage",
     "format:write": "prettier --write '**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx}'",
