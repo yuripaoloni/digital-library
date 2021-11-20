@@ -1,4 +1,6 @@
+import Footer from "components/Footer";
 import Navbar from "components/Navbar";
+
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -6,6 +8,7 @@ const App = () => {
     <>
       <Navbar />
       <Routes>{/* tutte le routes */}</Routes>
+      <Footer />
     </>
   );
 };
