@@ -13,12 +13,12 @@ class LibraryService {
 
     fun getLibraries(): List<Library> = getLibraryServices().map { it.getLibrary() }
 
-    fun searchBook(query: String, libraryIds: List<Long>?): List<Book> {
-        return if (libraryIds == null) getLibraryServices().flatMap { it.search(query) }
+    fun searchBook(query: String, libraryIds: List<Long>?): List<List<Book>> {
+        return (if (libraryIds == null) getLibraryServices().flatMap { it.search(query) }
         else getLibraryServices().filter {
             it.getLibrary().id in libraryIds
         }.flatMap {
             it.search(query)
-        }
+        }).chunked(10)
     }
 }
