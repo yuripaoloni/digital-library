@@ -8,19 +8,18 @@ export const getLibraries = () => {
   return data;
 };
 
-export const getBooks = (title) => {
+export const getBooks = (title, libraryId) => {
+  // let body = {};
+
+  // if (libraryId) body.libraryIds = [libraryId];
+  // return axios.get("/book/search", body)
   const data = {
-    data: getMockBooks([
-      "TitleA",
-      "TitleB",
-      "TitleC",
-      "TitleA",
-      "TitleB",
-      "TitleC",
-      "TitleA",
-      "TitleB",
-      "TitleC",
-    ]),
+    data: [
+      getMockBooks(["TitleA", "TitleB", "TitleC"]),
+      getMockBooks(["TitleD", "TitleE", "TitleF"]),
+      getMockBooks(["TitleG", "TitleH", "TitleI"]),
+    ],
   };
+
   return data;
 };
