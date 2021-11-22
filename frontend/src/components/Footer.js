@@ -1,43 +1,35 @@
 import React from "react";
-import Toolbar from "@mui/material/Toolbar";
-import AppBar from "@mui/material/AppBar";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-
+import Grid from "@mui/material/Grid";
 const Footer = () => {
   return (
-    <Box
+    <Grid
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
+        width: "100%",
+        backgroundColor: "#222C4A",
+        padding: "30px 0 30px 0",
       }}
     >
-      <Box
-        sx={{
-          mt: "auto",
-        }}
+      <Grid
+        data-testid="footer"
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
       >
-        <AppBar
-          position="static"
-          style={{ background: "#222C4A" }}
-          data-testid="footer"
+        <Typography
+          sx={{ color: "white" }}
+          variant="body1"
+          data-testid="footer-signature"
         >
-          <Container maxWidth="md" style={{}}>
-            <Toolbar>
-              <Typography
-                variant="body1"
-                color="inherit"
-                data-testid="footer-signature"
-              >
-                © 2021 Digital Library
-              </Typography>
-            </Toolbar>
-          </Container>
-        </AppBar>
-      </Box>
-    </Box>
+          © 2021 Digital Library
+        </Typography>
+      </Grid>
+    </Grid>
   );
 };
 
