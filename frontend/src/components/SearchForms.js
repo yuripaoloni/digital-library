@@ -22,14 +22,15 @@ const SearchForms = ({ onSearch }) => {
       justifyContent="center"
       alignItems="center"
       columnSpacing={2}
+      rowSpacing={{ xs: 2 }}
     >
-      <Grid item lg={2}>
+      <Grid item md={2.5} sm={3} xs={5}>
         <FormControl data-testid="dropdown-library" fullWidth>
-          <InputLabel>Biblioteca</InputLabel>
+          <InputLabel>Seleziona biblioteca</InputLabel>
           <Select
             data-testid="select-library"
             value={library}
-            label="Biblioteca"
+            label="Seleziona biblioteca"
             onChange={(e) => setLibrary(e.target.value)}
           >
             <MenuItem value="all">Tutte le biblioteche</MenuItem>
@@ -41,7 +42,7 @@ const SearchForms = ({ onSearch }) => {
           </Select>
         </FormControl>
       </Grid>
-      <Grid item lg={3} sm={4}>
+      <Grid item lg={3.5} sm={5} xs={5}>
         <TextField
           fullWidth
           value={title}
@@ -51,14 +52,16 @@ const SearchForms = ({ onSearch }) => {
           placeholder="Inserisci titolo libro..."
         />
       </Grid>
-      <Grid item lg={1}>
-        <Button
-          size="large"
-          variant="outlined"
-          onClick={() => onSearch(title, library)}
-        >
-          SEARCH
-        </Button>
+      <Grid item lg={1} md={1.5} sm={2} xs={10}>
+        <Grid container justifyContent="center">
+          <Button
+            size="large"
+            variant="outlined"
+            onClick={() => onSearch(title, library)}
+          >
+            SEARCH
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
-import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Skeleton from "@mui/material/Skeleton";
 import Pagination from "@mui/material/Pagination";
+import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 
 import Logo from "assets/sample.jpg";
@@ -20,70 +20,68 @@ const BookItems = ({ loading, books }) => {
   return (
     books.length > 0 && (
       <Grid container justifyContent="center">
-        <Grid item lg={8}>
-          <Stack divider={<Divider />}>
+        <Grid item lg={9} xs={10}>
+          <Stack spacing={2}>
             {books[page - 1].map((book, index) => (
-              <Grid
-                key={index}
-                container
-                alignItems="center"
-                columnSpacing={2}
-                mt={1.5}
-                mb={0.5}
-              >
-                <Grid item lg={1}>
-                  {loading ? (
-                    <Skeleton variant="rectangular" height={100} />
-                  ) : (
-                    <Img src={Logo} />
-                  )}
-                </Grid>
-                <Grid item lg={6}>
-                  {loading ? (
-                    <>
+              <Paper key={index} elevation={4} sx={{ px: 2 }}>
+                <Grid
+                  container
+                  alignItems="center"
+                  mt={1.5}
+                  mb={0.5}
+                  columnSpacing={2}
+                >
+                  <Grid item lg={1} md={1.5} sm={2} xs>
+                    {loading ? (
+                      <Skeleton variant="rectangular" height={100} />
+                    ) : (
+                      <Img src={Logo} />
+                    )}
+                  </Grid>
+                  <Grid item md={6} sm={10}>
+                    {loading ? (
+                      <>
+                        <Skeleton variant="text" />
+                        <Skeleton variant="text" width="60%" />
+                      </>
+                    ) : (
+                      <>
+                        <Typography
+                          variant="h6"
+                          style={{ wordWrap: "break-word" }}
+                        >
+                          {/* {book.title} */}
+                          Annali della facoltà di giurisprudenza Volume IX -
+                          1935 - XIII
+                        </Typography>
+                        <Typography variant="subtitle2">
+                          {/* {book.author} */}
+                          Università degli Studi di Camerino
+                        </Typography>
+                      </>
+                    )}
+                  </Grid>
+                  <Grid item md={3} sm={8}>
+                    {loading ? (
                       <Skeleton variant="text" />
-                      <Skeleton variant="text" width="60%" />
-                    </>
-                  ) : (
-                    <>
-                      <Typography
-                        variant="h6"
-                        style={{ wordWrap: "break-word" }}
-                      >
-                        {book.title}
+                    ) : (
+                      <Typography variant="subtitle1">
+                        Milano, Italia, Milano, Dott. A. Giuffrè - Editore, 1969
                       </Typography>
-                      <Typography variant="subtitle2">{book.author}</Typography>
-                    </>
-                  )}
-                </Grid>
-                <Grid item lg={2}>
-                  {loading ? (
-                    <>
-                      <Skeleton variant="text" />
-                      <Skeleton variant="text" width="60%" />
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="subtitle1">{book.title}</Typography>
-                      <Typography variant="subtitle2">{book.title}</Typography>
-                    </>
-                  )}
-                </Grid>
-                <Grid item lg={2}>
-                  {loading ? (
-                    <>
+                    )}
+                  </Grid>
+                  <Grid item lg={2} md={1.5} sm={4}>
+                    {loading ? (
                       <Skeleton variant="rectangle" />
-                    </>
-                  ) : (
-                    <>
-                      <Button variant="outlined">Leggi</Button>
-                      <Button variant="outlined" sx={{ ml: 2 }}>
-                        Dettagli
-                      </Button>
-                    </>
-                  )}
+                    ) : (
+                      <Grid container justifyContent="center">
+                        <Button>Leggi</Button>
+                        <Button>Dettagli</Button>
+                      </Grid>
+                    )}
+                  </Grid>
                 </Grid>
-              </Grid>
+              </Paper>
             ))}
           </Stack>
           <Grid container justifyContent="center" mt={2}>
