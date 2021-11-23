@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.1.1",
     "@mui/material": "^5.1.0",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -27,7 +28,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "CI=true react-scripts test",
+    "test": "react-scripts test",
+    "test:ci": "CI=true react-scripts test",
     "test:coverage": "CI=true react-scripts test -- --env=jsdom --coverage",
     "format:write": "prettier --write '**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx}'",
