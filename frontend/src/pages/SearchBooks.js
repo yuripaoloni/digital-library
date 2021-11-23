@@ -17,10 +17,10 @@ const SearchBooks = () => {
   const { alert, alertMessage, closeAlert, showAlert } = useAlert(setLoading);
 
   const fetchBooks = useCallback(
-    async (title, libraryId) => {
+    async (title, libraryId, page) => {
       setLoading(true);
       try {
-        const res = await getBooks(title, libraryId);
+        const res = await getBooks(title, libraryId, page);
         setBooks(res.data);
         setLoading(false);
       } catch (err) {
@@ -33,10 +33,10 @@ const SearchBooks = () => {
     [showAlert]
   );
 
-  // useEffect(() => {
-  //   TODO fetch primi 10 item per non mostrare pagina vuota
-  //   fetchBooks();
-  // }, [fetchBooks]);
+  useEffect(() => {
+    // TODO fetch primi 10 item per non mostrare pagina vuota
+    fetchBooks("", "all", 0);
+  }, [fetchBooks]);
 
   return (
     <PageWrapper alert={alert} alertMessage={alertMessage} onClose={closeAlert}>

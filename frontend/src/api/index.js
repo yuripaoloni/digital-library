@@ -8,11 +8,12 @@ export const getLibraries = () => {
   return data;
 };
 
-export const getBooks = (title, libraryId) => {
+export const getBooks = (title, libraryId, page) => {
   // let body = {};
+  //TODO inserire params nella get
 
-  // if (libraryId) body.libraryIds = [libraryId];
-  // return axios.get("/book/search", body)
+  // if (libraryId !== "all") body.libraryIds = [libraryId];
+  // return axios.get("/book/search", {params: {}})
   const data = {
     data: [
       getMockBooks(["TitleA", "TitleB", "TitleC"]),
