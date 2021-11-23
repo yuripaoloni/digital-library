@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "baseUrl": "src",
-    "module": "commonJS",
+    "module": "ES6",
     "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
