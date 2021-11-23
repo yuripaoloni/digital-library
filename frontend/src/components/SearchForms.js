@@ -25,9 +25,12 @@ const SearchForms = ({ onSearch }) => {
       rowSpacing={{ xs: 2 }}
     >
       <Grid item md={2.5} sm={3} xs={5}>
-        <FormControl data-testid="dropdown-library" fullWidth>
-          <InputLabel>Seleziona biblioteca</InputLabel>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">
+            Seleziona biblioteca
+          </InputLabel>
           <Select
+            labelId="demo-simple-select-label"
             data-testid="select-library"
             value={library}
             label="Seleziona biblioteca"
@@ -44,6 +47,7 @@ const SearchForms = ({ onSearch }) => {
       </Grid>
       <Grid item lg={3.5} sm={5} xs={5}>
         <TextField
+          data-testid="input-title"
           fullWidth
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -55,11 +59,12 @@ const SearchForms = ({ onSearch }) => {
       <Grid item lg={1} md={1.5} sm={2} xs={10}>
         <Grid container justifyContent="center">
           <Button
+            data-testid="search-button"
             size="large"
             variant="outlined"
             onClick={() => onSearch(title, library)}
           >
-            SEARCH
+            CERCA
           </Button>
         </Grid>
       </Grid>

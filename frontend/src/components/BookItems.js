@@ -23,7 +23,12 @@ const BookItems = ({ loading, books }) => {
         <Grid item lg={9} xs={10}>
           <Stack spacing={2}>
             {books[page - 1].map((book, index) => (
-              <Paper key={index} elevation={4} sx={{ px: 2 }}>
+              <Paper
+                data-testid={`book-item-${index}`}
+                key={index}
+                elevation={4}
+                sx={{ px: 2 }}
+              >
                 <Grid
                   container
                   alignItems="center"
@@ -50,13 +55,10 @@ const BookItems = ({ loading, books }) => {
                           variant="h6"
                           style={{ wordWrap: "break-word" }}
                         >
-                          {/* {book.title} */}
-                          Annali della facoltà di giurisprudenza Volume IX -
-                          1935 - XIII
+                          {book.title}
                         </Typography>
                         <Typography variant="subtitle2">
-                          {/* {book.author} */}
-                          Università degli Studi di Camerino
+                          {book.author}
                         </Typography>
                       </>
                     )}
@@ -65,9 +67,7 @@ const BookItems = ({ loading, books }) => {
                     {loading ? (
                       <Skeleton variant="text" />
                     ) : (
-                      <Typography variant="subtitle1">
-                        Milano, Italia, Milano, Dott. A. Giuffrè - Editore, 1969
-                      </Typography>
+                      <Typography variant="subtitle1">{`${book.plot}, ${book.year}`}</Typography>
                     )}
                   </Grid>
                   <Grid item lg={2} md={1.5} sm={4}>
