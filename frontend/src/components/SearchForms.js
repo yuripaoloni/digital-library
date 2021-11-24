@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -9,11 +9,19 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 
-const SearchForms = ({ onSearch }) => {
-  const libraries = useSelector((state) => state.global.libraries);
+import { fetchBooks } from "states/slices";
+
+const SearchForms = () => {
+  const libraries = useSelector((state) => state.books.libraries);
 
   const [title, setTitle] = useState("");
   const [library, setLibrary] = useState("");
+
+  const dispatch = useDispatch();
+
+  const onSearch = (title, libraryIds, page) => {
+    dispatch(fetchBooks({ title, libraryIds, page }));
+  };
 
   return (
     <Grid
