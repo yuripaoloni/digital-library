@@ -18,7 +18,7 @@ class LibraryServiceTest {
         val service = LibraryService()
         val query = "diritto"
         val library = service.getLibraries().first()
-        val books = service.searchBook(query, listOf(library.id))
+        val books = service.searchBook(query, listOf(library.id)).flatten()
         val filteredBooks = books.filter {
             it.library.id == library.id
         }
