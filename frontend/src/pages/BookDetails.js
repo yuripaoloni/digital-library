@@ -11,16 +11,19 @@ import ListItemText from "@mui/material/ListItemText";
 import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import InboxIcon from "@mui/icons-material/Inbox";
 import { styled } from "@mui/material/styles";
 
 import PageWrapper from "components/PageWrapper";
 import NoMatch from "pages/NoMatch";
 
 import Logo from "assets/sample2.jpg";
+import { formatBookKeys, getBookIcons } from "utils/bookUtils";
+import { Link } from "react-router-dom";
 
 const Img = styled("img")({
   height: 400,
+  borderRadius: 2,
+  boxShadow: 2,
 });
 
 const BookDetails = () => {
@@ -67,21 +70,25 @@ const BookDetails = () => {
                     <Paper elevation={2}>
                       <List dense>
                         {Object.keys(books[page][index]).map(
-                          (key, itemIndex) => (
-                            <ListItem key={itemIndex}>
-                              <ListItemIcon>
-                                <InboxIcon />
-                              </ListItemIcon>
-                              <ListItemText
-                                primary={
-                                  books[page][index][key] instanceof Object
-                                    ? books[page][index][key].name
-                                    : books[page][index][key]
-                                }
-                                secondary={key}
-                              />
-                            </ListItem>
-                          )
+                          (key, itemIndex) => {
+                            return (
+                              getBookIcons(key) && (
+                                <ListItem key={itemIndex}>
+                                  <ListItemIcon>
+                                    {getBookIcons(key)}
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    primary={
+                                      books[page][index][key] instanceof Object
+                                        ? books[page][index][key].name
+                                        : books[page][index][key]
+                                    }
+                                    secondary={formatBookKeys(key)}
+                                  />
+                                </ListItem>
+                              )
+                            );
+                          }
                         )}
                       </List>
                     </Paper>
@@ -89,19 +96,23 @@ const BookDetails = () => {
                 </Grid>
                 <Grid item md={3} sm={4} xs={12}>
                   {loading ? (
-                    <Skeleton variant="rectangle" height={400} />
+                    <Skeleton variant="rectangle" height={400} width={280} />
                   ) : (
-                    <Img src={Logo} sx={{ borderRadius: 2, boxShadow: 2 }} />
+                    <Img src={Logo} />
                   )}
                 </Grid>
               </Grid>
               <Grid item md={6} mt={3}>
                 <Grid container justifyContent="space-around">
                   <Grid item>
-                    <Button>Vai alla lettura</Button>
+                    {!loading && <Button>Vai alla lettura</Button>}
                   </Grid>
                   <Grid item>
-                    <Button>Torna al catalogo</Button>
+                    {!loading && (
+                      <Button LinkComponent={Link} to="/books">
+                        Torna al catalogo
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
               </Grid>
