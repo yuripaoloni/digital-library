@@ -43,45 +43,23 @@ const booksSlice = createSlice({
         state.loading = false;
         state.books = action.payload;
       })
-      .addCase(fetchBooks.pending, (state, action) => {
-        state.loading = true;
-        state.error = { error: false, variant: "error", message: "" };
-      })
-      .addCase(fetchLibraries.pending, (state, action) => {
-        state.loading = true;
-        state.error = { error: false, variant: "error", message: "" };
-      })
-      .addCase(fetchBooks.rejected, (state, action) => {
-        state.loading = false;
-        state.error.error = true;
-        state.error.variant = "error";
-        state.error.message =
-          "Errore durante il recupero dei dati. Prova di nuovo.";
-      })
-      .addCase(fetchLibraries.rejected, (state, action) => {
-        state.loading = false;
-        state.error.error = true;
-        state.error.variant = "error";
-        state.error.message =
-          "Errore durante il recupero dei dati. Prova di nuovo.";
-      });
-    // .addMatcher(
-    //   (action) => action.type.endsWith("/pending"),
-    //   (state, action) => {
-    //     state.loading = true;
-    //     state.error = { error: false, variant: "error", message: "" };
-    //   }
-    // )
-    // .addMatcher(
-    //   (action) => action.type.endsWith("/rejected"),
-    //   (state, action) => {
-    //     state.loading = false;
-    //     state.error.error = true;
-    //     state.error.variant = "error";
-    //     state.error.message =
-    //       "Errore durante il recupero dei dati. Prova di nuovo.";
-    //   }
-    // );
+      .addMatcher(
+        (action) => action.type?.endsWith("/pending"),
+        (state, action) => {
+          state.loading = true;
+          state.error = { error: false, variant: "error", message: "" };
+        }
+      )
+      .addMatcher(
+        (action) => action.type?.endsWith("/rejected"),
+        (state, action) => {
+          state.loading = false;
+          state.error.error = true;
+          state.error.variant = "error";
+          state.error.message =
+            "Errore durante il recupero dei dati. Prova di nuovo.";
+        }
+      );
   },
 });
 

@@ -86,7 +86,6 @@ export default function Navbar({ test }) {
     setOpen(false);
   };
 
-const Navbar = () => {
   return (
     <Box data-testid={test}>
       <CssBaseline />
@@ -118,7 +117,7 @@ const Navbar = () => {
             Digital Library
           </Typography>
           <Grid container direction="row" justifyContent="right">
-            <img src={LogoUnicam} style={{ maxWidth: 35 }} />
+            <img alt="" src={LogoUnicam} style={{ maxWidth: 35 }} />
           </Grid>
         </Toolbar>
       </NavbarElement>
