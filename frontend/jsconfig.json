@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "baseUrl": "src",
-    "module": "ES6",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],

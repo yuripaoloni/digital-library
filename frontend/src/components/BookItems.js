@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -9,13 +10,16 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 
 import Logo from "assets/sample.jpg";
+import { Link } from "react-router-dom";
 
 const Img = styled("img")({
   height: 100,
 });
 
-const BookItems = ({ loading, books }) => {
+const BookItems = () => {
   const [page, setPage] = useState(1);
+
+  const { loading, books } = useSelector((state) => state.books);
 
   return (
     books.length > 0 && (
@@ -76,7 +80,12 @@ const BookItems = ({ loading, books }) => {
                     ) : (
                       <Grid container justifyContent="center">
                         <Button>Leggi</Button>
-                        <Button>Dettagli</Button>
+                        <Button
+                          LinkComponent={Link}
+                          to={`/books/${page - 1}/${index}`}
+                        >
+                          Dettagli
+                        </Button>
                       </Grid>
                     )}
                   </Grid>

@@ -1,39 +1,92 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getLibraries } from "api";
+import { getLibraries, getBooks } from "api";
 
 const initialState = {
-  loading: false,
+  loading: true,
   libraries: [],
+  books: [],
+  error: {
+    error: false,
+    variant: "error",
+    message: "",
+  },
 };
 
-export const fetchLibraries = createAsyncThunk("global/libraries", async () => {
+export const fetchLibraries = createAsyncThunk("books/libraries", async () => {
   const res = await getLibraries();
   return res.data;
 });
 
-const slice = createSlice({
-  name: "global",
+export const fetchBooks = createAsyncThunk(
+  "books/books",
+  async ({ title, libraryId, page }) => {
+    const res = await getBooks(title, libraryId, page);
+    return res.data;
+  }
+);
+
+const booksSlice = createSlice({
+  name: "books",
   initialState,
   reducers: {
-    test: () => {},
+    unsetError: (state) => {
+      state.error = { error: false, variant: "error", message: "" };
+    },
   },
   extraReducers: (builder) => {
-    // Add reducers for additional action types here, and handle loading state as needed
     builder
       .addCase(fetchLibraries.fulfilled, (state, action) => {
         state.loading = false;
         state.libraries = action.payload;
       })
+      .addCase(fetchBooks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.books = action.payload;
+      })
+      .addCase(fetchBooks.pending, (state, action) => {
+        state.loading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
       .addCase(fetchLibraries.pending, (state, action) => {
         state.loading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
+      .addCase(fetchBooks.rejected, (state, action) => {
+        state.loading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore durante il recupero dei dati. Prova di nuovo.";
       })
       .addCase(fetchLibraries.rejected, (state, action) => {
         state.loading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore durante il recupero dei dati. Prova di nuovo.";
       });
+    // .addMatcher(
+    //   (action) => action.type.endsWith("/pending"),
+    //   (state, action) => {
+    //     state.loading = true;
+    //     state.error = { error: false, variant: "error", message: "" };
+    //   }
+    // )
+    // .addMatcher(
+    //   (action) => action.type.endsWith("/rejected"),
+    //   (state, action) => {
+    //     state.loading = false;
+    //     state.error.error = true;
+    //     state.error.variant = "error";
+    //     state.error.message =
+    //       "Errore durante il recupero dei dati. Prova di nuovo.";
+    //   }
+    // );
   },
 });
 
-// Action creators are generated for each case reducer function
-export const { test } = slice.actions;
+const { actions, reducer } = booksSlice;
 
-export default slice.reducer;
+export const { unsetError } = actions;
+
+export default reducer;

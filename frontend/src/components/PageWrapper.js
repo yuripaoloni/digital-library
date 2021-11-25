@@ -1,21 +1,29 @@
 import React from "react";
 import { Snackbar, Alert } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { unsetError } from "states/slices";
 
-const PageWrapper = ({ alert, alertMessage, onClose, children }) => {
+const PageWrapper = ({ children }) => {
+  const { error, variant, message } = useSelector((state) => state.books.error);
+
+  const dispatch = useDispatch();
+
+  const onClose = () => dispatch(unsetError());
+
   return (
     <>
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        open={alert.length > 0 ? true : false}
+        open={error}
         autoHideDuration={6000}
         onClose={() => onClose()}
       >
         <Alert
           onClose={() => onClose()}
-          severity={alert.length === 0 ? "error" : alert}
+          severity={variant}
           sx={{ width: "100%" }}
         >
-          {alertMessage}
+          {message}
         </Alert>
       </Snackbar>
       {children}

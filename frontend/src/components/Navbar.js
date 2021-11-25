@@ -86,6 +86,7 @@ export default function Navbar({ test }) {
     setOpen(false);
   };
 
+const Navbar = () => {
   return (
     <Box data-testid={test}>
       <CssBaseline />
