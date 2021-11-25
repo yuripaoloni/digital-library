@@ -12,6 +12,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
 const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -65,6 +66,8 @@ export default function Landing({ test }) {
                 }}
                 variant="contained"
                 data-testid="trova_button"
+                LinkComponent={Link}
+                to="/books"
               >
                 Trova un Libro
               </Button>
