@@ -5,7 +5,6 @@ const initialState = {
   loading: true,
   libraries: [],
   books: [],
-  selectedBook: {},
   error: {
     error: false,
     variant: "error",
@@ -26,13 +25,10 @@ export const fetchBooks = createAsyncThunk(
   }
 );
 
-const slice = createSlice({
+const booksSlice = createSlice({
   name: "books",
   initialState,
   reducers: {
-    selectBook: (state, action) => {
-      state.selectedBook = action.payload;
-    },
     unsetError: (state) => {
       state.error = { error: false, variant: "error", message: "" };
     },
@@ -47,26 +43,50 @@ const slice = createSlice({
         state.loading = false;
         state.books = action.payload;
       })
-      .addMatcher(
-        (action) => action.type.endsWith("/pending"),
-        (state, action) => {
-          state.loading = true;
-          state.error = { error: false, variant: "error", message: "" };
-        }
-      )
-      .addMatcher(
-        (action) => action.type.endsWith("/rejected"),
-        (state, action) => {
-          state.loading = false;
-          state.error.error = true;
-          state.error.variant = "error";
-          state.error.message =
-            "Errore durante il recupero dei dati. Prova di nuovo.";
-        }
-      );
+      .addCase(fetchBooks.pending, (state, action) => {
+        state.loading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
+      .addCase(fetchLibraries.pending, (state, action) => {
+        state.loading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
+      .addCase(fetchBooks.rejected, (state, action) => {
+        state.loading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore durante il recupero dei dati. Prova di nuovo.";
+      })
+      .addCase(fetchLibraries.rejected, (state, action) => {
+        state.loading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore durante il recupero dei dati. Prova di nuovo.";
+      });
+    // .addMatcher(
+    //   (action) => action.type.endsWith("/pending"),
+    //   (state, action) => {
+    //     state.loading = true;
+    //     state.error = { error: false, variant: "error", message: "" };
+    //   }
+    // )
+    // .addMatcher(
+    //   (action) => action.type.endsWith("/rejected"),
+    //   (state, action) => {
+    //     state.loading = false;
+    //     state.error.error = true;
+    //     state.error.variant = "error";
+    //     state.error.message =
+    //       "Errore durante il recupero dei dati. Prova di nuovo.";
+    //   }
+    // );
   },
 });
 
-export const { unsetError } = slice.actions;
+const { actions, reducer } = booksSlice;
 
-export default slice.reducer;
+export const { unsetError } = actions;
+
+export default reducer;
