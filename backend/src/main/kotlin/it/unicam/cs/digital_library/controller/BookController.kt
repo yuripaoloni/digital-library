@@ -30,7 +30,7 @@ class BookController {
 
     @GetMapping("/book/random")
     @ApiOperation(value = "get random books", notes = "fetches 10 random books from libraries")
-    fun getRandomBooks(): List<Book> {
+    fun getRandomBooks(): List<List<Book>> {
         return libraryService.getRandomBooks()
     }
 }

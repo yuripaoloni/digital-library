@@ -30,9 +30,9 @@ class LibraryService {
         return getLibraryService(book)?.getCover(book)
     }
 
-    fun getRandomBooks(): List<Book> {
+    fun getRandomBooks(): List<List<Book>> {
         return getLibraryServices().flatMap {
             it.getRandomBooks()
-        }.shuffled().take(10)
+        }.shuffled().take(10).chunked(10)
     }
 }
