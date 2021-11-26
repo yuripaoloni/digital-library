@@ -21,4 +21,18 @@ class LibraryService {
             it.search(query)
         }).chunked(10)
     }
+
+    private fun getLibraryService(book: Book): ILibraryService? {
+        return getLibraryServices().find { it.getLibrary().id == book.library.id }
+    }
+
+    fun getCover(book: Book): String? {
+        return getLibraryService(book)?.getCover(book)
+    }
+
+    fun getRandomBooks(): List<Book> {
+        return getLibraryServices().flatMap {
+            it.getRandomBooks()
+        }.shuffled().take(10)
+    }
 }

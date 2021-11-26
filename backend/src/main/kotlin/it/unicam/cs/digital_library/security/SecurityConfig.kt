@@ -9,8 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 class SecurityConfig : WebSecurityConfigurerAdapter() {
-    @Throws(Exception::class)
     override fun configure(security: HttpSecurity) {
-        security.httpBasic().disable()
+        security.csrf().disable()
     }
 }
