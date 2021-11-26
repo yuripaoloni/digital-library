@@ -7,6 +7,7 @@ import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.network.LibraryService
 import org.springframework.web.bind.annotation.*
 
+@CrossOrigin("*")
 @RestController
 @Api(tags = ["Books"])
 class BookController {
