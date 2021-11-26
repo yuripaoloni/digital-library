@@ -1,5 +1,5 @@
 import Navbar from "../components/Navbar";
-import { render } from "utilS/testUtils";
+import { render } from "utils/testUtils";
 import { fireEvent } from "@testing-library/react";
 
 test("Testing Global Navbar", () => {
