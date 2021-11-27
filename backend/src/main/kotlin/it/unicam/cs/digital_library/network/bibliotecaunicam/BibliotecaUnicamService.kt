@@ -77,7 +77,7 @@ class BibliotecaUnicamService : ILibraryService {
                 HttpMethod.GET,
                 null,
                 object : ParameterizedTypeReference<List<BookPage>>() {}).body?.find { it.isFrontCover }?.let {
-                "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid}/${it.name}"
+                "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid.trim()}/${it.name.trim()}"
             }
         }.getOrNull()
     }
