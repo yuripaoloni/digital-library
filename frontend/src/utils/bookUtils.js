@@ -9,14 +9,18 @@ import ListAltSharpIcon from "@mui/icons-material/ListAltSharp";
  * ? id, remoteId, title, author non vengono restituiti nella scheda libro
  */
 
-export const getBookIcons = (key) => {
+export const getBookIcons = (key, data) => {
   switch (key) {
     case "genre":
       return <ListAltSharpIcon />;
     case "language":
       return <LanguageSharpIcon />;
     case "library":
-      return <LocalLibrarySharpIcon />;
+      return data?.icon ? (
+        <img alt="library-logo" src={data?.icon} height={25} />
+      ) : (
+        <LocalLibrarySharpIcon />
+      );
     case "pages":
       return <AutoStoriesSharpIcon />;
     case "plot":

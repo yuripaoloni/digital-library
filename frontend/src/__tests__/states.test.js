@@ -1,8 +1,8 @@
-import reducer from "states/slices";
+import reducer from "states/booksSlice";
 
 test("should return the initial state", () => {
   expect(reducer(undefined, {})).toEqual({
-    loading: true,
+    loading: false,
     libraries: [],
     books: [],
     error: {
