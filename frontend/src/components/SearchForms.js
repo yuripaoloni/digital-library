@@ -9,7 +9,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 
-import { fetchBooks } from "states/slices";
+import { fetchBooks } from "states/booksSlice";
 
 const SearchForms = () => {
   const libraries = useSelector((state) => state.books.libraries);
@@ -19,8 +19,8 @@ const SearchForms = () => {
 
   const dispatch = useDispatch();
 
-  const onSearch = (title, libraryIds, page) => {
-    dispatch(fetchBooks({ title, libraryIds, page }));
+  const onSearch = (title, libraryId) => {
+    dispatch(fetchBooks({ title, libraryId }));
   };
 
   return (
@@ -61,7 +61,7 @@ const SearchForms = () => {
           onChange={(e) => setTitle(e.target.value)}
           id="outlined-required"
           label="Titolo"
-          placeholder="Inserisci titolo libro..."
+          placeholder="Inserisci almeno 3 caratteri per iniziare la ricerca..."
         />
       </Grid>
       <Grid item lg={1} md={1.5} sm={2} xs={10}>
@@ -70,6 +70,7 @@ const SearchForms = () => {
             data-testid="search-button"
             size="large"
             variant="outlined"
+            disabled={library.length === 0 && title.length < 3}
             onClick={() => onSearch(title, library)}
           >
             CERCA

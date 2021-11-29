@@ -1,5 +1,5 @@
 import Footer from "../components/Footer";
-import { render } from "utilS/testUtils";
+import { render } from "utils/testUtils";
 
 test("Testing Footer", () => {
   const { getByTestId } = render(<Footer />);

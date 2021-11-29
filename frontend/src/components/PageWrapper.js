@@ -1,7 +1,7 @@
 import React from "react";
 import { Snackbar, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { unsetError } from "states/slices";
+import { unsetError } from "states/booksSlice";
 
 const PageWrapper = ({ children }) => {
   const { error, variant, message } = useSelector((state) => state.books.error);

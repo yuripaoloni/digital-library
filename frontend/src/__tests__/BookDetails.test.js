@@ -1,6 +1,20 @@
 import { render, fireEvent, waitFor, screen } from "utils/testUtils";
 import App from "App";
 
-xtest("should display book details", async () => {});
+test("should display book details", async () => {
+  render(<App />);
 
-xtest("should render NoMatch in case of invalid value for books matrix", async () => {});
+  let button = await waitFor(() => screen.getByTestId("trova_button"));
+
+  fireEvent.click(button);
+
+  let detailsButton = await waitFor(() =>
+    screen.getByTestId("details-button-0")
+  );
+
+  fireEvent.click(detailsButton);
+
+  await waitFor(() =>
+    expect(screen.getByTestId("book-details-item")).toBeDefined()
+  );
+});
