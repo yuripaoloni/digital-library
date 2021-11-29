@@ -11,6 +11,9 @@ data class User(
     @Column(nullable = false, unique = true)
     val email: String,
 
+    @Column(nullable = false, unique = true)
+    val username: String,
+
     @Column(nullable = false)
     val name: String = "",
 

@@ -1,10 +1,10 @@
 package it.unicam.cs.digital_library
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.spi.DocumentationType
@@ -12,8 +12,13 @@ import springfox.documentation.spring.web.plugins.Docket
 import java.util.function.Predicate
 
 
-@SpringBootApplication(exclude = [DataSourceAutoConfiguration::class])
-class DigitalLibraryApplication
+@SpringBootApplication
+class DigitalLibraryApplication {
+    @Bean
+    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
+        return BCryptPasswordEncoder()
+    }
+}
 
 fun main(args: Array<String>) {
     runApplication<DigitalLibraryApplication>(*args)
