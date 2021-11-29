@@ -5,6 +5,7 @@ import it.unicam.cs.digital_library.model.Library
 
 interface ILibraryService {
     fun getLibrary(): Library
-    fun getBooks(): List<Book>
     fun search(query: String): List<Book>
+    fun getCover(book: Book): String?
+    fun getRandomBooks(): List<Book>
 }

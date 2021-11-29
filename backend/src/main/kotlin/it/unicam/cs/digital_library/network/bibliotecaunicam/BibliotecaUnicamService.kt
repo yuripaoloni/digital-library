@@ -4,6 +4,7 @@ import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.model.Library
 import it.unicam.cs.digital_library.network.ILibraryService
 import it.unicam.cs.digital_library.network.LibraryService.Companion.BIBLIOTECA_UNICAM_ID
+import it.unicam.cs.digital_library.network.bibliotecaunicam.model.BookPage
 import it.unicam.cs.digital_library.network.bibliotecaunicam.model.RemoteBook
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.ParameterizedTypeReference
@@ -28,12 +29,24 @@ class BibliotecaUnicamService : ILibraryService {
         )
     }
 
-    override fun getBooks(): List<Book> {
-        return restTemplate.exchange(
-            "/books",
-            HttpMethod.GET,
-            null,
-            object : ParameterizedTypeReference<List<RemoteBook>>() {}).body?.map(this::toBook) ?: emptyList()
+    private fun getBooks(): List<Book> {
+        return kotlin.runCatching {
+            restTemplate.exchange(
+                "/books",
+                HttpMethod.GET,
+                null,
+                object : ParameterizedTypeReference<List<RemoteBook>>() {}).body?.map(this::toBook) ?: emptyList()
+        }.getOrNull() ?: emptyList()
+    }
+
+    private fun getBookById(id: Long): RemoteBook? {
+        return kotlin.runCatching {
+            restTemplate.exchange(
+                "/books/$id",
+                HttpMethod.GET,
+                null,
+                object : ParameterizedTypeReference<RemoteBook>() {}).body
+        }.getOrNull()
     }
 
     override fun search(query: String): List<Book> {
@@ -42,17 +55,34 @@ class BibliotecaUnicamService : ILibraryService {
         }
     }
 
-    private fun toBook(book: RemoteBook): Book {
+    private fun toBook(remoteBook: RemoteBook): Book {
         return Book(
-            title = book.title,
-            author = book.creators,
-            pages = book.pageNumber,
-            remoteId = book.id,
+            title = remoteBook.title,
+            author = remoteBook.creators,
+            pages = remoteBook.pageNumber,
+            remoteId = remoteBook.id,
             library = getLibrary(),
-            genre = book.classification,
-            year = book.date,
-            plot = book.description,
-            language = book.language
+            genre = remoteBook.classification,
+            year = remoteBook.date,
+            plot = remoteBook.description,
+            language = remoteBook.language
         )
+    }
+
+    override fun getCover(book: Book): String? {
+        val remoteBook = getBookById(book.remoteId) ?: return null
+        return kotlin.runCatching {
+            restTemplate.exchange(
+                "/bookpages/${remoteBook.id}",
+                HttpMethod.GET,
+                null,
+                object : ParameterizedTypeReference<List<BookPage>>() {}).body?.find { it.isFrontCover }?.let {
+                "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid.trim()}/${it.name.trim()}"
+            }
+        }.getOrNull()
+    }
+
+    override fun getRandomBooks(): List<Book> {
+        return getBooks().shuffled().take(10)
     }
 }

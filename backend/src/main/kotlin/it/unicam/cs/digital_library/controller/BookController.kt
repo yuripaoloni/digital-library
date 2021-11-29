@@ -5,10 +5,9 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.network.LibraryService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
+@CrossOrigin("*")
 @RestController
 @Api(tags = ["Books"])
 class BookController {
@@ -21,5 +20,17 @@ class BookController {
         @RequestParam @ApiParam(required = false) libraryIds: List<Long>? = null
     ): List<List<Book>> {
         return libraryService.searchBook(query, libraryIds)
+    }
+
+    @PostMapping("/book/cover")
+    @ApiOperation(value = "get book cover", notes = "fetches the book url cover, if present")
+    fun getCover(@RequestBody book: Book): String? {
+        return libraryService.getCover(book)
+    }
+
+    @GetMapping("/book/random")
+    @ApiOperation(value = "get random books", notes = "fetches 10 random books from libraries")
+    fun getRandomBooks(): List<List<Book>> {
+        return libraryService.getRandomBooks()
     }
 }
