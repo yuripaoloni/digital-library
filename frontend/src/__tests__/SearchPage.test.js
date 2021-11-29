@@ -1,14 +1,20 @@
 import { render, fireEvent, waitFor, screen } from "utils/testUtils";
 import App from "App";
 
-xtest("books loaded when SearchBooks page is rendered", async () => {
+test("books showed when SearchBooks page is rendered", async () => {
   render(<App />);
 
-  await waitFor(() => expect(screen.getByTestId(/book-item-1/i)).toBeDefined());
+  let button = await waitFor(() => screen.getByTestId("trova_button"));
+
+  fireEvent.click(button);
+
+  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
 });
 
-xtest("select a library and search books", async () => {
+test("select a library and search books", async () => {
   render(<App />);
+
+  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
 
   fireEvent.mouseDown(screen.getByLabelText("Seleziona biblioteca"));
 
@@ -20,5 +26,5 @@ xtest("select a library and search books", async () => {
 
   fireEvent.click(screen.getByTestId("search-button"));
 
-  await waitFor(() => expect(screen.getByTestId(/book-item-1/i)).toBeDefined());
+  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
 });

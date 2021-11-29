@@ -10,13 +10,13 @@ import NoMatch from "pages/NoMatch";
 import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 
-import { fetchBooks, fetchLibraries } from "states/slices";
+import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 
 const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchBooks({ title: "", libraryIds: "all", page: 0 }));
+    dispatch(fetchRandomBooks());
     dispatch(fetchLibraries());
   }, [dispatch]);
 
@@ -25,8 +25,8 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route exact path="/books" element={<SearchBooks />} />
-        <Route exact path="/books/:page/:index" element={<BookDetails />} />
+        <Route exact path="books" element={<SearchBooks />} />
+        <Route exact path="books/:page/:index" element={<BookDetails />} />
         <Route path="*" element={<NoMatch />} />
       </Routes>
       <Footer />

@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getLibraries, getBooks } from "api";
+import { getLibraries, getBooks, getRandomBooks, getBookCover } from "api";
 
 const initialState = {
-  loading: true,
+  loading: false,
   libraries: [],
   books: [],
   error: {
@@ -19,11 +19,30 @@ export const fetchLibraries = createAsyncThunk("books/libraries", async () => {
 
 export const fetchBooks = createAsyncThunk(
   "books/books",
-  async ({ title, libraryId, page }) => {
-    const res = await getBooks(title, libraryId, page);
-    return res.data;
+  async ({ title, libraryId }) => {
+    let res = await getBooks(title, libraryId);
+    let books = res.data;
+    for (const booksPage of books) {
+      for (const book of booksPage) {
+        const res = await getBookCover(book);
+        book.image = res.data;
+      }
+    }
+    return books;
   }
 );
+
+export const fetchRandomBooks = createAsyncThunk("books/random", async () => {
+  const res = await getRandomBooks();
+  let books = res.data;
+  for (const booksPage of books) {
+    for (const book of booksPage) {
+      const res = await getBookCover(book);
+      book.image = res.data;
+    }
+  }
+  return books;
+});
 
 const booksSlice = createSlice({
   name: "books",
@@ -36,23 +55,28 @@ const booksSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchLibraries.fulfilled, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.libraries = action.payload;
       })
-      .addCase(fetchBooks.fulfilled, (state, action) => {
-        state.loading = false;
-        state.books = action.payload;
-      })
+      .addMatcher(
+        (action) =>
+          action.type?.endsWith("random/fulfilled") ||
+          action.type?.endsWith("books/fulfilled"),
+        (state, action) => {
+          state.loading = false;
+          state.books = action.payload;
+        }
+      )
       .addMatcher(
         (action) => action.type?.endsWith("/pending"),
-        (state, action) => {
+        (state) => {
           state.loading = true;
           state.error = { error: false, variant: "error", message: "" };
         }
       )
       .addMatcher(
         (action) => action.type?.endsWith("/rejected"),
-        (state, action) => {
+        (state) => {
           state.loading = false;
           state.error.error = true;
           state.error.variant = "error";

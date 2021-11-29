@@ -1,6 +1,6 @@
 import Landing from "pages/Landing";
-import { render } from "utilS/testUtils";
-import { fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "utils/testUtils";
+import App from "App";
 
 test("Testing Landing Page", () => {
   const { getByTestId } = render(<Landing />);
@@ -10,10 +10,17 @@ test("Testing Landing Page", () => {
   //testing header text
   expect(mainHeader.textContent).toBe("Biblioteca digitale");
   //testing subheader text
-  expect(subHeader.textContent).toBe("Portale online per la consultazione dei libri digitalizzati con il sistema BooKeeper. Scegli da un catalogo sempre a tua disposizione.");
+  expect(subHeader.textContent).toBe(
+    "Portale online per la consultazione dei libri digitalizzati con il sistema BooKeeper. Scegli da un catalogo sempre a tua disposizione."
+  );
   //testing button existance
   expect(trovaButton).toBeInTheDocument();
   //testing button style
-  expect(trovaButton).toHaveStyle('background-color : #222C4A')
+  expect(trovaButton).toHaveStyle("background-color : #222C4A");
+});
 
+test("should display books on landing page", async () => {
+  render(<App />);
+
+  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
 });

@@ -11,12 +11,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run tests
-        run: npm test:ci
+        run: yarn test:ci
