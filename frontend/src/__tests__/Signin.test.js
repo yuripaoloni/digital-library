@@ -13,7 +13,6 @@ test("Testing SignIn Page", () => {
   let errFound = false;
   try {
     getByTestId("signin_error");
-    //throw error if found
     throw new Error("signin_error found when its not supposed to..");
   } catch (err) {
     if (errFound) console.error(err.message);
@@ -45,10 +44,8 @@ test("Testing SignIn Page", () => {
   errFound = false;
   try {
     getByTestId("signin_error");
-    //throw error if found
     throw new Error("signin_error found when its not supposed to..");
   } catch (err) {
-    //do nothing
     if (errFound) console.error(err.message);
   }
 });

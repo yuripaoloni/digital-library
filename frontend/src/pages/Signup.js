@@ -7,20 +7,31 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-
+import { useSelector, useDispatch } from "react-redux";
+import { signupActions } from "states/signupSlice";
 export default function SignUp() {
+  const dispatch = useDispatch();
+  const { valid, err } = useSelector((state) => state.signup);
+  const { setFirstname, setLastname, setEmail, setPassword, setErr } =
+    signupActions;
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    if (!valid) dispatch(setErr(true));
+    else dispatch(setErr(false));
+  };
+
+  const handleChange = (type) => {
+    return (e) => {
+      if (type === "firstname") dispatch(setFirstname(e.target.value));
+      else if (type === "lastname") dispatch(setLastname(e.target.value));
+      else if (type === "email") dispatch(setEmail(e.target.value));
+      else if (type === "password") dispatch(setPassword(e.target.value));
+    };
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" data-testid="signup_root">
       <CssBaseline />
       <Box
         sx={{
@@ -44,6 +55,8 @@ export default function SignUp() {
                 id="firstName"
                 label="First Name"
                 autoFocus
+                onChange={handleChange("firstname")}
+                inputProps={{ "data-testid": "signup_firstname_field" }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -54,6 +67,8 @@ export default function SignUp() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
+                onChange={handleChange("lastname")}
+                inputProps={{ "data-testid": "signup_lastname_field" }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -64,6 +79,8 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                onChange={handleChange("email")}
+                inputProps={{ "data-testid": "signup_email_field" }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -75,6 +92,8 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="new-password"
+                onChange={handleChange("password")}
+                inputProps={{ "data-testid": "signup_password_field" }}
               />
             </Grid>
           </Grid>
@@ -84,9 +103,18 @@ export default function SignUp() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             style={{ background: "#222C4A" }}
+            data-testid="signup_submit_button"
           >
             Sign Up
           </Button>
+          {err ? (
+            <Typography data-testid="signup_error">
+              Please Enter Valid Info
+            </Typography>
+          ) : (
+            ""
+          )}
+
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="#" variant="body2" style={{ color: "#222C4A" }}>
