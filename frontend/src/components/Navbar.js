@@ -74,9 +74,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+//TODO link a login page.
+
 export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
+  //TODO se isAuth è true nascondere login dal drawer o modificare con "Profilo"
+  //const isAuth = useSelector(state => state.auth.isAuth);
 
   const handleDrawerOpen = () => {
     setOpen(true);
