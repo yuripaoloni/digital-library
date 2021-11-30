@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -7,26 +7,42 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { signinActions } from "states/signinSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { onSignIn } from "states/authSlice";
+import { Navigate } from "react-router";
 
 export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  const { error, loading, isAuth } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { valid, err } = useSelector((state) => state.signin);
-  const { setEmail, setPassword, setErr } = signinActions;
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    if (!valid) dispatch(setErr(true));
-    else dispatch(setErr(false));
+
+  const changeEmail = (email) => {
+    setEmail(email);
+    email.match(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    )
+      ? setEmailError(false)
+      : setEmailError(true);
   };
 
-  const handleChange = (type) => {
-    return (e) => {
-      if (type === "email") dispatch(setEmail(e.target.value));
-      else if (type === "password") dispatch(setPassword(e.target.value));
-    };
+  const changePassword = (password) => {
+    setPassword(password);
+    password.length < 6 ? setPasswordError(true) : setPasswordError(false);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(onSignIn({ email, password }));
+  };
+
+  //TODO vedere se funziona dopo inserimento Spinner
+  if (isAuth && !loading) return <Navigate to="/" />;
+
+  // TODO if(loading) return a spinner or something
 
   return (
     <Container component="main" maxWidth="xs" data-testid="signin_root">
@@ -46,28 +62,31 @@ export default function SignIn() {
           <TextField
             margin="normal"
             required
+            error={emailError}
             fullWidth
-            defaultValue=""
             id="email"
+            value={email}
             label="Email Address"
             name="email"
             autoComplete="email"
             autoFocus
-            onChange={handleChange("email")}
+            onChange={(e) => changeEmail(e.target.value)}
             inputProps={{ "data-testid": "signin_email_field" }}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            defaultValue=""
+            error={passwordError}
+            helperText="Lunghezza minima 6 caratteri"
             name="password"
             label="Password"
             type="password"
             id="password"
+            value={password}
             autoComplete="current-password"
             style={{ color: "#222C4A" }}
-            onChange={handleChange("password")}
+            onChange={(e) => changePassword(e.target.value)}
             inputProps={{ "data-testid": "signin_password_field" }}
           />
 
@@ -81,7 +100,8 @@ export default function SignIn() {
           >
             Sign In
           </Button>
-          {err ? (
+          {/* //TODO se vuoi c'è unsetError su authSlice per cancellare errore */}
+          {error ? (
             <Typography data-testid="signin_error">
               Please Enter Valid Info
             </Typography>
@@ -95,7 +115,7 @@ export default function SignIn() {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2" style={{ color: "#222C4A" }}>
+              <Link href="/signup" variant="body2" style={{ color: "#222C4A" }}>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

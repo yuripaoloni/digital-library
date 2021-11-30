@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -8,27 +8,47 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
-import { signupActions } from "states/signupSlice";
+import { onSignUp } from "states/authSlice";
+import { Navigate, useNavigate } from "react-router";
+
 export default function SignUp() {
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+
+  //TODO se vuoi gestire errori su name, surname, username fai come con changeEmail e changePassword
+
+  const { error, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { valid, err } = useSelector((state) => state.signup);
-  const { setFirstname, setLastname, setEmail, setPassword, setErr } =
-    signupActions;
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    if (!valid) dispatch(setErr(true));
-    else dispatch(setErr(false));
+
+  const changeEmail = (email) => {
+    setEmail(email);
+    email.match(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    )
+      ? setEmailError(false)
+      : setEmailError(true);
   };
 
-  const handleChange = (type) => {
-    return (e) => {
-      if (type === "firstname") dispatch(setFirstname(e.target.value));
-      else if (type === "lastname") dispatch(setLastname(e.target.value));
-      else if (type === "email") dispatch(setEmail(e.target.value));
-      else if (type === "password") dispatch(setPassword(e.target.value));
-    };
+  const changePassword = (password) => {
+    setPassword(password);
+    password.length < 6 ? setPasswordError(true) : setPasswordError(false);
   };
+
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(onSignUp({ name, surname, username, email, password }));
+    //TODO vedere se funziona dopo inserimento Spinner
+    !loading && navigate("/signin");
+  };
+
+  // TODO if(loading) return a spinner or something
 
   return (
     <Container component="main" maxWidth="xs" data-testid="signup_root">
@@ -55,7 +75,8 @@ export default function SignUp() {
                 id="firstName"
                 label="First Name"
                 autoFocus
-                onChange={handleChange("firstname")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 inputProps={{ "data-testid": "signup_firstname_field" }}
               />
             </Grid>
@@ -67,8 +88,21 @@ export default function SignUp() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
-                onChange={handleChange("lastname")}
+                value={surname}
+                onChange={(e) => setSurname(e.target.value)}
                 inputProps={{ "data-testid": "signup_lastname_field" }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="family-name"
+                onChange={(e) => setUsername(e.target.value)}
+                inputProps={{ "data-testid": "signup_username_field" }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -77,9 +111,10 @@ export default function SignUp() {
                 fullWidth
                 id="email"
                 label="Email Address"
+                error={emailError}
                 name="email"
                 autoComplete="email"
-                onChange={handleChange("email")}
+                onChange={(e) => changeEmail(e.target.value)}
                 inputProps={{ "data-testid": "signup_email_field" }}
               />
             </Grid>
@@ -90,9 +125,11 @@ export default function SignUp() {
                 name="password"
                 label="Password"
                 type="password"
+                helperText="Lunghezza minima 6 caratteri"
                 id="password"
+                error={passwordError}
                 autoComplete="new-password"
-                onChange={handleChange("password")}
+                onChange={(e) => changePassword(e.target.value)}
                 inputProps={{ "data-testid": "signup_password_field" }}
               />
             </Grid>
@@ -107,7 +144,8 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
-          {err ? (
+          {/* //TODO se vuoi c'è unsetError su authSlice per cancellare errore */}
+          {error ? (
             <Typography data-testid="signup_error">
               Please Enter Valid Info
             </Typography>
@@ -117,7 +155,7 @@ export default function SignUp() {
 
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link href="#" variant="body2" style={{ color: "#222C4A" }}>
+              <Link href="/signin" variant="body2" style={{ color: "#222C4A" }}>
                 Already have an account? Sign in
               </Link>
             </Grid>

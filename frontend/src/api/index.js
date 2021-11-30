@@ -20,3 +20,17 @@ export const getRandomBooks = () => {
 export const getBookCover = (book) => {
   return axios.post("/book/cover", book);
 };
+
+export const signIn = (email, password) => {
+  return axios.post("/api/login", { email, password });
+};
+
+export const signUp = (name, surname, username, email, password) => {
+  return axios.post("/api/signup", {
+    name,
+    surname,
+    username,
+    email,
+    password,
+  });
+};
