@@ -2,6 +2,9 @@ package it.unicam.cs.digital_library.controller
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
+import it.unicam.cs.digital_library.controller.errors.SIGNUP_EMAIL_EXISTS
+import it.unicam.cs.digital_library.controller.errors.SIGNUP_USERNAME_EXISTS
 import it.unicam.cs.digital_library.model.User
 import it.unicam.cs.digital_library.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,14 +23,18 @@ class UserController(
 ) {
     @PostMapping("/signup")
     @ApiOperation(value = "sign up to digital library")
-    fun signup(@RequestBody user: User): Int {
+    fun signup(@RequestBody user: User) {
         try {
             user.password = passwordEncoder.encode(user.password)
-            if (this.userRepository.findByEmail(user.email) != null) return -2
+            if (this.userRepository.findByEmail(user.email) != null) {
+                throw SIGNUP_EMAIL_EXISTS
+            }
+            if (this.userRepository.findByUsername(user.username) != null) {
+                throw SIGNUP_USERNAME_EXISTS
+            }
             userRepository.save(user)
-            return 0
-        } catch (e: Exception) {
-            return -1
+        } catch (e: IllegalArgumentException) {
+            throw GENERIC_ERROR
         }
     }
 }
