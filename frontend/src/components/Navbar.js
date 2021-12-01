@@ -22,10 +22,10 @@ import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import LoginIcon from "@mui/icons-material/Login";
-import CollectionsIcon from "@mui/icons-material/Collections";
-import NotesIcon from "@mui/icons-material/Notes";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const drawerWidth = 240;
 
@@ -79,9 +79,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-
+  const isAuth = useSelector((state) => state.auth.isAuth);
   //TODO se isAuth è true nascondere login dal drawer o modificare con "Profilo"
-  //const isAuth = useSelector(state => state.auth.isAuth);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -175,16 +174,10 @@ export default function Navbar({ test }) {
         </List>
         <Divider />
         <List>
-          {["Login", "Collezione", "Note"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {text === "Login" ? <LoginIcon /> : ""}
-                {text === "Collezione" ? <CollectionsIcon /> : ""}
-                {text === "Note" ? <NotesIcon /> : ""}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem component={Link} to="/signin" button key="login">
+            <ListItemIcon>{isAuth === false ? <LoginIcon /> : ""}</ListItemIcon>
+            {isAuth === false ? <ListItemText primary="Login" /> : ""}
+          </ListItem>
         </List>
       </Drawer>
       <Main open={open}>
