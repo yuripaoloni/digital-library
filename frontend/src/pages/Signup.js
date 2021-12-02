@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
 import { onSignUp } from "states/authSlice";
 import { Navigate, useNavigate } from "react-router";
+import Spinner from "components/Spinner";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -20,7 +21,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
 
-  //TODO se vuoi gestire errori su name, surname, username fai come con changeEmail e changePassword
+  //TODO manages erros  name, surname, username in the same way maked in changeEmail e changePassword
 
   const { error, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -49,6 +50,9 @@ export default function SignUp() {
   };
 
   // TODO if(loading) return a spinner or something
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <Container component="main" maxWidth="xs" data-testid="signup_root">

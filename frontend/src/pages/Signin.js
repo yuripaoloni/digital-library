@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
 import { onSignIn } from "states/authSlice";
 import { Navigate } from "react-router";
+import Spinner from "../components/Spinner";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -39,14 +40,16 @@ export default function SignIn() {
     dispatch(onSignIn({ email, password }));
   };
 
-  //TODO vedere se funziona dopo inserimento Spinner
   if (isAuth && !loading) return <Navigate to="/" />;
 
-  // TODO if(loading) return a spinner or something
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <Container component="main" maxWidth="xs" data-testid="signin_root">
       <CssBaseline />
+
       <Box
         sx={{
           marginTop: 8,

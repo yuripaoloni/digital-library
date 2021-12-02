@@ -5,7 +5,6 @@ import SearchBooks from "pages/SearchBooks";
 import BookDetails from "pages/BookDetails";
 import Landing from "pages/Landing";
 import NoMatch from "pages/NoMatch";
-import Footer from "components/Footer";
 import Navbar from "components/Navbar";
 import SignIn from "pages/Signin";
 import SignUp from "pages/Signup";
@@ -30,7 +29,6 @@ const App = () => {
         <Route exact path="signup" element={<SignUp />} />
         <Route path="*" element={<NoMatch />} />
       </Routes>
-      <Footer />
     </>
   );
 };

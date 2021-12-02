@@ -1,36 +1,43 @@
-import React from "react";
+import * as React from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-const Footer = () => {
+import Container from "@mui/material/Container";
+
+export default function StickyFooter() {
   return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="center"
-      alignItems="center"
+    <Box
       sx={{
-        width: "100%",
-        backgroundColor: "#222C4A",
-        padding: "30px 0 30px 0",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "20vh",
       }}
     >
-      <Grid
-        data-testid="footer"
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
+      <CssBaseline />
+      <Box
+        component="footer"
+        sx={{
+          py: 3,
+          px: 2,
+          mt: "auto",
+          backgroundColor: "#222C4A",
+        }}
       >
-        <Typography
-          sx={{ color: "white" }}
-          variant="body1"
-          data-testid="footer-signature"
-        >
-          © 2021 Digital Library
-        </Typography>
-      </Grid>
-    </Grid>
+        <Container maxWidth="sm">
+          <Typography
+            variant="body1"
+            style={{
+              color: "white",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            Digital Library 2021
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
   );
-};
-
-export default Footer;
+}
