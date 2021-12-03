@@ -12,7 +12,7 @@ const Img = styled("img")({
   height: 100,
 });
 
-const BookItem = ({ book, page = 0, index = 0 }) => {
+const BookItem = ({ book, page = 1, index = 0 }) => {
   return (
     <Paper data-testid={`book-item-${index}`} elevation={4} sx={{ px: 2 }}>
       <Grid container alignItems="center" mt={1.5} mb={0.5} columnSpacing={2}>
