@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
 import { onSignUp } from "states/authSlice";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import Spinner from "components/Spinner";
+import { Link } from "react-router-dom";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -20,8 +20,8 @@ export default function SignUp() {
   const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
-
-  //TODO manages erros  name, surname, username in the same way maked in changeEmail e changePassword
+  const [nameErr, setNameErr] = useState(false);
+  const [surnameErr, setSurnameErr] = useState(false);
 
   const { error, loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -40,16 +40,25 @@ export default function SignUp() {
     password.length < 6 ? setPasswordError(true) : setPasswordError(false);
   };
 
+  const changeName = (name) => {
+    setName(name);
+    name.length > 20 ? setNameErr(true) : setNameErr(false);
+    // name.match(/^[0-9]+$/) ? setNameErr(true) : setNameErr(false);
+  };
+
+  const changeSurname = (surname) => {
+    setSurname(surname);
+    surname.length > 20 ? setSurnameErr(true) : setSurnameErr(false);
+  };
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(onSignUp({ name, surname, username, email, password }));
-    //TODO vedere se funziona dopo inserimento Spinner
     !loading && navigate("/signin");
   };
 
-  // TODO if(loading) return a spinner or something
   if (loading) {
     return <Spinner />;
   }
@@ -79,8 +88,8 @@ export default function SignUp() {
                 id="firstName"
                 label="First Name"
                 autoFocus
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                error={nameErr}
+                onChange={(e) => changeName(e.target.value)}
                 inputProps={{ "data-testid": "signup_firstname_field" }}
               />
             </Grid>
@@ -92,8 +101,8 @@ export default function SignUp() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
-                value={surname}
-                onChange={(e) => setSurname(e.target.value)}
+                error={surnameErr}
+                onChange={(e) => changeSurname(e.target.value)}
                 inputProps={{ "data-testid": "signup_lastname_field" }}
               />
             </Grid>
@@ -148,7 +157,6 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
-          {/* //TODO se vuoi c'è unsetError su authSlice per cancellare errore */}
           {error ? (
             <Typography data-testid="signup_error">
               Please Enter Valid Info
@@ -159,9 +167,14 @@ export default function SignUp() {
 
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link href="/signin" variant="body2" style={{ color: "#222C4A" }}>
+              <Typography
+                component={Link}
+                to="/signin"
+                variant="body2"
+                style={{ color: "#222C4A" }}
+              >
                 Already have an account? Sign in
-              </Link>
+              </Typography>
             </Grid>
           </Grid>
         </Box>

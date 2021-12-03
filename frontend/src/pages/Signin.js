@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -11,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { onSignIn } from "states/authSlice";
 import { Navigate } from "react-router";
 import Spinner from "../components/Spinner";
+import { Link } from "react-router-dom";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -103,7 +103,6 @@ export default function SignIn() {
           >
             Sign In
           </Button>
-          {/* //TODO se vuoi c'è unsetError su authSlice per cancellare errore */}
           {error ? (
             <Typography data-testid="signin_error">
               Please Enter Valid Info
@@ -113,14 +112,24 @@ export default function SignIn() {
           )}
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2" style={{ color: "#222C4A" }}>
+              <Typography
+                component={Link}
+                to="#"
+                variant="body2"
+                style={{ color: "#222C4A" }}
+              >
                 Forgot password?
-              </Link>
+              </Typography>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2" style={{ color: "#222C4A" }}>
-                {"Don't have an account? Sign Up"}
-              </Link>
+              <Typography
+                component={Link}
+                to="/signup"
+                variant="body2"
+                style={{ color: "#222C4A" }}
+              >
+                Don't have an account? Sign Up
+              </Typography>
             </Grid>
           </Grid>
         </Box>
