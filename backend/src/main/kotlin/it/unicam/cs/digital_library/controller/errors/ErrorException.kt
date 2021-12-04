@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
 
-sealed class ErrorException(status: HttpStatus, reason: String?) : ResponseStatusException(status, reason)
+open class ErrorException(status: HttpStatus, reason: String?) : ResponseStatusException(status, reason)
 
 object GENERIC_ERROR : ErrorException(HttpStatus.BAD_REQUEST, "Errore")
 
