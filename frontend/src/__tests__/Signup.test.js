@@ -1,7 +1,10 @@
 import SignUp from "pages/SignUp";
-import { render } from "utils/testUtils";
+import { render, screen, waitFor } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
-test("Testing SignUp Page", () => {
+import App from "App";
+
+//TODO update test in order to work after the Redux implementations
+test("Testing SignUp Page elements", () => {
   const { getByTestId } = render(<SignUp />);
   const root = getByTestId("signup_root");
   const firstname = getByTestId("signup_firstname_field");
@@ -58,4 +61,30 @@ test("Testing SignUp Page", () => {
     //do nothing
     if (errFound) console.error(err.message);
   }
+});
+
+test("should perform sign up", async () => {
+  render(<App />);
+
+  //? await for Landing to be rendered
+  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
+
+  userEvent.click(screen.getByTestId("menu-button"));
+
+  userEvent.click(screen.getByText(/login/i));
+
+  userEvent.click(screen.getByTestId("signup_link"));
+
+  userEvent.type(screen.getByTestId("signup_firstname_field"), "name");
+  userEvent.type(screen.getByTestId("signup_lastname_field"), "surname");
+  userEvent.type(screen.getByTestId("signup_username_field"), "username");
+  userEvent.type(screen.getByTestId("signup_email_field"), "email@gmail.com");
+  userEvent.type(screen.getByTestId("signup_password_field"), "password123");
+
+  userEvent.click(screen.getByTestId("signup_submit_button"));
+
+  //? if sign up successful, the user will be redirected to /signin (Login)
+  await waitFor(() =>
+    expect(screen.getByTestId("signin_email_field")).toBeDefined()
+  );
 });

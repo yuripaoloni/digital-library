@@ -21,9 +21,9 @@ export const handlers = [
       ])
     )
   ),
-  rest.get("/library/list", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getMockLibraries(["MockA", "MockB"])));
-  }),
+  rest.get("/library/list", (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(getMockLibraries(["MockA", "MockB"])))
+  ),
   rest.post("/book/cover", (req, res, ctx) =>
     res(
       ctx.status(200),
@@ -32,4 +32,8 @@ export const handlers = [
       )
     )
   ),
+  rest.post("/api/login", (req, res, ctx) =>
+    res(ctx.status(200), ctx.set({ Authorization: "Bearer 123456abcdef" }))
+  ),
+  rest.post("/api/signup", (req, res, ctx) => res(ctx.status(200))),
 ];

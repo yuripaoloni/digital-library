@@ -124,6 +124,7 @@ export default function SignIn() {
             <Grid item>
               <Typography
                 component={Link}
+                data-testid="signup_link"
                 to="/signup"
                 variant="body2"
                 style={{ color: "#222C4A" }}
