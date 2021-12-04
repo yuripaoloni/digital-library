@@ -33,7 +33,7 @@ class UserController(
                 throw SIGNUP_USERNAME_EXISTS
             }
             userRepository.save(user)
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Throwable) {
             throw GENERIC_ERROR
         }
     }

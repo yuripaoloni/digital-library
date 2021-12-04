@@ -6,6 +6,7 @@ import it.unicam.cs.digital_library.security.jwt.JWTConstants.LOGIN_URL
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.SIGN_UP_URL
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -29,10 +30,13 @@ class WebSecurity(
             .permitAll()/*.anyRequest().authenticated()*/.and()
             .addFilter(JWTAuthenticationFilter(authenticationManager()).apply {
                 setFilterProcessesUrl(LOGIN_URL)
+                this.setAuthenticationFailureHandler { _, response, exception ->
+                    response.sendError(HttpStatus.BAD_REQUEST.value(), exception.message)
+                }
             })
             .addFilter(JWTAuthorizationFilter(authenticationManager()))
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {

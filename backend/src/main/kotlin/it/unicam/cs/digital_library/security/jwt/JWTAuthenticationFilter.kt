@@ -2,6 +2,7 @@ package it.unicam.cs.digital_library.security.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm.HMAC512
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.EXPIRATION_TIME
@@ -10,11 +11,11 @@ import it.unicam.cs.digital_library.security.jwt.JWTConstants.SECRET
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.TOKEN_PREFIX
 import it.unicam.cs.digital_library.security.model.UserAuthentication
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import java.io.IOException
 import java.util.*
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
@@ -32,8 +33,10 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager) : 
                     emptyList()
                 )
             )
-        } catch (e: IOException) {
-            throw RuntimeException(e)
+        } catch (e: MissingKotlinParameterException) {
+            throw AuthenticationServiceException("Errore dati incompleti")
+        } catch (e: Throwable) {
+            throw AuthenticationServiceException("Credenziali non valide")
         }
     }
 
