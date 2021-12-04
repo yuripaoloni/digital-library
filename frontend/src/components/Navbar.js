@@ -16,14 +16,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { onSignOut } from "states/authSlice";
 
 const drawerWidth = 240;
 
@@ -75,7 +76,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
   const isAuth = useSelector((state) => state.auth.isAuth);
+
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -170,10 +174,22 @@ export default function Navbar({ test }) {
         </List>
         <Divider />
         <List>
-          <ListItem component={Link} to="/signin" button key="login">
-            <ListItemIcon>{isAuth === false ? <LoginIcon /> : ""}</ListItemIcon>
-            {isAuth === false ? <ListItemText primary="Login" /> : ""}
-          </ListItem>
+          {isAuth ? (
+            <ListItem button key="logout" onClick={() => dispatch(onSignOut())}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          ) : (
+            <ListItem component={Link} to="/signin" button key="login">
+              <ListItemIcon>
+                {" "}
+                <LoginIcon />{" "}
+              </ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItem>
+          )}
         </List>
       </Drawer>
       <Main open={open}>

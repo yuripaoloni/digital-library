@@ -68,6 +68,6 @@ const authSlice = createSlice({
 
 const { actions, reducer } = authSlice;
 
-export const { unsetError } = actions;
+export const { unsetError, onSignOut } = actions;
 
 export default reducer;
