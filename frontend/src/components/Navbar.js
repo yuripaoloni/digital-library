@@ -18,9 +18,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
 import HomeIcon from "@mui/icons-material/Home";
-import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
-import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LoginIcon from "@mui/icons-material/Login";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
@@ -153,21 +151,22 @@ export default function Navbar({ test }) {
           </IconButton>
         </DrawerHeader>
         <Divider />
+        {/* <HomeIcon />  */}
         <List data-testid="side-menu">
-          {["Home", "Catalogo", "Fondo Mdd", "Contattaci", "App Mobile"].map(
-            (text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {text === "Home" ? <HomeIcon /> : ""}
-                  {text === "Catalogo" ? <LocalLibraryIcon /> : ""}
-                  {text === "Fondo Mdd" ? <FolderSpecialIcon /> : ""}
-                  {text === "Contattaci" ? <MailIcon /> : ""}
-                  {text === "App Mobile" ? <PhoneAndroidIcon /> : ""}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            )
-          )}
+          <ListItem component={Link} to="/" button key="home">
+            <ListItemIcon>
+              {" "}
+              <HomeIcon />{" "}
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
+          <ListItem component={Link} to="/books" button key="MenuBookIcon">
+            <ListItemIcon>
+              {" "}
+              <MenuBookIcon />{" "}
+            </ListItemIcon>
+            <ListItemText primary="Cerca Libro" />
+          </ListItem>
         </List>
         <Divider />
         <List>

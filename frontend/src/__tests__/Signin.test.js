@@ -11,15 +11,6 @@ test("Testing SignIn Page elements", () => {
   const password = getByTestId("signin_password_field");
   const submit = getByTestId("signin_submit_button");
 
-  //dont expect an error at the start
-  let errFound = false;
-  try {
-    getByTestId("signin_error");
-    throw new Error("signin_error found when its not supposed to..");
-  } catch (err) {
-    if (errFound) console.error(err.message);
-  }
-
   //testing root existance
   expect(root).toBeInTheDocument();
   //testing default input values
@@ -41,15 +32,6 @@ test("Testing SignIn Page elements", () => {
   userEvent.type(password, "1234567");
   //submitting valid login
   userEvent.click(submit);
-
-  //dont expect an error after sumbmitted a valid form
-  errFound = false;
-  try {
-    getByTestId("signin_error");
-    throw new Error("signin_error found when its not supposed to..");
-  } catch (err) {
-    if (errFound) console.error(err.message);
-  }
 });
 
 test("should perform sign in", async () => {
