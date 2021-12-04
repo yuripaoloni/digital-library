@@ -3,6 +3,7 @@ package it.unicam.cs.digital_library.model
 import javax.persistence.*
 
 @Entity
+@Table(name = "\"user\"")
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
