@@ -17,7 +17,7 @@ class BookController {
     @ApiOperation(value = "search book", notes = "search book by title and optionally by library ids")
     fun searchBook(
         @RequestParam query: String,
-        @RequestParam @ApiParam(required = false) libraryIds: List<Long>? = null
+        @RequestParam(required = false) @ApiParam(required = false) libraryIds: List<Long>? = null
     ): List<List<Book>> {
         return libraryService.searchBook(query, libraryIds)
     }

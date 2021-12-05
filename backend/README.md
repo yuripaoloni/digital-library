@@ -18,5 +18,5 @@ In order to change that you need to add the following line to the `./src/main/re
 server.port=your port
 ```
 
-## APIs
-To check the available endpoints of this server, go to http://localhost:8080/v2/api-docs and paste the json content into https://editor.swagger.io/
+## Host
+The server is hosted at: https://digital-library-2021.herokuapp.com

@@ -3,6 +3,7 @@ package it.unicam.cs.digital_library.model
 import javax.persistence.*
 
 @Entity
+@Table(name = "\"user\"")
 data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -10,6 +11,9 @@ data class User(
 
     @Column(nullable = false, unique = true)
     val email: String,
+
+    @Column(nullable = false, unique = true)
+    val username: String,
 
     @Column(nullable = false)
     val name: String = "",
