@@ -4,6 +4,8 @@ import io.swagger.annotations.*
 import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.network.LibraryService
+import it.unicam.cs.digital_library.security.Authenticate
+import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -37,16 +39,22 @@ class BookController {
     data class GetBookPageRequest(val book: Book, val page: Int)
 
     @PostMapping("/book/page")
-    @ApiOperation(value = "get book page", notes = "fetches the corresponding book page URL")
+    @ApiOperation(
+        value = "get book page",
+        notes = "fetches the corresponding book page URL",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
     @ApiResponses(
         value = [
             ApiResponse(
                 code = 200,
                 message = "Ex. https://bibliotecadigitale.unicam.it/Library/Dir.civ.IV-A-520/Dir.civ.IV-A-520_0005.JPG"
             ),
-            ApiResponse(code = 404, message = "Errore pagina non trovata")
+            ApiResponse(code = 404, message = "Errore pagina non trovata"),
+            ApiResponse(code = 403, message = "Forbidden")
         ]
     )
+    @Authenticate
     fun getBookPage(@RequestBody bookPageRequest: GetBookPageRequest): String {
         return libraryService.getBookPage(bookPageRequest.book, bookPageRequest.page)
             ?: throw ErrorException(HttpStatus.NOT_FOUND, "Errore pagina non trovata")

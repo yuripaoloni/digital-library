@@ -7,6 +7,7 @@ import it.unicam.cs.digital_library.security.jwt.JWTConstants.SECRET
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.TOKEN_PREFIX
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import javax.servlet.FilterChain
@@ -34,7 +35,7 @@ class JWTAuthorizationFilter(authenticationManager: AuthenticationManager) : Bas
                 .verify(token.replace(TOKEN_PREFIX, ""))
                 .subject
             return if (user != null) {
-                UsernamePasswordAuthenticationToken(user, null, emptyList())
+                UsernamePasswordAuthenticationToken(user, null, listOf(SimpleGrantedAuthority("ROLE_USER")))
             } else null
         }
         return null
