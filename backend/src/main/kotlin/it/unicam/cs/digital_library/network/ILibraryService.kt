@@ -8,4 +8,5 @@ interface ILibraryService {
     fun search(query: String): List<Book>
     fun getCover(book: Book): String?
     fun getRandomBooks(): List<Book>
+    fun getBookPage(book: Book, page: Int): String?
 }

@@ -3,11 +3,11 @@ package it.unicam.cs.digital_library.security
 import it.unicam.cs.digital_library.security.jwt.JWTAuthenticationFilter
 import it.unicam.cs.digital_library.security.jwt.JWTAuthorizationFilter
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.LOGIN_URL
-import it.unicam.cs.digital_library.security.jwt.JWTConstants.SIGN_UP_URL
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -19,15 +19,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 class WebSecurity(
     val userDetailsService: UserDetailsServiceImpl,
     val passwordEncoder: BCryptPasswordEncoder
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
-        http.cors().and().csrf().disable().authorizeRequests()
-            .antMatchers(HttpMethod.POST, SIGN_UP_URL, LOGIN_URL)
-            .permitAll()/*.anyRequest().authenticated()*/.and()
+        http.cors()
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .anyRequest()
+            .permitAll()
+            .and()
             .addFilter(JWTAuthenticationFilter(authenticationManager()).apply {
                 setFilterProcessesUrl(LOGIN_URL)
                 this.setAuthenticationFailureHandler { _, response, exception ->
