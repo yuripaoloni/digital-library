@@ -9,9 +9,12 @@ data class Note(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-    val page: Int,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     val book: Book,
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    val user: User,
+    val page: Int,
     val note: String
 )

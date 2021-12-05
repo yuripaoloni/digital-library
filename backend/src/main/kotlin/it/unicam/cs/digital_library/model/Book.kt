@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDeleteAction
 import javax.persistence.*
 
 @Entity
+@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["library_id", "remoteId"])])
 data class Book(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +15,7 @@ data class Book(
     val pages: Int,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "library_id")
     val library: Library,
     val remoteId: Long,
     // optional
