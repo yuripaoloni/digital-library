@@ -5,6 +5,6 @@ object JWTConstants {
     const val EXPIRATION_TIME: Long = 3600000 // 1 hour
     const val TOKEN_PREFIX = "Bearer "
     const val HEADER_STRING = "Authorization"
-    const val SIGN_UP_URL = "/api/signup"
-    const val LOGIN_URL = "/api/login"
+    const val SIGN_UP_URL = "/signup"
+    const val LOGIN_URL = "/login"
 }

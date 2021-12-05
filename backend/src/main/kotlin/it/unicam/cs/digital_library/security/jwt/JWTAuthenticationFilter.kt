@@ -9,7 +9,7 @@ import it.unicam.cs.digital_library.security.jwt.JWTConstants.EXPIRATION_TIME
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.HEADER_STRING
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.SECRET
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.TOKEN_PREFIX
-import it.unicam.cs.digital_library.security.model.UserAuthentication
+import it.unicam.cs.digital_library.security.model.Credentials
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -25,7 +25,7 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager) : 
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         try {
-            val userAuthentication = jacksonObjectMapper().readValue<UserAuthentication>(request.inputStream)
+            val userAuthentication = jacksonObjectMapper().readValue<Credentials>(request.inputStream)
             return authManager.authenticate(
                 UsernamePasswordAuthenticationToken(
                     userAuthentication.email,
