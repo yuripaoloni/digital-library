@@ -38,12 +38,4 @@ class BookControllerTest(
         assert(randomBooks.isNotEmpty())
         assert(randomBooks.first().size <= 10)
     }
-
-    @Test
-    fun addNote() {
-        val book = bookController.getRandomBooks().first().first()
-        val user = userRepository.findByEmail("test@gmail.com")!!
-        val note = Note(0, book, user, 0, "Prova")
-        noteRepository.save(note)
-    }
 }
