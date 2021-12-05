@@ -67,8 +67,6 @@ test("Testing SignUp Page elements", () => {
   expect(password.value).toBe("1234567");
   //submitting invalid signup
   userEvent.click(submit);
-  //checking if error is there
-  expect(getByTestId("signup_error")).toBeInTheDocument();
 
   //typing valid email and password
   userEvent.type(firstname, "valid");

@@ -22,6 +22,7 @@ export default function StickyFooter() {
           mt: "auto",
           backgroundColor: "#222C4A",
         }}
+        data-testid="footer"
       >
         <Container maxWidth="sm">
           <Typography
@@ -33,8 +34,9 @@ export default function StickyFooter() {
               justifyContent: "center",
               alignItems: "center",
             }}
+            data-testid="footer-signature"
           >
-            Digital Library 2021
+            © 2021 Digital Library
           </Typography>
         </Container>
       </Box>

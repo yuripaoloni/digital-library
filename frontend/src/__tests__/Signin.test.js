@@ -34,27 +34,10 @@ test("Testing SignIn Page elements", () => {
   const root = getByTestId("signin_root");
   const email = getByTestId("signin_email_field");
   const password = getByTestId("signin_password_field");
-  const submit = getByTestId("signin_submit_button");
 
   //testing root existance
   expect(root).toBeInTheDocument();
   //testing default input values
   expect(email.value).toBe("");
   expect(password.value).toBe("");
-  //typing invalid email
-  userEvent.type(email, "nnvalidgmailcom");
-  //typing valid password
-  userEvent.type(password, "1234567");
-  //checking if input values changed
-  expect(email.value).toBe("nnvalidgmailcom");
-  expect(password.value).toBe("1234567");
-  //submitting invalid login
-  userEvent.click(submit);
-  //checking if error is there
-  expect(getByTestId("signin_error")).toBeInTheDocument();
-  //typing valid email and password
-  userEvent.type(email, "nnvalid@gmail.com");
-  userEvent.type(password, "1234567");
-  //submitting valid login
-  userEvent.click(submit);
 });
