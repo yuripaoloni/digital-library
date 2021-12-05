@@ -17,4 +17,4 @@ jobs:
           git remote add heroku https://heroku:a18254fe-a3e9-4032-b665-bde42a788e4e@git.heroku.com/digital-library-2021.git
       - name: Deploy api to Heroku
         run: |
-          git push heroku `git subtree split --prefix backend master`:master --force
+          git push heroku `git subtree split --prefix backend main`:main --force
