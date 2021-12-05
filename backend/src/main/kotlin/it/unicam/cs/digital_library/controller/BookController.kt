@@ -2,17 +2,31 @@ package it.unicam.cs.digital_library.controller
 
 import io.swagger.annotations.*
 import it.unicam.cs.digital_library.controller.errors.ErrorException
+import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
+import it.unicam.cs.digital_library.controller.model.BookPageRequest
+import it.unicam.cs.digital_library.controller.model.ClientNote
+import it.unicam.cs.digital_library.controller.model.toClientNote
 import it.unicam.cs.digital_library.model.Book
+import it.unicam.cs.digital_library.model.Note
 import it.unicam.cs.digital_library.network.LibraryService
+import it.unicam.cs.digital_library.repository.*
 import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import springfox.documentation.annotations.ApiIgnore
+import java.security.Principal
 
 @CrossOrigin("*")
 @RestController
 @Api(tags = ["Books"])
-class BookController {
+class BookController(
+    @Autowired val userRepository: UserRepository,
+    @Autowired val noteRepository: NoteRepository,
+    @Autowired val bookRepository: BookRepository
+) {
     private val libraryService = LibraryService()
 
     @GetMapping("/book/search")
@@ -36,8 +50,6 @@ class BookController {
         return libraryService.getRandomBooks()
     }
 
-    data class GetBookPageRequest(val book: Book, val page: Int)
-
     @PostMapping("/book/page")
     @ApiOperation(
         value = "get book page",
@@ -55,8 +67,75 @@ class BookController {
         ]
     )
     @Authenticate
-    fun getBookPage(@RequestBody bookPageRequest: GetBookPageRequest): String {
+    fun getBookPage(@RequestBody bookPageRequest: BookPageRequest): String {
         return libraryService.getBookPage(bookPageRequest.book, bookPageRequest.page)
             ?: throw ErrorException(HttpStatus.NOT_FOUND, "Errore pagina non trovata")
+    }
+
+    @PostMapping("/note/add")
+    @ApiOperation(
+        value = "create a note",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun addNote(@RequestBody clientNote: ClientNote, @ApiIgnore principal: Principal): ClientNote {
+        val user = userRepository.findByEmail(principal.name)!!
+        val book = (libraryService.parseBook(clientNote.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
+        return noteRepository.save(Note(0, book, user, clientNote.page, clientNote.note)).toClientNote()
+    }
+
+    @PostMapping("/note/edit")
+    @ApiOperation(
+        value = "edits a note",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun editNote(@RequestBody clientNote: ClientNote, @ApiIgnore principal: Principal) {
+        noteRepository.save(
+            (noteRepository.findByIdOrNull(clientNote.id) ?: throw GENERIC_ERROR).copy(note = clientNote.note)
+        )
+    }
+
+    @DeleteMapping("/note/delete")
+    @ApiOperation(
+        value = "deletes a note",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun deleteNote(@RequestBody clientNote: ClientNote, @ApiIgnore principal: Principal) {
+        noteRepository.delete(
+            (noteRepository.findByIdOrNull(clientNote.id) ?: throw GENERIC_ERROR)
+        )
+    }
+
+    @PostMapping("/note/page")
+    @ApiOperation(
+        value = "get notes for a given page",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun getNotesByPage(
+        @RequestBody bookPageRequest: BookPageRequest,
+        @ApiIgnore principal: Principal
+    ): List<ClientNote> {
+        val book = (libraryService.parseBook(bookPageRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::find)
+            ?: return emptyList()
+        return noteRepository.findAllByBookIdAndPage(book.id, bookPageRequest.page).map(Note::toClientNote)
+    }
+
+    @PostMapping("/note/all")
+    @ApiOperation(
+        value = "get all notes for a given book",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun getNotesByBook(
+        @RequestBody book: Book,
+        @ApiIgnore principal: Principal
+    ): List<ClientNote> {
+        return noteRepository.findAllByBookId(
+            ((libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::find)
+                ?: return emptyList()).id
+        ).map(Note::toClientNote)
     }
 }

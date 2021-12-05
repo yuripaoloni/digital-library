@@ -9,4 +9,5 @@ interface ILibraryService {
     fun getCover(book: Book): String?
     fun getRandomBooks(): List<Book>
     fun getBookPage(book: Book, page: Int): String?
+    fun getBook(book: Book): Book?
 }

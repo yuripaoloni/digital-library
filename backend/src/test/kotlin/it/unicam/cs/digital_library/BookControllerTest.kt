@@ -1,14 +1,21 @@
 package it.unicam.cs.digital_library
 
 import it.unicam.cs.digital_library.controller.BookController
-import it.unicam.cs.digital_library.controller.LibraryController
-import it.unicam.cs.digital_library.model.Book
+import it.unicam.cs.digital_library.model.Note
+import it.unicam.cs.digital_library.repository.LibraryRepository
+import it.unicam.cs.digital_library.repository.NoteRepository
+import it.unicam.cs.digital_library.repository.UserRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class BookControllerTest(@Autowired private val bookController: BookController) {
+class BookControllerTest(
+    @Autowired private val bookController: BookController,
+    @Autowired private val userRepository: UserRepository,
+    @Autowired private val noteRepository: NoteRepository,
+    @Autowired private val libraryRepository: LibraryRepository
+) {
 
     @Test
     fun searchBookTest() {
@@ -32,4 +39,11 @@ class BookControllerTest(@Autowired private val bookController: BookController) 
         assert(randomBooks.first().size <= 10)
     }
 
+    @Test
+    fun addNote() {
+        val book = bookController.getRandomBooks().first().first()
+        val user = userRepository.findByEmail("test@gmail.com")!!
+        val note = Note(0, book, user, 0, "Prova")
+        noteRepository.save(note)
+    }
 }

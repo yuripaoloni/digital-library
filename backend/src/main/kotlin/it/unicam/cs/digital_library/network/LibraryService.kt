@@ -39,4 +39,8 @@ class LibraryService {
     fun getBookPage(book: Book, page: Int): String? {
         return getLibraryService(book)?.getBookPage(book, page)
     }
+
+    fun parseBook(book: Book): Book? {
+        return getLibraryService(book)?.getBook(book)
+    }
 }
