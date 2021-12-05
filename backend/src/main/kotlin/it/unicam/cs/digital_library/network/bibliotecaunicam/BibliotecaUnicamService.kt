@@ -71,18 +71,30 @@ class BibliotecaUnicamService : ILibraryService {
 
     override fun getCover(book: Book): String? {
         val remoteBook = getBookById(book.remoteId) ?: return null
-        return kotlin.runCatching {
-            restTemplate.exchange(
-                "/bookpages/${remoteBook.id}",
-                HttpMethod.GET,
-                null,
-                object : ParameterizedTypeReference<List<BookPage>>() {}).body?.find { it.isFrontCover }?.let {
-                "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid.trim()}/${it.name.trim()}"
-            }
-        }.getOrNull()
+        return getBookPages(remoteBook.id).find { it.isFrontCover }?.let {
+            "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid.trim()}/${it.name.trim()}"
+        }
     }
 
     override fun getRandomBooks(): List<Book> {
         return getBooks().shuffled().take(10)
+    }
+
+    private fun getBookPages(remoteBookId: Long): List<BookPage> {
+        return kotlin.runCatching {
+            restTemplate.exchange(
+                "/bookpages/$remoteBookId",
+                HttpMethod.GET,
+                null,
+                object : ParameterizedTypeReference<List<BookPage>>() {}).body
+        }.getOrDefault(emptyList())!!
+    }
+
+    override fun getBookPage(book: Book, page: Int): String? {
+        val remoteBook = getBookById(book.remoteId) ?: return null
+        val bookPage = getBookPages(remoteBook.id).find { it.number == page }
+        return bookPage?.let {
+            "https://bibliotecadigitale.unicam.it/Library/${remoteBook.bid.trim()}/${it.name.trim()}"
+        }
     }
 }

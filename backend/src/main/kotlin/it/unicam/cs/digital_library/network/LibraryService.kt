@@ -35,4 +35,8 @@ class LibraryService {
             it.getRandomBooks()
         }.shuffled().take(10).chunked(10)
     }
+
+    fun getBookPage(book: Book, page: Int): String? {
+        return getLibraryService(book)?.getBookPage(book, page)
+    }
 }

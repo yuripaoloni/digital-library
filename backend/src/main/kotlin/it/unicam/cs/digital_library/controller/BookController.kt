@@ -1,10 +1,10 @@
 package it.unicam.cs.digital_library.controller
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
+import io.swagger.annotations.*
+import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.network.LibraryService
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @CrossOrigin("*")
@@ -32,5 +32,23 @@ class BookController {
     @ApiOperation(value = "get random books", notes = "fetches 10 random books from libraries")
     fun getRandomBooks(): List<List<Book>> {
         return libraryService.getRandomBooks()
+    }
+
+    data class GetBookPageRequest(val book: Book, val page: Int)
+
+    @PostMapping("/book/page")
+    @ApiOperation(value = "get book page", notes = "fetches the corresponding book page URL")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                code = 200,
+                message = "Ex. https://bibliotecadigitale.unicam.it/Library/Dir.civ.IV-A-520/Dir.civ.IV-A-520_0005.JPG"
+            ),
+            ApiResponse(code = 404, message = "Errore pagina non trovata")
+        ]
+    )
+    fun getBookPage(@RequestBody bookPageRequest: GetBookPageRequest): String {
+        return libraryService.getBookPage(bookPageRequest.book, bookPageRequest.page)
+            ?: throw ErrorException(HttpStatus.NOT_FOUND, "Errore pagina non trovata")
     }
 }
