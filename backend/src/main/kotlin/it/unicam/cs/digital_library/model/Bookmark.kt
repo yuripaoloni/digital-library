@@ -5,7 +5,7 @@ import org.hibernate.annotations.OnDeleteAction
 import javax.persistence.*
 
 @Entity
-@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["book_id", "page"])])
+@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["book_id", "page", "user_id"])])
 data class Bookmark(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +16,7 @@ data class Bookmark(
     val book: Book,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
     val user: User,
     val page: Int,
     val description: String
