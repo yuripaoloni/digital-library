@@ -1,10 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getLibraries, getBooks, getRandomBooks, getBookCover } from "api";
+import {
+  getLibraries,
+  getBooks,
+  getRandomBooks,
+  getBookCover,
+  getBookPage,
+} from "api";
 
 const initialState = {
   loading: false,
   libraries: [],
   books: [],
+  pageUrl: "",
   error: {
     error: false,
     variant: "error",
@@ -44,6 +51,14 @@ export const fetchRandomBooks = createAsyncThunk("random/books", async () => {
   return books;
 });
 
+export const fetchBookPage = createAsyncThunk(
+  "page/books",
+  async ({ book, page }) => {
+    const res = await getBookPage({ book, page });
+    return res.data;
+  }
+);
+
 const booksSlice = createSlice({
   name: "books",
   initialState,
@@ -55,11 +70,14 @@ const booksSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchLibraries.fulfilled, (state, action) => {
-        // state.loading = false;
         state.libraries = action.payload;
       })
       .addCase(fetchLibraries.pending, (state, action) => {
         state.error = { error: false, variant: "error", message: "" };
+      })
+      .addCase(fetchBookPage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pageUrl = action.payload;
       })
       .addMatcher(
         (action) =>

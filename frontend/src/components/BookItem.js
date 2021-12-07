@@ -59,6 +59,8 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
               <Button
                 style={{ color: "#222C4A" }}
                 data-testid={`read-button-${index}`}
+                LinkComponent={Link}
+                to={`/read/${page - 1}/${index}`}
               >
                 Leggi
               </Button>
