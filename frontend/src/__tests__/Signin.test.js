@@ -1,4 +1,4 @@
-import SignIn from "pages/SignIn";
+import SignIn from "pages/Signin";
 import { render, waitFor, screen } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
