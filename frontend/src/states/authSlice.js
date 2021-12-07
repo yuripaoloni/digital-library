@@ -4,7 +4,12 @@ import { signIn, signUp } from "api";
 const initialState = {
   loading: false,
   isAuth: false,
-  error: false,
+  isRegistered: false,
+  error: {
+    error: false,
+    variant: "error",
+    message: "",
+  },
   authToken: localStorage.getItem("authToken"),
   user: {}, //TODO se nel backend restituiscono qualcosa sull'utente dopo il login inserire in user
 };
@@ -30,7 +35,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     unsetError: (state) => {
-      state.error = false;
+      state.error = { error: false, variant: "error", message: "" };
     },
     onSignOut: (state) => {
       localStorage.removeItem("authToken");
@@ -48,19 +53,24 @@ const authSlice = createSlice({
       })
       .addCase(onSignUp.fulfilled, (state, action) => {
         state.loading = false;
+        state.isRegistered = true;
       })
       .addMatcher(
         (action) => action.type?.endsWith("auth/pending"),
         (state) => {
           state.loading = true;
-          state.error = false;
+          state.error = { error: false, variant: "error", message: "" };
         }
       )
       .addMatcher(
         (action) => action.type?.endsWith("auth/rejected"),
         (state) => {
           state.loading = false;
-          state.error = true;
+          state.error = {
+            error: true,
+            variant: "error",
+            message: "Errore nella richiesta. Prova di nuovo.",
+          };
         }
       );
   },
