@@ -1,6 +1,7 @@
 import Footer from "../components/Footer";
 import { render } from "utils/testUtils";
 
+//TODO update test since Footer now is only visible in the Landing component
 test("Testing Footer", () => {
   const { getByTestId } = render(<Footer />);
   const footer = getByTestId("footer");

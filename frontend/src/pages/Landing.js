@@ -5,19 +5,17 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import BookItem from "components/BookItem";
-
-const theme = createTheme();
+import Footer from "components/Footer";
 
 export default function Landing({ test }) {
   const books = useSelector((state) => state.books.books);
   const loading = useSelector((state) => state.books.loading);
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <main data-testid={test}>
         <Box
@@ -71,7 +69,7 @@ export default function Landing({ test }) {
             </Stack>
           </Container>
         </Box>
-        <Container sx={{ py: 8 }} maxWidth="md">
+        <Container sx={{ py: 8 }} maxWidth="lg">
           <Stack spacing={2}>
             {loading ? (
               Array(8)
@@ -88,7 +86,8 @@ export default function Landing({ test }) {
             )}
           </Stack>
         </Container>
+        <Footer />
       </main>
-    </ThemeProvider>
+    </>
   );
 }

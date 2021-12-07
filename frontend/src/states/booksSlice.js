@@ -12,7 +12,7 @@ const initialState = {
   },
 };
 
-export const fetchLibraries = createAsyncThunk("books/libraries", async () => {
+export const fetchLibraries = createAsyncThunk("libraries/books", async () => {
   const res = await getLibraries();
   return res.data;
 });
@@ -32,7 +32,7 @@ export const fetchBooks = createAsyncThunk(
   }
 );
 
-export const fetchRandomBooks = createAsyncThunk("books/random", async () => {
+export const fetchRandomBooks = createAsyncThunk("random/books", async () => {
   const res = await getRandomBooks();
   let books = res.data;
   for (const booksPage of books) {
@@ -58,24 +58,27 @@ const booksSlice = createSlice({
         // state.loading = false;
         state.libraries = action.payload;
       })
+      .addCase(fetchLibraries.pending, (state, action) => {
+        state.error = { error: false, variant: "error", message: "" };
+      })
       .addMatcher(
         (action) =>
-          action.type?.endsWith("random/fulfilled") ||
-          action.type?.endsWith("books/fulfilled"),
+          action.type?.endsWith("random/books/fulfilled") ||
+          action.type?.endsWith("books/books/fulfilled"),
         (state, action) => {
           state.loading = false;
           state.books = action.payload;
         }
       )
       .addMatcher(
-        (action) => action.type?.endsWith("/pending"),
+        (action) => action.type?.endsWith("books/pending"),
         (state) => {
           state.loading = true;
           state.error = { error: false, variant: "error", message: "" };
         }
       )
       .addMatcher(
-        (action) => action.type?.endsWith("/rejected"),
+        (action) => action.type?.endsWith("books/rejected"),
         (state) => {
           state.loading = false;
           state.error.error = true;

@@ -16,16 +16,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
 import HomeIcon from "@mui/icons-material/Home";
-import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
-import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LoginIcon from "@mui/icons-material/Login";
-import CollectionsIcon from "@mui/icons-material/Collections";
-import NotesIcon from "@mui/icons-material/Notes";
+import LogoutIcon from "@mui/icons-material/Logout";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { onSignOut } from "states/authSlice";
 
 const drawerWidth = 240;
 
@@ -77,6 +76,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
+  const isAuth = useSelector((state) => state.auth.isAuth);
+
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -152,34 +155,41 @@ export default function Navbar({ test }) {
           </IconButton>
         </DrawerHeader>
         <Divider />
+        {/* <HomeIcon />  */}
         <List data-testid="side-menu">
-          {["Home", "Catalogo", "Fondo Mdd", "Contattaci", "App Mobile"].map(
-            (text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {text === "Home" ? <HomeIcon /> : ""}
-                  {text === "Catalogo" ? <LocalLibraryIcon /> : ""}
-                  {text === "Fondo Mdd" ? <FolderSpecialIcon /> : ""}
-                  {text === "Contattaci" ? <MailIcon /> : ""}
-                  {text === "App Mobile" ? <PhoneAndroidIcon /> : ""}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            )
-          )}
+          <ListItem component={Link} to="/" button key="home">
+            <ListItemIcon>
+              {" "}
+              <HomeIcon />{" "}
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
+          <ListItem component={Link} to="/books" button key="MenuBookIcon">
+            <ListItemIcon>
+              {" "}
+              <MenuBookIcon />{" "}
+            </ListItemIcon>
+            <ListItemText primary="Cerca Libro" />
+          </ListItem>
         </List>
         <Divider />
         <List>
-          {["Login", "Collezione", "Note"].map((text, index) => (
-            <ListItem button key={text}>
+          {isAuth ? (
+            <ListItem button key="logout" onClick={() => dispatch(onSignOut())}>
               <ListItemIcon>
-                {text === "Login" ? <LoginIcon /> : ""}
-                {text === "Collezione" ? <CollectionsIcon /> : ""}
-                {text === "Note" ? <NotesIcon /> : ""}
+                <LogoutIcon />
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary="Logout" />
             </ListItem>
-          ))}
+          ) : (
+            <ListItem component={Link} to="/signin" button key="login">
+              <ListItemIcon>
+                {" "}
+                <LoginIcon />{" "}
+              </ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItem>
+          )}
         </List>
       </Drawer>
       <Main open={open}>

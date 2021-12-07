@@ -12,15 +12,19 @@ const Img = styled("img")({
   height: 100,
 });
 
-const BookItem = ({ book, page = 0, index = 0 }) => {
+const BookItem = ({ book, page = 1, index = 0 }) => {
   return (
     <Paper data-testid={`book-item-${index}`} elevation={4} sx={{ px: 2 }}>
       <Grid container alignItems="center" mt={1.5} mb={0.5} columnSpacing={2}>
-        <Grid item lg={1} md={1.5} sm={2} xs>
+        <Grid item lg={1} md={1.5} sm={2}>
           {!book ? (
             <Skeleton variant="rectangular" height={100} />
           ) : (
-            <Img src={book.image} loading="lazy" />
+            <Img
+              src={book.image}
+              loading="lazy"
+              style={{ borderRadius: "3px" }}
+            />
           )}
         </Grid>
         <Grid item md={6} sm={10}>
@@ -52,8 +56,14 @@ const BookItem = ({ book, page = 0, index = 0 }) => {
             <Skeleton variant="rectangle" />
           ) : (
             <Grid container justifyContent="center">
-              <Button data-testid={`read-button-${index}`}>Leggi</Button>
               <Button
+                style={{ color: "#222C4A" }}
+                data-testid={`read-button-${index}`}
+              >
+                Leggi
+              </Button>
+              <Button
+                style={{ color: "#222C4A" }}
                 data-testid={`details-button-${index}`}
                 LinkComponent={Link}
                 to={`/books/${page - 1}/${index}`}
