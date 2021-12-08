@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface NoteRepository : JpaRepository<Note, Long> {
-    fun findAllByBookIdAndPage(book_id: Long, page: Int): List<Note>
-    fun findAllByBookId(book_id: Long): List<Note>
+    fun findByIdAndUserId(id: Long, user_id: Int): Note?
+    fun findAllByBookIdAndPageAndUserId(book_id: Long, page: Int, user_id: Int): List<Note>
+    fun findAllByBookIdAndUserId(book_id: Long, user_id: Int): List<Note>
 }

@@ -3,10 +3,7 @@ package it.unicam.cs.digital_library.controller
 import io.swagger.annotations.*
 import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
-import it.unicam.cs.digital_library.controller.model.BookPageRequest
-import it.unicam.cs.digital_library.controller.model.BookmarkRequest
-import it.unicam.cs.digital_library.controller.model.NoteRequest
-import it.unicam.cs.digital_library.controller.model.toBookmarkRequest
+import it.unicam.cs.digital_library.controller.model.*
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.model.Bookmark
 import it.unicam.cs.digital_library.model.Note
@@ -15,7 +12,6 @@ import it.unicam.cs.digital_library.repository.*
 import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
@@ -84,7 +80,7 @@ class BookController(
     fun addNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal): NoteRequest {
         val user = userRepository.findByEmail(principal.name)!!
         val book = (libraryService.parseBook(noteRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
-        return noteRepository.save(Note(0, book, user, noteRequest.page, noteRequest.note)).toBookmarkRequest()
+        return noteRepository.save(Note(0, book, user, noteRequest.page, noteRequest.note)).toNoteRequest()
     }
 
     @PostMapping("/note/edit")
@@ -94,8 +90,12 @@ class BookController(
     )
     @Authenticate
     fun editNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
         noteRepository.save(
-            (noteRepository.findByIdOrNull(noteRequest.id) ?: throw GENERIC_ERROR).copy(note = noteRequest.note)
+            (noteRepository.findByIdAndUserId(noteRequest.id, user.id) ?: throw ErrorException(
+                HttpStatus.BAD_REQUEST,
+                "Nota non trovata"
+            )).copy(note = noteRequest.note)
         )
     }
 
@@ -106,8 +106,12 @@ class BookController(
     )
     @Authenticate
     fun deleteNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
         noteRepository.delete(
-            (noteRepository.findByIdOrNull(noteRequest.id) ?: throw GENERIC_ERROR)
+            (noteRepository.findByIdAndUserId(noteRequest.id, user.id) ?: throw ErrorException(
+                HttpStatus.BAD_REQUEST,
+                "Nota non trovata"
+            ))
         )
     }
 
@@ -121,9 +125,11 @@ class BookController(
         @RequestBody bookPageRequest: BookPageRequest,
         @ApiIgnore principal: Principal
     ): List<NoteRequest> {
-        val book = (libraryService.parseBook(bookPageRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::find)
+        val user = userRepository.findByEmail(principal.name)!!
+        val book = (libraryService.parseBook(bookPageRequest.book) ?: return emptyList()).run(bookRepository::find)
             ?: return emptyList()
-        return noteRepository.findAllByBookIdAndPage(book.id, bookPageRequest.page).map(Note::toBookmarkRequest)
+        return noteRepository.findAllByBookIdAndPageAndUserId(book.id, bookPageRequest.page, user.id)
+            .map(Note::toNoteRequest)
     }
 
     @PostMapping("/note/all")
@@ -136,10 +142,12 @@ class BookController(
         @RequestBody book: Book,
         @ApiIgnore principal: Principal
     ): List<NoteRequest> {
-        return noteRepository.findAllByBookId(
-            ((libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::find)
-                ?: return emptyList()).id
-        ).map(Note::toBookmarkRequest)
+        val user = userRepository.findByEmail(principal.name)!!
+        return noteRepository.findAllByBookIdAndUserId(
+            ((libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find)
+                ?: return emptyList()).id,
+            user.id
+        ).map(Note::toNoteRequest)
     }
 
     @PostMapping("/bookmark/add")
@@ -152,7 +160,7 @@ class BookController(
         val user = userRepository.findByEmail(principal.name)!!
         val book =
             (libraryService.parseBook(bookmarkRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
-        val bookmark = bookmarkRepository.findByBookIdAndPage(book.id, bookmarkRequest.page)
+        val bookmark = bookmarkRepository.findByBookIdAndPageAndUserId(book.id, bookmarkRequest.page, user.id)
         if (bookmark != null) throw ErrorException(HttpStatus.FORBIDDEN, "Bookmark già presente sulla pagina")
         else return bookmarkRepository.save(Bookmark(0, book, user, bookmarkRequest.page, bookmarkRequest.description))
             .toBookmarkRequest()
@@ -165,9 +173,13 @@ class BookController(
     )
     @Authenticate
     fun editBookmark(@RequestBody bookmarkRequest: BookmarkRequest, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
         bookmarkRepository.save(
-            (bookmarkRepository.findByIdOrNull(bookmarkRequest.id)
-                ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Bookmark non trovato")).copy(description = bookmarkRequest.description)
+            (bookmarkRepository.findByIdAndUserId(bookmarkRequest.id, user.id)
+                ?: throw ErrorException(
+                    HttpStatus.BAD_REQUEST,
+                    "Bookmark non trovato"
+                )).copy(description = bookmarkRequest.description)
         )
     }
 
@@ -178,8 +190,12 @@ class BookController(
     )
     @Authenticate
     fun deleteBookmark(@RequestBody bookmarkRequest: BookmarkRequest, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
         bookmarkRepository.delete(
-            (bookmarkRepository.findByIdOrNull(bookmarkRequest.id) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Bookmark non trovato"))
+            (bookmarkRepository.findByIdAndUserId(bookmarkRequest.id, user.id) ?: throw ErrorException(
+                HttpStatus.BAD_REQUEST,
+                "Bookmark non trovato"
+            ))
         )
     }
 
@@ -193,9 +209,11 @@ class BookController(
         @RequestBody book: Book,
         @ApiIgnore principal: Principal
     ): List<BookmarkRequest> {
-        return bookmarkRepository.findAllByBookId(
-            ((libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::find)
-                ?: return emptyList()).id
+        val user = userRepository.findByEmail(principal.name)!!
+        return bookmarkRepository.findAllByBookIdAndUserId(
+            book_id = ((libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find)
+                ?: return emptyList()).id,
+            user_id = user.id
         ).map(Bookmark::toBookmarkRequest)
     }
 }

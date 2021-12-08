@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface BookmarkRepository : JpaRepository<Bookmark, Long> {
-    fun findByBookIdAndPage(book_id: Long, page: Int): Bookmark?
-    fun findAllByBookId(book_id: Long): List<Bookmark>
+    fun findByIdAndUserId(id: Long, user_id: Int): Bookmark?
+    fun findByBookIdAndPageAndUserId(book_id: Long, page: Int, user_id: Int): Bookmark?
+    fun findAllByBookIdAndUserId(book_id: Long, user_id: Int): List<Bookmark>
 }
