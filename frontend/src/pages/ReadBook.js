@@ -6,9 +6,12 @@ import { Navigate, useParams, Link } from "react-router-dom";
 import PageWrapper from "components/PageWrapper";
 import { fetchBookPage } from "states/booksSlice";
 import BookmarkModal from "components/BookmarkModal";
+import IconButton from "@mui/material/IconButton";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import ModeIcon from "@mui/icons-material/Mode";
 
 const Img = styled("img")({
-  height: 700,
+  height: 1000,
   borderRadius: 5,
   boxShadow: 2,
 });
@@ -48,33 +51,98 @@ const ReadBook = () => {
         onClose={() => setShowModal(false)}
       />
 
-      <Grid item xs={12} data-testid="book-details-item">
-        <Typography variant="h4">
-          {loading ? <Skeleton variant="text" width="60%" /> : book?.title}
-        </Typography>
-        <Typography variant="subtitle1" xs={12}>
-          {loading ? <Skeleton variant="text" width="40%" /> : book?.author}
-        </Typography>
+      <Grid container justifyContent="center" xs={12}>
+        <Grid
+          item
+          xs={12}
+          data-testid="book-details-item"
+          container
+          justifyContent="center"
+          flexDirection="column"
+          alignItems="center"
+          padding="2vh"
+        >
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{ width: "80%", margin: "0 0 10px 10px" }}
+          >
+            <Typography
+              variant="h4"
+              sx={{
+                fontSize: ["15px", "25px", "25px", "25px"],
+              }}
+            >
+              {loading ? <Skeleton variant="text" width="50%" /> : book?.title}
+            </Typography>
+          </Grid>
+
+          <Typography variant="subtitle1" xs={12}>
+            {loading ? <Skeleton variant="text" width="40%" /> : book?.author}
+          </Typography>
+        </Grid>
+        <Grid container justifyContent="center" xs={12}>
+          {loading ? (
+            <Skeleton variant="rectangle" height={800} width={280} />
+          ) : (
+            <Img
+              sx={{
+                ["@media (max-width : 600px)"]: {
+                  width: 300,
+                  height: 450,
+                },
+              }}
+              src={pageUrl}
+              loading="lazy"
+            />
+          )}
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          flexDirection="column"
+          alignItems="center"
+          padding="4vh"
+          md={12}
+        >
+          <Grid>
+            <Pagination
+              page={readingPage}
+              count={book.pages}
+              sx={{
+                width: ["250px", "100%", "100%", "100%"],
+              }}
+              onChange={(e, page) => setReadingPage(page)}
+            />
+          </Grid>
+          <Grid paddingTop="2vh">
+            <IconButton
+              onClick={() => setShowModal(true)}
+              style={{ color: "#222C4A" }}
+            >
+              <BookmarkBorderIcon />
+            </IconButton>
+            <IconButton
+              LinkComponent={Link}
+              to={`/notes/${page}/${index}/${readingPage}`}
+              style={{ color: "#222C4A" }}
+            >
+              <ModeIcon />
+            </IconButton>
+            {/* <Button onClick={() => setShowModal(true)}>
+              Aggiungi segnalibro
+            </Button>
+            <Button
+              LinkComponent={Link}
+              to={`/notes/${page}/${index}/${readingPage}`}
+            >
+              Aggiungi/modifica note
+            </Button> */}
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid container justifyContent="center">
-        {loading ? (
-          <Skeleton variant="rectangle" height={800} width={280} />
-        ) : (
-          <Img src={pageUrl} loading="lazy" />
-        )}
-        <Pagination
-          page={readingPage}
-          count={book.pages}
-          onChange={(e, page) => setReadingPage(page)}
-        />
-      </Grid>
-      <Button onClick={() => setShowModal(true)}>Aggiungi segnalibro</Button>
-      <Button
-        LinkComponent={Link}
-        to={`/notes/${page}/${index}/${readingPage}`}
-      >
-        Aggiungi/modifica note
-      </Button>
     </PageWrapper>
   );
 };
