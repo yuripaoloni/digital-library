@@ -7,3 +7,16 @@ export const axios = Axios.create({
 /**
  * add interceptors if needed
  */
+
+axios.interceptors.response.use(
+  (res) => {
+    return res;
+  },
+  (err) => {
+    if (err.response.status === 403) {
+      localStorage.removeItem("authToken");
+    }
+
+    return Promise.reject(err);
+  }
+);

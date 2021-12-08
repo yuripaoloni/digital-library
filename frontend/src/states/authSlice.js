@@ -3,7 +3,7 @@ import { signIn, signUp } from "api";
 
 const initialState = {
   loading: false,
-  isAuth: false,
+  isAuth: localStorage.getItem("authToken") ? true : false,
   isRegistered: false,
   error: {
     error: false,
@@ -47,9 +47,9 @@ const authSlice = createSlice({
     builder
       .addCase(onSignIn.fulfilled, (state, action) => {
         localStorage.setItem("authToken", action.payload);
-        state.loading = false;
         state.isAuth = true;
         state.authToken = action.payload;
+        state.loading = false;
       })
       .addCase(onSignUp.fulfilled, (state, action) => {
         state.loading = false;
