@@ -30,7 +30,7 @@ const BookDetails = () => {
   const loading = useSelector((state) => state.books.loading);
 
   //? this one permits the BookDetails page to be showed only when coming from /books. If we reload the page on books/0/1 after the render we will get a different book
-  //? because of getRandomBook. So, to ensure that this issue couldn't happen we make possible to go in the /books/:page/:index page only from /books
+  //? because of getRandomBook. So, to ensure that this issue couldn't happen we allows to go in the /books/:page/:index page only from /books
   const book = useSelector((state) =>
     state.books.books.length > 0 ? state.books.books[page][index] : false
   );
@@ -110,7 +110,14 @@ const BookDetails = () => {
               <Grid item md={6} mt={3}>
                 <Grid container justifyContent="space-around">
                   <Grid item>
-                    {!loading && <Button>Vai alla lettura</Button>}
+                    {!loading && (
+                      <Button
+                        LinkComponent={Link}
+                        to={`/read/${page}/${index}`}
+                      >
+                        Vai alla lettura
+                      </Button>
+                    )}
                   </Grid>
                   <Grid item>
                     {!loading && (

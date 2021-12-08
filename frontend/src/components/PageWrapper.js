@@ -1,14 +1,18 @@
 import React from "react";
 import { Snackbar, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { unsetError } from "states/booksSlice";
+import * as booksSlice from "states/booksSlice";
+import * as authSlice from "states/authSlice";
 
-const PageWrapper = ({ children }) => {
-  const { error, variant, message } = useSelector((state) => state.books.error);
+const PageWrapper = ({ auth, children }) => {
+  const { error, variant, message } = useSelector((state) =>
+    auth ? state.auth.error : state.books.error
+  );
 
   const dispatch = useDispatch();
 
-  const onClose = () => dispatch(unsetError());
+  const onClose = () =>
+    dispatch(auth ? authSlice.unsetError() : booksSlice.unsetError());
 
   return (
     <>

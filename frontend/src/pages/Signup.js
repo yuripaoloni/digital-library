@@ -8,9 +8,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
 import { onSignUp } from "states/authSlice";
-import { useNavigate } from "react-router";
 import Spinner from "components/Spinner";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import PageWrapper from "components/PageWrapper";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -23,7 +23,7 @@ export default function SignUp() {
   const [nameErr, setNameErr] = useState(false);
   const [surnameErr, setSurnameErr] = useState(false);
 
-  const { error, loading } = useSelector((state) => state.auth);
+  const { loading, isRegistered } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const changeEmail = (email) => {
@@ -51,134 +51,133 @@ export default function SignUp() {
     surname.length > 20 ? setSurnameErr(true) : setSurnameErr(false);
   };
 
-  const navigate = useNavigate();
-
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(onSignUp({ name, surname, username, email, password }));
-    !loading && navigate("/signin");
   };
+
+  if (!loading && isRegistered) return <Navigate to="/signin" />;
 
   if (loading) {
     return <Spinner />;
   }
 
   return (
-    <Container component="main" maxWidth="xs" data-testid="signup_root">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="given-name"
-                name="firstName"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-                error={nameErr}
-                onChange={(e) => changeName(e.target.value)}
-                inputProps={{ "data-testid": "signup_firstname_field" }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="family-name"
-                error={surnameErr}
-                onChange={(e) => changeSurname(e.target.value)}
-                inputProps={{ "data-testid": "signup_lastname_field" }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                autoComplete="family-name"
-                onChange={(e) => setUsername(e.target.value)}
-                inputProps={{ "data-testid": "signup_username_field" }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                error={emailError}
-                name="email"
-                autoComplete="email"
-                onChange={(e) => changeEmail(e.target.value)}
-                inputProps={{ "data-testid": "signup_email_field" }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                helperText="Lunghezza minima 6 caratteri"
-                id="password"
-                error={passwordError}
-                autoComplete="new-password"
-                onChange={(e) => changePassword(e.target.value)}
-                inputProps={{ "data-testid": "signup_password_field" }}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            style={{ background: "#222C4A" }}
-            data-testid="signup_submit_button"
+    <PageWrapper>
+      <Container component="main" maxWidth="xs" data-testid="signup_root">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography component="h1" variant="h5">
+            Sign up
+          </Typography>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
           >
-            Sign Up
-          </Button>
-          {error ? (
-            <Typography data-testid="signup_error">
-              Please Enter Valid Info
-            </Typography>
-          ) : (
-            ""
-          )}
-
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Typography
-                component={Link}
-                to="/signin"
-                variant="body2"
-                style={{ color: "#222C4A" }}
-              >
-                Already have an account? Sign in
-              </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="firstName"
+                  required
+                  fullWidth
+                  id="firstName"
+                  label="First Name"
+                  autoFocus
+                  error={nameErr}
+                  onChange={(e) => changeName(e.target.value)}
+                  inputProps={{ "data-testid": "signup_firstname_field" }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  autoComplete="family-name"
+                  error={surnameErr}
+                  onChange={(e) => changeSurname(e.target.value)}
+                  inputProps={{ "data-testid": "signup_lastname_field" }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="family-name"
+                  onChange={(e) => setUsername(e.target.value)}
+                  inputProps={{ "data-testid": "signup_username_field" }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  error={emailError}
+                  name="email"
+                  autoComplete="email"
+                  onChange={(e) => changeEmail(e.target.value)}
+                  inputProps={{ "data-testid": "signup_email_field" }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  helperText="Lunghezza minima 6 caratteri"
+                  id="password"
+                  error={passwordError}
+                  autoComplete="new-password"
+                  onChange={(e) => changePassword(e.target.value)}
+                  inputProps={{ "data-testid": "signup_password_field" }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              style={{ background: "#222C4A" }}
+              data-testid="signup_submit_button"
+            >
+              Sign Up
+            </Button>
+
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Typography
+                  component={Link}
+                  to="/signin"
+                  variant="body2"
+                  style={{ color: "#222C4A" }}
+                >
+                  Already have an account? Sign in
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </PageWrapper>
   );
 }
