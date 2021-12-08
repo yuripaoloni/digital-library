@@ -3,6 +3,19 @@ import { render, waitFor, screen } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 
+test("Testing SignIn Page elements", () => {
+  const { getByTestId } = render(<SignIn />);
+  const root = getByTestId("signin_root");
+  const email = getByTestId("signin_email_field");
+  const password = getByTestId("signin_password_field");
+
+  //testing root existance
+  expect(root).toBeInTheDocument();
+  //testing default input values
+  expect(email.value).toBe("");
+  expect(password.value).toBe("");
+});
+
 test("should perform sign in and logout", async () => {
   render(<App />);
 
@@ -26,18 +39,4 @@ test("should perform sign in and logout", async () => {
   userEvent.click(screen.getByText(/logout/i));
 
   expect(screen.getByText(/login/i)).toBeDefined();
-});
-
-//TODO update test in order to work after the Redux implementations
-test("Testing SignIn Page elements", () => {
-  const { getByTestId } = render(<SignIn />);
-  const root = getByTestId("signin_root");
-  const email = getByTestId("signin_email_field");
-  const password = getByTestId("signin_password_field");
-
-  //testing root existance
-  expect(root).toBeInTheDocument();
-  //testing default input values
-  expect(email.value).toBe("");
-  expect(password.value).toBe("");
 });

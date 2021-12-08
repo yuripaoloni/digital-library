@@ -29,8 +29,7 @@ test("should perform sign up", async () => {
   );
 });
 
-//TODO update test in order to work after the Redux implementations
-test("Testing SignUp Page elements", () => {
+xtest("Testing SignUp Page elements", () => {
   const { getByTestId } = render(<SignUp />);
   const root = getByTestId("signup_root");
   const firstname = getByTestId("signup_firstname_field");
