@@ -10,6 +10,8 @@ import MUIRichTextEditor from "mui-rte";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { EditorState } from "draft-js";
 
 const Img = styled("img")({
   height: 400,
@@ -24,20 +26,19 @@ const BookNotes = () => {
       MUIRichTextEditor: {
         root: {
           width: "90%",
-          marginTop: 30,
-          marginLeft: 10,
+          maxHeight: "400px",
+          maxWidth: "700px",
           border: "1px solid grey",
           borderRadius: 4,
-          maxWidth: "100vh",
-          maxHeight: "80vh",
         },
         editor: {
-          display: "block",
-          maxHeight: "80vh",
-          maxWidth: "80vh",
+          maxHeight: "330px",
+          maxWidth: "650px",
           padding: "0 13px",
           marginTop: 2,
           marginBottom: 15,
+          overflowX: "hidden",
+          overflowY: "auto",
         },
         container: {
           display: "flex",
@@ -108,7 +109,6 @@ const BookNotes = () => {
       })
     );
   };
-
   return (
     <PageWrapper>
       <SelectNotes
@@ -135,12 +135,7 @@ const BookNotes = () => {
               marginLeft: "20px",
             }}
             data-testid="book-details-item"
-          >
-            {/* <Typography variant="h4">Note</Typography>
-            <Typography variant="subtitle1" xs={12}>
-              Pagina {readingPage}
-            </Typography> */}
-          </Grid>
+          ></Grid>
           <Grid
             item
             xs
@@ -148,40 +143,49 @@ const BookNotes = () => {
             direction="column"
             justifyContent="center"
             alignItems="center"
-          >
-            <Button onClick={() => setShowDialog(true)}>seleziona nota</Button>
-          </Grid>
+          ></Grid>
         </Grid>
         <Grid item xs={12}>
           <Grid
             container
             direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
+            justifyContent="space-evenly"
+            sx={{ marginTop: "20px" }}
           >
             <Grid
               item
               sm={5}
               container
               direction="column"
-              justifyContent="start"
-              sx={{
-                height: "inherit",
-              }}
+              justifyContent="center"
+              alignItems="center"
+              sx={{ position: "relative" }}
             >
+              {/* //TODO inserire editor note
+                - the content should be controlled with the note state using the note.note property
+                - should have a submit button to create a new note or edit an existing one note (logic will be implemented later)
+                - should have a delete button
+              */}
               <ThemeProvider theme={editorTheme}>
                 <MUIRichTextEditor
                   defaultValue={note.note && note.note.toString()}
-                  label={
-                    <Typography sx={{ marginLeft: "20px" }}>
-                      Start typing...
-                    </Typography>
-                  }
+                  label={<Typography>Start typing...</Typography>}
                   onSave={onSave}
-                  controls={["bold", "italic", "bulletList", "save", "clear"]}
-                  inlineToolbar
+                  controls={["bold", "italic", "bulletList", "save", "delete"]}
+                  customControls={[
+                    {
+                      name: "delete",
+                      icon: <DeleteIcon />,
+                      type: "callback",
+                      //editorState, anchor da passare come paramentri
+                      onClick: () => {
+                        onDelete();
+                        //return EditorState.createEmpty();
+                      },
+                    },
+                  ]}
                 />
               </ThemeProvider>
-
               <Grid
                 container
                 direction="column"
@@ -190,11 +194,13 @@ const BookNotes = () => {
             </Grid>
             <Grid
               item
+              container={{ xs: true, sm: false }}
+              direction="column"
               justifyContent="center"
               alignItems="center"
               sm={3}
               sx={{
-                marginTop: "50px",
+                paddingTop: "20px",
               }}
             >
               {loading ? (
@@ -205,7 +211,10 @@ const BookNotes = () => {
               <Typography variant="subtitle1" xs={12}>
                 Pagina {readingPage}
               </Typography>
-              <IconButton onClick={() => setShowDialog(true)}>
+              <IconButton
+                onClick={() => setShowDialog(true)}
+                data-testid="delete-icon"
+              >
                 {" "}
                 <LibraryBooksIcon />{" "}
               </IconButton>
@@ -216,5 +225,4 @@ const BookNotes = () => {
     </PageWrapper>
   );
 };
-
 export default BookNotes;

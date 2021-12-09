@@ -30,7 +30,7 @@ test("should open notes page", async () => {
 test("should open the notes dialog", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByText(/Seleziona nota/i));
+  userEvent.click(await screen.findByTestId("delete-icon"));
 
   expect(await screen.findAllByText(/MockNote/i)).toBeDefined();
   // screen.debug(null, Infinity);
@@ -39,7 +39,7 @@ test("should open the notes dialog", async () => {
 test("should create a new note", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByText(/Seleziona nota/i));
+  userEvent.click(await screen.findByTestId("delete-icon"));
 
   userEvent.click(await screen.findByText(/Crea nuova nota/i));
 
@@ -57,7 +57,7 @@ test("should create a new note", async () => {
 test("should edit an existing note", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByText(/Seleziona nota/i));
+  userEvent.click(await screen.findByTestId("delete-icon"));
 
   userEvent.click(await screen.findByText(/MockNote-0/i));
 
@@ -75,7 +75,7 @@ test("should edit an existing note", async () => {
 test("should delete an existing note", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByText(/Seleziona nota/i));
+  userEvent.click(await screen.findByTestId("delete-icon"));
 
   userEvent.click(await screen.findByText(/MockNote-0/i));
 
