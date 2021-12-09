@@ -1,5 +1,5 @@
 import SignUp from "pages/Signup";
-import { render, screen, waitFor } from "utils/testUtils";
+import { render, screen } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 
@@ -7,7 +7,7 @@ test("should perform sign up", async () => {
   render(<App />);
 
   //? await for Landing to be rendered
-  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
+  expect(await screen.findByTestId(/book-item-0/i)).toBeDefined();
 
   userEvent.click(screen.getByTestId("menu-button"));
 
@@ -24,9 +24,7 @@ test("should perform sign up", async () => {
   userEvent.click(screen.getByTestId("signup_submit_button"));
 
   //? if sign up successful, the user will be redirected to /signin (Login)
-  await waitFor(() =>
-    expect(screen.getByTestId("signin_email_field")).toBeDefined()
-  );
+  expect(await screen.findByTestId("signin_email_field")).toBeDefined();
 });
 
 xtest("Testing SignUp Page elements", () => {

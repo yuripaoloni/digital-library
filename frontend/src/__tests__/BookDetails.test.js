@@ -1,20 +1,16 @@
-import { render, fireEvent, waitFor, screen } from "utils/testUtils";
+import { render, fireEvent, screen } from "utils/testUtils";
 import App from "App";
 
 test("should display book details", async () => {
   render(<App />);
 
-  let button = await waitFor(() => screen.getByTestId("trova_button"));
+  let button = await screen.findByTestId("trova_button");
 
   fireEvent.click(button);
 
-  let detailsButton = await waitFor(() =>
-    screen.getByTestId("details-button-0")
-  );
+  let detailsButton = await screen.findByTestId("details-button-0");
 
   fireEvent.click(detailsButton);
 
-  await waitFor(() =>
-    expect(screen.getByTestId("book-details-item")).toBeDefined()
-  );
+  expect(await screen.findByTestId("book-details-item")).toBeDefined();
 });
