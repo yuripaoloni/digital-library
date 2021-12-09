@@ -15,7 +15,7 @@ const SearchForms = () => {
   const libraries = useSelector((state) => state.books.libraries);
 
   const [title, setTitle] = useState("");
-  const [library, setLibrary] = useState("");
+  const [library, setLibrary] = useState("all");
 
   const dispatch = useDispatch();
 
@@ -41,7 +41,7 @@ const SearchForms = () => {
             labelId="demo-simple-select-label"
             data-testid="select-library"
             value={library}
-            label="Seleziona biblioteca"
+            label="Tutte le biblioteche"
             onChange={(e) => setLibrary(e.target.value)}
           >
             <MenuItem value="all">Tutte le biblioteche</MenuItem>
