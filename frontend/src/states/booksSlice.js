@@ -70,80 +70,9 @@ export const fetchBookData = createAsyncThunk(
   async ({ book }) => {
     const notes = await getAllNotes({ book });
     //TODO const bookmarks = await getAllBookmarks({book});
+    return { notes: notes.data };
+
     // return { notes: notes.data , bookmarks: bookmarks.data };
-    return {
-      notes: [
-        {
-          id: 15,
-          book: {
-            id: 11,
-            title:
-              "Annuario della libera Università degli studi di Camerino - Anno scolastico 1881-82",
-            author: "Università di Camerino",
-            pages: 130,
-            library: {
-              id: 0,
-              name: "Biblioteca digitale unicam",
-              url: "https://bibliotecadigitale.unicam.it",
-              icon: "https://bibliotecadigitale.unicam.it/Images/Logo.ico",
-            },
-            remoteId: 1222,
-            language: "italiano",
-            year: 1882,
-            genre: "B.G.1-6",
-            plot: null,
-          },
-          page: 0,
-          note: "test1",
-        },
-        {
-          id: 16,
-          book: {
-            id: 11,
-            title:
-              "Annuario della libera Università degli studi di Camerino - Anno scolastico 1881-82",
-            author: "Università di Camerino",
-            pages: 130,
-            library: {
-              id: 0,
-              name: "Biblioteca digitale unicam",
-              url: "https://bibliotecadigitale.unicam.it",
-              icon: "https://bibliotecadigitale.unicam.it/Images/Logo.ico",
-            },
-            remoteId: 1222,
-            language: "italiano",
-            year: 1882,
-            genre: "B.G.1-6",
-            plot: null,
-          },
-          page: 0,
-          note: "test",
-        },
-        {
-          id: 17,
-          book: {
-            id: 11,
-            title:
-              "Annuario della libera Università degli studi di Camerino - Anno scolastico 1881-82",
-            author: "Università di Camerino",
-            pages: 130,
-            library: {
-              id: 0,
-              name: "Biblioteca digitale unicam",
-              url: "https://bibliotecadigitale.unicam.it",
-              icon: "https://bibliotecadigitale.unicam.it/Images/Logo.ico",
-            },
-            remoteId: 1222,
-            language: "italiano",
-            year: 1882,
-            genre: "B.G.1-6",
-            plot: null,
-          },
-          page: 1,
-          note: "test",
-        },
-      ],
-    };
   }
 );
 
@@ -204,7 +133,7 @@ const booksSlice = createSlice({
       })
       .addCase(onCreateNote.fulfilled, (state, action) => {
         state.loading = false;
-        state.notes = [...state.notes.push(action.payload)];
+        state.notes = [...state.notes, action.payload];
       })
       .addCase(onEditNote.fulfilled, (state, action) => {
         state.loading = false;

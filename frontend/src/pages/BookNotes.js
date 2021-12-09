@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import PageWrapper from "components/PageWrapper";
-import { Grid, Typography, Skeleton, Paper, Button } from "@mui/material";
-import ModeIcon from "@mui/icons-material/Mode";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { onDeleteNote } from "states/booksSlice";
+import { Grid, Typography, Skeleton, Button } from "@mui/material";
+import { onDeleteNote, onCreateNote, onEditNote } from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
 import MUIRichTextEditor from "mui-rte";
@@ -64,26 +62,51 @@ const BookNotes = () => {
   });
   const { page, index, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
-  //? has book, id, page, note properties
   const [note, setNote] = useState({
-    book: {},
-    id: 0,
+    book: null,
+    id: -1,
     page: readingPage,
-    note: "",
+    note: null,
   });
 
   const loading = useSelector((state) => state.books.loading);
-  const notes = useSelector((state) => state.books.notes);
+  const book = useSelector((state) =>
+    state.books.books.length > 0 ? state.books.books[page][index] : false
+  );
   const pageUrl = useSelector((state) => state.books.pageUrl);
 
   const dispatch = useDispatch();
 
-  //? note hardcoded solo per pag 0 e 1
+  //TODO improve general layout & implement onDelete
 
-  //TODO improve general layout
+  const onSave = (data) => {
+    setNote((prev) => {
+      return { ...prev, page: readingPage, book: book, note: data.toString() };
+    });
+    //? id = -1 means new note
+    note.id === -1
+      ? dispatch(
+          onCreateNote({ book: book, page: readingPage, note: data.toString() })
+        )
+      : dispatch(
+          onEditNote({
+            book: book,
+            page: readingPage,
+            note: data.toString(),
+            id: note.id,
+          })
+        );
+  };
 
-  const save = (data) => {
-    console.log(data);
+  const onDelete = () => {
+    dispatch(
+      onDeleteNote({
+        book: book,
+        page: readingPage,
+        note: note.note,
+        id: note.id,
+      })
+    );
   };
 
   return (
@@ -100,7 +123,6 @@ const BookNotes = () => {
         sx={{
           maxWidth: "100%",
           alignItems: "baseline",
-          backgroundColor: "red",
         }}
       >
         <Grid container rowSpacing={3}>
@@ -126,7 +148,9 @@ const BookNotes = () => {
             direction="column"
             justifyContent="center"
             alignItems="center"
-          ></Grid>
+          >
+            <Button onClick={() => setShowDialog(true)}>seleziona nota</Button>
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <Grid
@@ -144,22 +168,20 @@ const BookNotes = () => {
                 height: "inherit",
               }}
             >
-              {/* //TODO inserire editor note 
-                - the content should be controlled with the note state using the note.note property
-                - should have a submit button to create a new note or edit an existing one note (logic will be implemented later)
-                - should have a delete button
-              */}
               <ThemeProvider theme={editorTheme}>
                 <MUIRichTextEditor
+                  defaultValue={note.note && note.note.toString()}
                   label={
                     <Typography sx={{ marginLeft: "20px" }}>
                       Start typing...
                     </Typography>
                   }
-                  onSave={save}
+                  onSave={onSave}
                   controls={["bold", "italic", "bulletList", "save", "clear"]}
+                  inlineToolbar
                 />
               </ThemeProvider>
+
               <Grid
                 container
                 direction="column"
@@ -168,8 +190,6 @@ const BookNotes = () => {
             </Grid>
             <Grid
               item
-              container={{ xs: true, sm: false }}
-              direction="column"
               justifyContent="center"
               alignItems="center"
               sm={3}
