@@ -1,11 +1,11 @@
-import { render, waitFor, screen } from "utils/testUtils";
+import { render, screen } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 
 test("should display the reading page", async () => {
   render(<App />);
 
-  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
+  expect(await screen.findByTestId(/book-item-0/i)).toBeDefined();
 
   userEvent.click(screen.getByTestId(/read-button-0/i));
 
@@ -16,7 +16,5 @@ test("should display the reading page", async () => {
   userEvent.click(screen.getByTestId("signin_submit_button"));
 
   //? after login should redirect to read page
-  await waitFor(() =>
-    expect(screen.getByTestId(/book-read-item/i)).toBeDefined()
-  );
+  expect(await screen.findByTestId(/book-read-item/i)).toBeDefined();
 });
