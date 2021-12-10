@@ -25,7 +25,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
 
   return (
     <Dialog onClose={onClose} open={show}>
-      <DialogTitle>Set backup account</DialogTitle>
+      <DialogTitle>Seleziona nota</DialogTitle>
       <List sx={{ pt: 0 }}>
         {notes.map(
           (note, index) =>
@@ -40,7 +40,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
                     <ArticleIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={note.note} />
+                <ListItemText primary={`Nota ${note.id}`} />
               </ListItem>
             )
         )}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import PageWrapper from "components/PageWrapper";
-import { Grid, Typography, Skeleton, Button } from "@mui/material";
+import { Grid, Typography, Skeleton } from "@mui/material";
 import { onDeleteNote, onCreateNote, onEditNote } from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
@@ -11,13 +11,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { EditorState } from "draft-js";
 
 const Img = styled("img")({
   height: 400,
   borderRadius: 5,
   boxShadow: 2,
 });
+
+//TODO adjust loading
 
 const BookNotes = () => {
   const editorTheme = createTheme();
@@ -108,6 +109,12 @@ const BookNotes = () => {
         id: note.id,
       })
     );
+    setNote({
+      book: null,
+      id: -1,
+      page: readingPage,
+      note: null,
+    });
   };
   return (
     <PageWrapper>
@@ -161,13 +168,9 @@ const BookNotes = () => {
               alignItems="center"
               sx={{ position: "relative" }}
             >
-              {/* //TODO inserire editor note
-                - the content should be controlled with the note state using the note.note property
-                - should have a submit button to create a new note or edit an existing one note (logic will be implemented later)
-                - should have a delete button
-              */}
               <ThemeProvider theme={editorTheme}>
                 <MUIRichTextEditor
+                  data-testid="text-editor"
                   defaultValue={note.note && note.note.toString()}
                   label={<Typography>Start typing...</Typography>}
                   onSave={onSave}
@@ -177,11 +180,7 @@ const BookNotes = () => {
                       name: "delete",
                       icon: <DeleteIcon />,
                       type: "callback",
-                      //editorState, anchor da passare come paramentri
-                      onClick: () => {
-                        onDelete();
-                        //return EditorState.createEmpty();
-                      },
+                      onClick: () => onDelete(),
                     },
                   ]}
                 />
@@ -215,8 +214,7 @@ const BookNotes = () => {
                 onClick={() => setShowDialog(true)}
                 data-testid="delete-icon"
               >
-                {" "}
-                <LibraryBooksIcon />{" "}
+                <LibraryBooksIcon data-testid="select-note" />
               </IconButton>
             </Grid>
           </Grid>

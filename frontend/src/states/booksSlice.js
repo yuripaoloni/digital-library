@@ -95,8 +95,8 @@ export const onCreateNote = createAsyncThunk(
 export const onEditNote = createAsyncThunk(
   "editNote/books",
   async ({ book, id, note, page }) => {
-    const res = await editNote({ book, id, note, page });
-    return res.data;
+    await editNote({ book, id, note, page });
+    return { book, id, note, page };
   }
 );
 
@@ -126,22 +126,22 @@ const booksSlice = createSlice({
         // state.bookmarks = action.payload.bookmarks
       })
       .addCase(onDeleteNote.fulfilled, (state, action) => {
+        let updatedNotes = state.notes.filter(
+          (note) => note.id !== action.payload
+        );
         state.loading = false;
-        state.notes = [
-          ...state.notes.filter((note) => note.id !== action.payload),
-        ];
+        state.notes = [...updatedNotes];
       })
       .addCase(onCreateNote.fulfilled, (state, action) => {
         state.loading = false;
         state.notes = [...state.notes, action.payload];
       })
       .addCase(onEditNote.fulfilled, (state, action) => {
+        let updatedNotes = state.notes.map((note) =>
+          note.id === action.payload.id ? action.payload : note
+        );
         state.loading = false;
-        state.notes = [
-          ...state.notes.map((note) =>
-            note.id === action.payload.id ? action.payload : note
-          ),
-        ];
+        state.notes = [...updatedNotes];
       })
       .addMatcher(
         (action) =>
