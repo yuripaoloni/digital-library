@@ -33,11 +33,12 @@ const ReadBook = () => {
 
   const dispatch = useDispatch();
 
+  //? fetch book data on page render
   useEffect(() => {
     book && dispatch(fetchBookData({ book }));
   }, [book, dispatch]);
 
-  //fetch new page
+  //? fetch new page on readingPage change
   useEffect(() => {
     book && dispatch(fetchBookPage({ book, page: readingPage }));
   }, [book, readingPage, dispatch]);
@@ -55,7 +56,6 @@ const ReadBook = () => {
         <Grid
           item
           xs={12}
-          data-testid="book-read-item"
           container
           justifyContent="center"
           flexDirection="column"
@@ -107,6 +107,7 @@ const ReadBook = () => {
             />
           ) : (
             <Img
+              data-testid="reading-page-image"
               sx={{
                 "@media (max-width : 600px)": {
                   width: 300,
@@ -143,6 +144,7 @@ const ReadBook = () => {
               <BookmarkBorderIcon />
             </IconButton>
             <IconButton
+              data-testid="note-icon-button"
               LinkComponent={Link}
               to={`/notes/${page}/${index}/${readingPage}`}
               style={{ color: "#222C4A" }}

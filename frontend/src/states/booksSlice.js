@@ -13,9 +13,10 @@ import {
 
 const initialState = {
   loading: false,
+  noteLoading: false,
   libraries: [],
   books: [],
-  pageUrl: "",
+  pageUrl: null,
   notes: [],
   bookmarks: [],
   error: {
@@ -129,18 +130,18 @@ const booksSlice = createSlice({
         let updatedNotes = state.notes.filter(
           (note) => note.id !== action.payload
         );
-        state.loading = false;
+        state.noteLoading = false;
         state.notes = [...updatedNotes];
       })
       .addCase(onCreateNote.fulfilled, (state, action) => {
-        state.loading = false;
+        state.noteLoading = false;
         state.notes = [...state.notes, action.payload];
       })
       .addCase(onEditNote.fulfilled, (state, action) => {
         let updatedNotes = state.notes.map((note) =>
           note.id === action.payload.id ? action.payload : note
         );
-        state.loading = false;
+        state.noteLoading = false;
         state.notes = [...updatedNotes];
       })
       .addMatcher(
@@ -150,6 +151,13 @@ const booksSlice = createSlice({
         (state, action) => {
           state.loading = false;
           state.books = action.payload;
+        }
+      )
+      .addMatcher(
+        (action) => action.type?.endsWith("Note/books/pending"),
+        (state) => {
+          state.noteLoading = true;
+          state.error = { error: false, variant: "error", message: "" };
         }
       )
       .addMatcher(
@@ -163,6 +171,7 @@ const booksSlice = createSlice({
         (action) => action.type?.endsWith("books/rejected"),
         (state) => {
           state.loading = false;
+          state.noteLoading = false;
           state.error.error = true;
           state.error.variant = "error";
           state.error.message = localStorage.getItem("authToken")
