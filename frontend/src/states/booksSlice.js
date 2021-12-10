@@ -5,6 +5,10 @@ import {
   getRandomBooks,
   getBookCover,
   getBookPage,
+  getAllNotes,
+  deleteNote,
+  createNote,
+  editNote,
 } from "api";
 
 const initialState = {
@@ -12,6 +16,8 @@ const initialState = {
   libraries: [],
   books: [],
   pageUrl: "",
+  notes: [],
+  bookmarks: [],
   error: {
     error: false,
     variant: "error",
@@ -59,6 +65,41 @@ export const fetchBookPage = createAsyncThunk(
   }
 );
 
+export const fetchBookData = createAsyncThunk(
+  "data/books",
+  async ({ book }) => {
+    const notes = await getAllNotes({ book });
+    //TODO const bookmarks = await getAllBookmarks({book});
+    return { notes: notes.data };
+
+    // return { notes: notes.data , bookmarks: bookmarks.data };
+  }
+);
+
+export const onDeleteNote = createAsyncThunk(
+  "deleteNote/books",
+  async ({ book, id, note, page }) => {
+    await deleteNote({ book, id, note, page });
+    return id;
+  }
+);
+
+export const onCreateNote = createAsyncThunk(
+  "createNote/books",
+  async ({ book, note, page }) => {
+    const res = await createNote({ book, note, page });
+    return res.data;
+  }
+);
+
+export const onEditNote = createAsyncThunk(
+  "editNote/books",
+  async ({ book, id, note, page }) => {
+    await editNote({ book, id, note, page });
+    return { book, id, note, page };
+  }
+);
+
 const booksSlice = createSlice({
   name: "books",
   initialState,
@@ -72,12 +113,35 @@ const booksSlice = createSlice({
       .addCase(fetchLibraries.fulfilled, (state, action) => {
         state.libraries = action.payload;
       })
-      .addCase(fetchLibraries.pending, (state, action) => {
+      .addCase(fetchLibraries.pending, (state) => {
         state.error = { error: false, variant: "error", message: "" };
       })
       .addCase(fetchBookPage.fulfilled, (state, action) => {
         state.loading = false;
         state.pageUrl = action.payload;
+      })
+      .addCase(fetchBookData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.notes = action.payload.notes;
+        // state.bookmarks = action.payload.bookmarks
+      })
+      .addCase(onDeleteNote.fulfilled, (state, action) => {
+        let updatedNotes = state.notes.filter(
+          (note) => note.id !== action.payload
+        );
+        state.loading = false;
+        state.notes = [...updatedNotes];
+      })
+      .addCase(onCreateNote.fulfilled, (state, action) => {
+        state.loading = false;
+        state.notes = [...state.notes, action.payload];
+      })
+      .addCase(onEditNote.fulfilled, (state, action) => {
+        let updatedNotes = state.notes.map((note) =>
+          note.id === action.payload.id ? action.payload : note
+        );
+        state.loading = false;
+        state.notes = [...updatedNotes];
       })
       .addMatcher(
         (action) =>
@@ -101,8 +165,9 @@ const booksSlice = createSlice({
           state.loading = false;
           state.error.error = true;
           state.error.variant = "error";
-          state.error.message =
-            "Errore durante il recupero dei dati. Prova di nuovo.";
+          state.error.message = localStorage.getItem("authToken")
+            ? "Errore durante il recupero dei dati. Prova di nuovo."
+            : "Effettua nuovamente il login.";
         }
       );
   },

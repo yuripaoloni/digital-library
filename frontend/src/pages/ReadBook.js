@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Pagination, Skeleton, Typography, Button } from "@mui/material";
+import { Grid, Pagination, Skeleton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate, useParams, Link } from "react-router-dom";
 import PageWrapper from "components/PageWrapper";
-import { fetchBookPage } from "states/booksSlice";
+import { fetchBookData, fetchBookPage } from "states/booksSlice";
 import BookmarkModal from "components/BookmarkModal";
 import IconButton from "@mui/material/IconButton";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ModeIcon from "@mui/icons-material/Mode";
 
 const Img = styled("img")({
-  height: 1000,
+  height: 700,
   borderRadius: 5,
   boxShadow: 2,
 });
@@ -34,15 +34,15 @@ const ReadBook = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchBookPage({ book, page: readingPage }));
+    book && dispatch(fetchBookData({ book }));
+  }, [book, dispatch]);
+
+  //fetch new page
+  useEffect(() => {
+    book && dispatch(fetchBookPage({ book, page: readingPage }));
   }, [book, readingPage, dispatch]);
 
   if (!book) return <Navigate to="/books" />;
-
-  /**
-   * TODO
-   * - fix layout foto pagina, button, pagination e titolo
-   */
 
   return (
     <PageWrapper>
@@ -51,16 +51,16 @@ const ReadBook = () => {
         onClose={() => setShowModal(false)}
       />
 
-      <Grid container justifyContent="center" xs={12}>
+      <Grid container justifyContent="center">
         <Grid
           item
           xs={12}
-          data-testid="book-details-item"
+          data-testid="book-read-item"
           container
           justifyContent="center"
           flexDirection="column"
           alignItems="center"
-          padding="2vh"
+          padding="1vh"
         >
           <Grid
             container
@@ -75,21 +75,40 @@ const ReadBook = () => {
                 fontSize: ["15px", "25px", "25px", "25px"],
               }}
             >
-              {loading ? <Skeleton variant="text" width="50%" /> : book?.title}
+              {loading && page === 0 ? (
+                <Skeleton variant="text" width="50%" />
+              ) : (
+                book?.title
+              )}
             </Typography>
           </Grid>
 
           <Typography variant="subtitle1" xs={12}>
-            {loading ? <Skeleton variant="text" width="40%" /> : book?.author}
+            {loading && page === 0 ? (
+              <Skeleton variant="text" width="40%" />
+            ) : (
+              book?.author
+            )}
           </Typography>
         </Grid>
-        <Grid container justifyContent="center" xs={12}>
+        <Grid container justifyContent="center">
           {loading ? (
-            <Skeleton variant="rectangle" height={800} width={280} />
+            <Skeleton
+              variant="rectangle"
+              animation="wave"
+              height={700}
+              width={500}
+              sx={{
+                "@media (max-width : 600px)": {
+                  width: 300,
+                  height: 450,
+                },
+              }}
+            />
           ) : (
             <Img
               sx={{
-                ["@media (max-width : 600px)"]: {
+                "@media (max-width : 600px)": {
                   width: 300,
                   height: 450,
                 },
@@ -104,8 +123,7 @@ const ReadBook = () => {
           justifyContent="center"
           flexDirection="column"
           alignItems="center"
-          padding="4vh"
-          md={12}
+          padding="1vh"
         >
           <Grid>
             <Pagination
@@ -131,15 +149,6 @@ const ReadBook = () => {
             >
               <ModeIcon />
             </IconButton>
-            {/* <Button onClick={() => setShowModal(true)}>
-              Aggiungi segnalibro
-            </Button>
-            <Button
-              LinkComponent={Link}
-              to={`/notes/${page}/${index}/${readingPage}`}
-            >
-              Aggiungi/modifica note
-            </Button> */}
           </Grid>
         </Grid>
       </Grid>

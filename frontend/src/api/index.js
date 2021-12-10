@@ -1,9 +1,5 @@
 import { axios } from "api/axios";
 
-let authHeaders = {
-  headers: { Authorization: localStorage.getItem("authToken") },
-};
-
 export const getLibraries = () => {
   return axios.get("/library/list");
 };
@@ -40,25 +36,48 @@ export const signUp = (name, surname, username, email, password) => {
 };
 
 export const getBookPage = ({ book, page }) => {
-  return axios.post("/book/page", { book, page }, authHeaders);
+  return axios.post(
+    "/book/page",
+    { book, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
 };
 
 export const createNote = ({ book, note, page }) => {
-  return axios.post("/note/add", { book, note, page }, authHeaders);
+  return axios.post(
+    "/note/add",
+    { book, note, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
 };
 
 export const editNote = ({ book, id, note, page }) => {
-  return axios.post("/note/edit", { book, id, note, page }, authHeaders);
+  return axios.post(
+    "/note/edit",
+    { book, id, note, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
 };
 
 export const getAllNotes = ({ book }) => {
-  return axios.post("/note/all", { book }, authHeaders);
+  return axios.post("/note/all", book, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
 };
 
 export const getNoteByPage = ({ book, page }) => {
-  return axios.post("/note/page", { book, page }, authHeaders);
+  return axios.post(
+    "/note/page",
+    { book, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
 };
 
-export const deleteNote = ({ book, note, page }) => {
-  return axios.delete("/note/delete", { book, note, page }, authHeaders);
+export const deleteNote = ({ book, id, note, page }) => {
+  return axios({
+    method: "delete",
+    url: "/note/delete",
+    headers: { Authorization: localStorage.getItem("authToken") },
+    data: { book, id, note, page },
+  });
 };

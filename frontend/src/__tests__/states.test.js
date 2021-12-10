@@ -7,6 +7,8 @@ test("booksSlice: should return the initial state", () => {
     libraries: [],
     books: [],
     pageUrl: "",
+    notes: [],
+    bookmarks: [],
     error: {
       error: false,
       variant: "error",

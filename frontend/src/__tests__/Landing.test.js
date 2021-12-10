@@ -1,5 +1,5 @@
 import Landing from "pages/Landing";
-import { render, screen, waitFor } from "utils/testUtils";
+import { render, screen } from "utils/testUtils";
 import App from "App";
 
 test("Testing Landing Page", () => {
@@ -22,5 +22,5 @@ test("Testing Landing Page", () => {
 test("should display books on landing page", async () => {
   render(<App />);
 
-  await waitFor(() => expect(screen.getByTestId(/book-item-0/i)).toBeDefined());
+  expect(await screen.findByTestId(/book-item-0/i)).toBeDefined();
 });
