@@ -1,7 +1,7 @@
-export const getMockNotes = (notes) => {
+export const getMockNotes = (notes, manualIndex) => {
   return notes.map((note, index) => {
     return {
-      id: index,
+      id: manualIndex ? manualIndex : index,
       book: {
         id: 11,
         title:
@@ -21,7 +21,9 @@ export const getMockNotes = (notes) => {
         plot: null,
       },
       page: index,
-      note: `${note}-${index}`,
+      note: `{"blocks":[{"key":"brhle","text":"test note ${
+        manualIndex ? manualIndex : index
+      }","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
     };
   });
 };

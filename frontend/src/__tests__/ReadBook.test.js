@@ -16,5 +16,5 @@ test("should display the reading page", async () => {
   userEvent.click(screen.getByTestId("signin_submit_button"));
 
   //? after login should redirect to read page
-  expect(await screen.findByTestId(/book-read-item/i)).toBeDefined();
+  expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
 });

@@ -1,4 +1,4 @@
-import { render, screen } from "utils/testUtils";
+import { render, screen, waitForElementToBeRemoved } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 
@@ -16,50 +16,76 @@ test("should open notes page", async () => {
   userEvent.click(screen.getByTestId("signin_submit_button"));
 
   //? after login should redirect to read page
-  expect(await screen.findByTestId(/book-read-item/i)).toBeDefined();
+  expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
 
-  userEvent.click(screen.getByTestId("ModeIcon"));
+  userEvent.click(screen.getByTestId("note-icon-button"));
 
-  expect(await screen.findByText(/Pagina/i)).toBeDefined();
-
-  userEvent.click(await screen.findByText(/Seleziona nota/i));
-
-  expect(await screen.findAllByText(/MockNote/i)).toBeDefined();
+  expect(await screen.findByTestId("select-note")).toBeDefined();
 });
 
 test("should open the notes dialog", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByTestId("delete-icon"));
+  userEvent.click(await screen.findByTestId("select-note"));
 
-  expect(await screen.findAllByText(/MockNote/i)).toBeDefined();
-  // screen.debug(null, Infinity);
+  expect(await screen.findAllByTestId(/note-item/i)).toBeDefined();
 });
 
 test("should create a new note", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByTestId("delete-icon"));
+  userEvent.click(await screen.findByTestId("select-note"));
 
   userEvent.click(await screen.findByText(/Crea nuova nota/i));
 
-  // screen.debug(null, Infinity);
+  userEvent.click(screen.getByTestId("SaveIcon"));
 
-  //TODO find the editor by testid
+  await waitForElementToBeRemoved(screen.getByRole("progressbar"));
 
-  //TODO add content with userEvent
+  userEvent.click(await screen.findByTestId("select-note"));
 
-  //TODO click on the save icon to execute the onCreate method
-
-  //TODO check presence of the new note in the dialog
+  expect(await screen.findAllByTestId(/note-item/i)).toHaveLength(2);
 });
 
-test("should edit an existing note", async () => {
+test("should delete an existing note", async () => {
   render(<App />);
 
-  userEvent.click(await screen.findByTestId("delete-icon"));
+  userEvent.click(await screen.findByTestId("select-note"));
 
-  userEvent.click(await screen.findByText(/MockNote-0/i));
+  userEvent.click(await screen.findByTestId(/note-item-0/i));
+
+  userEvent.click(screen.getByTestId("remove-icon"));
+
+  await waitForElementToBeRemoved(screen.getByRole("progressbar"));
+
+  userEvent.click(await screen.findByTestId("select-note"));
+
+  expect(await screen.findAllByTestId(/note-item/i)).toHaveLength(1);
+});
+
+//TODO
+xtest("should edit an existing note", async () => {
+  render(<App />);
+
+  userEvent.click(await screen.findByTestId("select-note"));
+
+  userEvent.click(await screen.findByTestId(/note-item/i));
+
+  userEvent.type(
+    screen.getByText(/test note 1/i),
+    `{"blocks":[{"key":"brhle","text":"test note 2","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+  );
+
+  userEvent.click(screen.getByTestId("SaveIcon"));
+
+  await waitForElementToBeRemoved(screen.getByRole("progressbar"));
+
+  userEvent.click(await screen.findByTestId("select-note"));
+
+  // userEvent.click(await screen.findByText(/note-item/i));
+
+  screen.debug(null, Infinity);
+  // expect(await screen.findByText(/Nota 2/i)).toHaveLength(2);
 
   //TODO find the editor by testid
 
@@ -70,20 +96,4 @@ test("should edit an existing note", async () => {
   //TODO click on the save icon to execute the onEdit method
 
   //TODO check presence of the updated note in the dialog
-});
-
-test("should delete an existing note", async () => {
-  render(<App />);
-
-  userEvent.click(await screen.findByTestId("delete-icon"));
-
-  userEvent.click(await screen.findByText(/MockNote-0/i));
-
-  //TODO find the editor by testid
-
-  //TODO check presence of the existing note content in the editor
-
-  //TODO click on the delete icon to execute the onDelete method
-
-  //TODO check absence of the deleted note in the dialog
 });

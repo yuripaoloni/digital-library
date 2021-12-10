@@ -45,12 +45,14 @@ export const handlers = [
       )
     )
   ),
-  rest.post("/note/add", (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(getMockNotes(["CreateMockNote"])))
-  ),
+  rest.post("/note/add", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json(getMockNotes(["CreateMockNote"], 1)[0])
+    );
+  }),
   rest.post("/note/edit", (req, res, ctx) => {
-    req.body = getMockNotes(["MockNote"]);
-    return res(ctx.status(200), ctx.json(getMockNotes(["EditMockNote"])));
+    return res(ctx.status(200), ctx.json(getMockNotes(["EditMockNote"], 1)[0]));
   }),
   rest.post("/note/all", (req, res, ctx) =>
     res(
@@ -58,7 +60,5 @@ export const handlers = [
       ctx.json(getMockNotes(["MockNote", "MockNote", "MockNote"]))
     )
   ),
-  rest.delete("/note/delete", (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(getMockNotes("MockNote")))
-  ),
+  rest.delete("/note/delete", (req, res, ctx) => res(ctx.status(200))),
 ];

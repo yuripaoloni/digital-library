@@ -4,9 +4,10 @@ import authSlice from "states/authSlice";
 test("booksSlice: should return the initial state", () => {
   expect(booksSlice(undefined, {})).toEqual({
     loading: false,
+    noteLoading: false,
     libraries: [],
     books: [],
-    pageUrl: "",
+    pageUrl: null,
     notes: [],
     bookmarks: [],
     error: {

@@ -31,6 +31,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
           (note, index) =>
             note.page.toString() === readingPage && (
               <ListItem
+                data-testid={`note-item-${index}`}
                 button
                 onClick={() => handleSelection(note)}
                 key={index}
