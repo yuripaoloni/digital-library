@@ -13,9 +13,11 @@ import {
 
 const initialState = {
   loading: false,
+  singleBookLoading: false,
   noteLoading: false,
   libraries: [],
   books: [],
+  selectedBook: null,
   pageUrl: null,
   notes: [],
   bookmarks: [],
@@ -46,6 +48,17 @@ export const fetchBooks = createAsyncThunk(
   }
 );
 
+export const fetchSingleBook = createAsyncThunk(
+  "singleBook/books",
+  async ({ title, libraryId }) => {
+    let books = await getBooks(title, libraryId);
+    let book = books.data[0][0];
+    const cover = await getBookCover(book);
+    book.image = cover.data;
+    return book;
+  }
+);
+
 export const fetchRandomBooks = createAsyncThunk("random/books", async () => {
   const res = await getRandomBooks();
   let books = res.data;
@@ -68,10 +81,11 @@ export const fetchBookPage = createAsyncThunk(
 
 export const fetchBookData = createAsyncThunk(
   "data/books",
-  async ({ book }) => {
+  async ({ book, page }) => {
+    const pageUrl = await getBookPage({ book, page });
     const notes = await getAllNotes({ book });
     //TODO const bookmarks = await getAllBookmarks({book});
-    return { notes: notes.data };
+    return { pageUrl: pageUrl.data, notes: notes.data };
 
     // return { notes: notes.data , bookmarks: bookmarks.data };
   }
@@ -108,6 +122,9 @@ const booksSlice = createSlice({
     unsetError: (state) => {
       state.error = { error: false, variant: "error", message: "" };
     },
+    selectBook: (state, action) => {
+      state.selectedBook = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -117,12 +134,21 @@ const booksSlice = createSlice({
       .addCase(fetchLibraries.pending, (state) => {
         state.error = { error: false, variant: "error", message: "" };
       })
+      .addCase(fetchSingleBook.fulfilled, (state, action) => {
+        state.singleBookLoading = false;
+        state.selectedBook = action.payload;
+      })
+      .addCase(fetchSingleBook.pending, (state) => {
+        state.singleBookLoading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
       .addCase(fetchBookPage.fulfilled, (state, action) => {
         state.loading = false;
         state.pageUrl = action.payload;
       })
       .addCase(fetchBookData.fulfilled, (state, action) => {
         state.loading = false;
+        state.pageUrl = action.payload.pageUrl;
         state.notes = action.payload.notes;
         // state.bookmarks = action.payload.bookmarks
       })
@@ -172,6 +198,7 @@ const booksSlice = createSlice({
         (state) => {
           state.loading = false;
           state.noteLoading = false;
+          state.singleBookLoading = false;
           state.error.error = true;
           state.error.variant = "error";
           state.error.message = localStorage.getItem("authToken")
@@ -184,6 +211,6 @@ const booksSlice = createSlice({
 
 const { actions, reducer } = booksSlice;
 
-export const { unsetError } = actions;
+export const { unsetError, selectBook } = actions;
 
 export default reducer;

@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Grid, Pagination, Skeleton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
-import { Navigate, useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import PageWrapper from "components/PageWrapper";
-import { fetchBookData, fetchBookPage } from "states/booksSlice";
+import {
+  fetchBookData,
+  fetchBookPage,
+  fetchSingleBook,
+} from "states/booksSlice";
 import BookmarkModal from "components/BookmarkModal";
 import IconButton from "@mui/material/IconButton";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -20,30 +24,26 @@ const ReadBook = () => {
   const [readingPage, setReadingPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
-  const { page, index } = useParams();
+  const { libraryId, title } = useParams();
 
   const loading = useSelector((state) => state.books.loading);
   const pageUrl = useSelector((state) => state.books.pageUrl);
 
-  //? this one permits the ReadBook page to be showed only when coming from /books or /. If we reload the page on books/0/1 after the render we will get a different book
-  //? because of getRandomBook. So, to ensure that this issue couldn't happen we allows to go in the /books/:page/:index page only from /books
-  const book = useSelector((state) =>
-    state.books.books.length > 0 ? state.books.books[page][index] : false
-  );
+  const book = useSelector((state) => state.books.selectedBook);
 
   const dispatch = useDispatch();
 
   //? fetch book data on page render
   useEffect(() => {
-    book && dispatch(fetchBookData({ book }));
-  }, [book, dispatch]);
+    book
+      ? dispatch(fetchBookData({ book, page: 0 }))
+      : dispatch(fetchSingleBook({ libraryId, title }));
+  }, [book, dispatch, libraryId, title]);
 
   //? fetch new page on readingPage change
   useEffect(() => {
-    book && dispatch(fetchBookPage({ book, page: readingPage }));
+    readingPage !== 0 && dispatch(fetchBookPage({ book, page: readingPage }));
   }, [book, readingPage, dispatch]);
-
-  if (!book) return <Navigate to="/books" />;
 
   return (
     <PageWrapper>
@@ -75,20 +75,12 @@ const ReadBook = () => {
                 fontSize: ["15px", "25px", "25px", "25px"],
               }}
             >
-              {loading && page === 0 ? (
-                <Skeleton variant="text" width="50%" />
-              ) : (
-                book?.title
-              )}
+              {loading ? <Skeleton variant="text" width={250} /> : book?.title}
             </Typography>
           </Grid>
 
           <Typography variant="subtitle1" xs={12}>
-            {loading && page === 0 ? (
-              <Skeleton variant="text" width="40%" />
-            ) : (
-              book?.author
-            )}
+            {loading ? <Skeleton variant="text" width={100} /> : book?.author}
           </Typography>
         </Grid>
         <Grid container justifyContent="center">
@@ -129,7 +121,7 @@ const ReadBook = () => {
           <Grid>
             <Pagination
               page={readingPage}
-              count={book.pages}
+              count={book?.pages}
               sx={{
                 width: ["250px", "100%", "100%", "100%"],
               }}
@@ -146,7 +138,7 @@ const ReadBook = () => {
             <IconButton
               data-testid="note-icon-button"
               LinkComponent={Link}
-              to={`/notes/${page}/${index}/${readingPage}`}
+              to={`/books/notes/${libraryId}/${title}/${readingPage}`}
               style={{ color: "#222C4A" }}
             >
               <ModeIcon />

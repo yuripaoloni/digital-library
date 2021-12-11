@@ -1,9 +1,15 @@
-import React, { useState } from "react";
-import { useParams, Navigate } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import PageWrapper from "components/PageWrapper";
-import { Grid, Typography } from "@mui/material";
-import { onDeleteNote, onCreateNote, onEditNote } from "states/booksSlice";
+import { Grid, Typography, Skeleton } from "@mui/material";
+import {
+  onDeleteNote,
+  onCreateNote,
+  onEditNote,
+  fetchSingleBook,
+  fetchBookData,
+} from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
 import IconButton from "@mui/material/IconButton";
@@ -18,7 +24,7 @@ const Img = styled("img")({
 });
 
 const BookNotes = () => {
-  const { page, index, readingPage } = useParams();
+  const { libraryId, title, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
   const [note, setNote] = useState({
     book: null,
@@ -27,13 +33,18 @@ const BookNotes = () => {
     note: null,
   });
 
-  const loading = useSelector((state) => state.books.noteLoading);
-  const book = useSelector((state) =>
-    state.books.books.length > 0 ? state.books.books[page][index] : false
-  );
+  const noteLoading = useSelector((state) => state.books.noteLoading);
+  const loading = useSelector((state) => state.books.loading);
+  const book = useSelector((state) => state.books.selectedBook);
   const pageUrl = useSelector((state) => state.books.pageUrl);
 
   const dispatch = useDispatch();
+
+  //TODO fix this function
+  useEffect(() => {
+    !book && dispatch(fetchSingleBook({ libraryId, title }));
+    (book || !pageUrl) && dispatch(fetchBookData({ book, page: readingPage }));
+  }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
 
   const onSave = (data) => {
     setNote((prev) => {
@@ -71,10 +82,7 @@ const BookNotes = () => {
     });
   };
 
-  if (loading) return <Spinner />;
-
-  //? if no pageUrl is set, redirect to /. Happens if user try to go directly on /read/0/0/0 without passing from / or /books
-  if (!loading && !pageUrl) return <Navigate to="/" />;
+  if (noteLoading) return <Spinner />;
 
   return (
     <PageWrapper>
@@ -108,6 +116,7 @@ const BookNotes = () => {
               alignItems="center"
               sx={{ position: "relative" }}
             >
+              {/* //TODO add skeleton here */}
               <TextEditor
                 note={note.note}
                 onSave={onSave}
@@ -125,7 +134,11 @@ const BookNotes = () => {
                 paddingTop: "20px",
               }}
             >
-              <Img src={pageUrl} loading="lazy" />
+              {loading ? (
+                <Skeleton variant="rectangle" height={400} width={280} />
+              ) : (
+                <Img src={pageUrl} loading="lazy" />
+              )}
               <Typography variant="subtitle1" xs={12}>
                 Pagina {readingPage}
               </Typography>

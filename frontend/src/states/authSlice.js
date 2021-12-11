@@ -11,7 +11,7 @@ const initialState = {
     message: "",
   },
   authToken: localStorage.getItem("authToken"),
-  user: {}, //TODO se nel backend restituiscono qualcosa sull'utente dopo il login inserire in user
+  user: {}, //TODO add data after login, like 
 };
 
 export const onSignIn = createAsyncThunk(
@@ -19,6 +19,7 @@ export const onSignIn = createAsyncThunk(
   async ({ email, password }) => {
     const res = await signIn(email, password);
     return res.headers.authorization;
+    //TODO return {authToken: res.headers.authorization, user: res.data}
   }
 );
 

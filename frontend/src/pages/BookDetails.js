@@ -1,6 +1,6 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Navigate, useParams } from "react-router";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -13,10 +13,9 @@ import Skeleton from "@mui/material/Skeleton";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
-
 import PageWrapper from "components/PageWrapper";
-
 import { formatBookKeys, getBookIcons } from "utils/bookUtils";
+import { fetchSingleBook, selectBook } from "states/booksSlice";
 
 const Img = styled("img")({
   height: 400,
@@ -25,17 +24,24 @@ const Img = styled("img")({
 });
 
 const BookDetails = () => {
-  const { page, index } = useParams();
+  const { libraryId, title } = useParams();
 
-  const loading = useSelector((state) => state.books.loading);
+  const loading = useSelector((state) => state.books.singleBookLoading);
 
-  //? this one permits the BookDetails page to be showed only when coming from /books. If we reload the page on books/0/1 after the render we will get a different book
-  //? because of getRandomBook. So, to ensure that this issue couldn't happen we allows to go in the /books/:page/:index page only from /books
-  const book = useSelector((state) =>
-    state.books.books.length > 0 ? state.books.books[page][index] : false
-  );
+  const book = useSelector((state) => state.books.selectedBook);
 
-  if (!book) return <Navigate to="/books" />;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    !book && dispatch(fetchSingleBook({ libraryId, title }));
+  }, [book, dispatch, libraryId, title]);
+
+  const navigate = useNavigate();
+
+  const openReading = () => {
+    dispatch(selectBook(book));
+    navigate(`/books/read/${libraryId}/${title}`);
+  };
 
   return (
     <PageWrapper>
@@ -103,7 +109,7 @@ const BookDetails = () => {
                   {loading ? (
                     <Skeleton variant="rectangle" height={400} width={280} />
                   ) : (
-                    <Img src={book.image} loading="lazy" />
+                    <Img src={book?.image} loading="lazy" />
                   )}
                 </Grid>
               </Grid>
@@ -111,10 +117,7 @@ const BookDetails = () => {
                 <Grid container justifyContent="space-around">
                   <Grid item>
                     {!loading && (
-                      <Button
-                        LinkComponent={Link}
-                        to={`/read/${page}/${index}`}
-                      >
+                      <Button onClick={() => openReading()}>
                         Vai alla lettura
                       </Button>
                     )}
