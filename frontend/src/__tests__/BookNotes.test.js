@@ -76,15 +76,16 @@ xtest("should edit an existing note", async () => {
     `{"blocks":[{"key":"brhle","text":"test note 2","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
   );
 
-  userEvent.click(screen.getByTestId("SaveIcon"));
+  screen.debug(null, Infinity);
 
-  await waitForElementToBeRemoved(screen.getByRole("progressbar"));
+  // userEvent.click(screen.getByTestId("SaveIcon"));
 
-  userEvent.click(await screen.findByTestId("select-note"));
+  // await waitForElementToBeRemoved(screen.getByRole("progressbar"));
+
+  // userEvent.click(await screen.findByTestId("select-note"));
 
   // userEvent.click(await screen.findByText(/note-item/i));
 
-  screen.debug(null, Infinity);
   // expect(await screen.findByText(/Nota 2/i)).toHaveLength(2);
 
   //TODO find the editor by testid
