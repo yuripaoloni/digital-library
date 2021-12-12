@@ -50,12 +50,20 @@ export const fetchBooks = createAsyncThunk(
 
 export const fetchSingleBook = createAsyncThunk(
   "singleBook/books",
-  async ({ title, libraryId }) => {
+  async ({ title, libraryId, page = null }) => {
     let books = await getBooks(title, libraryId);
     let book = books.data[0][0];
     const cover = await getBookCover(book);
     book.image = cover.data;
-    return book;
+    if (page) {
+      const pageUrl = await getBookPage({ book, page });
+      const notes = await getAllNotes({ book });
+      //TODO const bookmarks = await getAllBookmarks({book});
+      return { book: book, pageUrl: pageUrl.data, notes: notes.data };
+      // return { notes: notes.data , bookmarks: bookmarks.data };
+    }
+
+    return { book: book };
   }
 );
 
@@ -92,7 +100,7 @@ export const fetchBookData = createAsyncThunk(
 );
 
 export const onDeleteNote = createAsyncThunk(
-  "deleteNote/books",
+  "deleteNote/books/notes",
   async ({ book, id, note, page }) => {
     await deleteNote({ book, id, note, page });
     return id;
@@ -100,7 +108,7 @@ export const onDeleteNote = createAsyncThunk(
 );
 
 export const onCreateNote = createAsyncThunk(
-  "createNote/books",
+  "createNote/books/notes",
   async ({ book, note, page }) => {
     const res = await createNote({ book, note, page });
     return res.data;
@@ -108,7 +116,7 @@ export const onCreateNote = createAsyncThunk(
 );
 
 export const onEditNote = createAsyncThunk(
-  "editNote/books",
+  "editNote/books/notes",
   async ({ book, id, note, page }) => {
     await editNote({ book, id, note, page });
     return { book, id, note, page };
@@ -136,7 +144,10 @@ const booksSlice = createSlice({
       })
       .addCase(fetchSingleBook.fulfilled, (state, action) => {
         state.singleBookLoading = false;
-        state.selectedBook = action.payload;
+        state.selectedBook = action.payload.book;
+        state.pageUrl = action.payload?.pageUrl;
+        state.notes = action.payload?.notes;
+        // state.bookmarks = action.payload?.bookmarks
       })
       .addCase(fetchSingleBook.pending, (state) => {
         state.singleBookLoading = true;
@@ -180,7 +191,7 @@ const booksSlice = createSlice({
         }
       )
       .addMatcher(
-        (action) => action.type?.endsWith("Note/books/pending"),
+        (action) => action.type?.endsWith("/books/notes/pending"),
         (state) => {
           state.noteLoading = true;
           state.error = { error: false, variant: "error", message: "" };
@@ -194,7 +205,9 @@ const booksSlice = createSlice({
         }
       )
       .addMatcher(
-        (action) => action.type?.endsWith("books/rejected"),
+        (action) =>
+          action.type?.endsWith("books/rejected") ||
+          action.type?.endsWith("books/notes/rejected"),
         (state) => {
           state.loading = false;
           state.noteLoading = false;

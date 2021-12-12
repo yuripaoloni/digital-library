@@ -8,7 +8,6 @@ import {
   onCreateNote,
   onEditNote,
   fetchSingleBook,
-  fetchBookData,
 } from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
@@ -42,8 +41,7 @@ const BookNotes = () => {
 
   //TODO fix this function
   useEffect(() => {
-    !book && dispatch(fetchSingleBook({ libraryId, title }));
-    (book || !pageUrl) && dispatch(fetchBookData({ book, page: readingPage }));
+    !book && dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
   }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
 
   const onSave = (data) => {
@@ -116,12 +114,15 @@ const BookNotes = () => {
               alignItems="center"
               sx={{ position: "relative" }}
             >
-              {/* //TODO add skeleton here */}
-              <TextEditor
-                note={note.note}
-                onSave={onSave}
-                onDelete={onDelete}
-              />
+              {loading ? (
+                <Skeleton variant="rectangle" height={200} width={300} />
+              ) : (
+                <TextEditor
+                  note={note.note}
+                  onSave={onSave}
+                  onDelete={onDelete}
+                />
+              )}
             </Grid>
             <Grid
               item
