@@ -33,13 +33,12 @@ const BookNotes = () => {
   });
 
   const noteLoading = useSelector((state) => state.books.noteLoading);
-  const loading = useSelector((state) => state.books.loading);
+  const loading = useSelector((state) => state.books.singleBookLoading);
   const book = useSelector((state) => state.books.selectedBook);
   const pageUrl = useSelector((state) => state.books.pageUrl);
 
   const dispatch = useDispatch();
 
-  //TODO fix this function
   useEffect(() => {
     !book && dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
   }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
@@ -136,7 +135,12 @@ const BookNotes = () => {
               }}
             >
               {loading ? (
-                <Skeleton variant="rectangle" height={400} width={280} />
+                <Skeleton
+                  data-testid
+                  variant="rectangle"
+                  height={400}
+                  width={280}
+                />
               ) : (
                 <Img src={pageUrl} loading="lazy" />
               )}

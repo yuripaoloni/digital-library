@@ -5,6 +5,7 @@ import { store } from "states/store";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ErrorBoundary } from "react-error-boundary";
 import CssBaseline from "@mui/material/CssBaseline";
+import { Button, Typography } from "@mui/material";
 
 const ErrorFallback = () => {
   return (
@@ -12,13 +13,15 @@ const ErrorFallback = () => {
       className="text-red-500 w-screen h-screen flex flex-col justify-center items-center"
       role="alert"
     >
-      <h2 className="text-lg font-semibold">Ooops, something went wrong :( </h2>
-      <button
-        className="mt-4"
+      <Typography variant="h4" mb={3}>
+        Ooops, qualcosa è andato storto...{" "}
+      </Typography>
+      <Button
+        variant="outlined"
         onClick={() => window.location.assign(window.location.origin)}
       >
-        Refresh
-      </button>
+        Riprova
+      </Button>
     </div>
   );
 };

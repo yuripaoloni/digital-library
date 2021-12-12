@@ -70,7 +70,7 @@ const SearchForms = () => {
             data-testid="search-button"
             size="large"
             variant="outlined"
-            disabled={library.length === 0 && title.length < 3}
+            disabled={title.length < 3}
             onClick={() => onSearch(title, library)}
           >
             CERCA
