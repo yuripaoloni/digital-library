@@ -9,12 +9,17 @@ import {
   deleteNote,
   createNote,
   editNote,
+  getAllBookmarks,
+  deleteBookmark,
+  createBookmark,
+  editBookmark,
 } from "api";
 
 const initialState = {
   loading: false,
   singleBookLoading: false,
   noteLoading: false,
+  bookmarkLoading: false,
   libraries: [],
   books: [],
   selectedBook: null,
@@ -58,9 +63,13 @@ export const fetchSingleBook = createAsyncThunk(
     if (page) {
       const pageUrl = await getBookPage({ book, page });
       const notes = await getAllNotes({ book });
-      //TODO const bookmarks = await getAllBookmarks({book});
-      return { book: book, pageUrl: pageUrl.data, notes: notes.data };
-      // return { notes: notes.data , bookmarks: bookmarks.data };
+      const bookmarks = await getAllBookmarks({ book });
+      return {
+        book: book,
+        pageUrl: pageUrl.data,
+        notes: notes.data,
+        bookmarks: bookmarks.data,
+      };
     }
 
     return { book: book };
@@ -92,10 +101,12 @@ export const fetchBookData = createAsyncThunk(
   async ({ book, page }) => {
     const pageUrl = await getBookPage({ book, page });
     const notes = await getAllNotes({ book });
-    //TODO const bookmarks = await getAllBookmarks({book});
-    return { pageUrl: pageUrl.data, notes: notes.data };
-
-    // return { notes: notes.data , bookmarks: bookmarks.data };
+    const bookmarks = await getAllBookmarks({ book });
+    return {
+      pageUrl: pageUrl.data,
+      notes: notes.data,
+      bookmarks: bookmarks.data,
+    };
   }
 );
 
@@ -123,6 +134,30 @@ export const onEditNote = createAsyncThunk(
   }
 );
 
+export const onDeleteBookmark = createAsyncThunk(
+  "deleteBookmark/books/bookmarks",
+  async ({ book, id, description, page }) => {
+    await deleteBookmark({ book, id, description, page });
+    return id;
+  }
+);
+
+export const onCreateBookmark = createAsyncThunk(
+  "createBookmark/books/bookmarks",
+  async ({ book, description, page }) => {
+    const res = await createBookmark({ book, description, page });
+    return res.data;
+  }
+);
+
+export const onEditBookmark = createAsyncThunk(
+  "editBookmark/books/bookmarks",
+  async ({ book, id, description, page }) => {
+    await editBookmark({ book, id, description, page });
+    return { book, id, description, page };
+  }
+);
+
 const booksSlice = createSlice({
   name: "books",
   initialState,
@@ -147,7 +182,7 @@ const booksSlice = createSlice({
         state.selectedBook = action.payload.book;
         state.pageUrl = action.payload?.pageUrl;
         state.notes = action.payload?.notes;
-        // state.bookmarks = action.payload?.bookmarks
+        state.bookmarks = action.payload?.bookmarks;
       })
       .addCase(fetchSingleBook.pending, (state) => {
         state.singleBookLoading = true;
@@ -161,7 +196,7 @@ const booksSlice = createSlice({
         state.loading = false;
         state.pageUrl = action.payload.pageUrl;
         state.notes = action.payload.notes;
-        // state.bookmarks = action.payload.bookmarks
+        state.bookmarks = action.payload.bookmarks;
       })
       .addCase(onDeleteNote.fulfilled, (state, action) => {
         let updatedNotes = state.notes.filter(
@@ -181,6 +216,24 @@ const booksSlice = createSlice({
         state.noteLoading = false;
         state.notes = [...updatedNotes];
       })
+      .addCase(onDeleteBookmark.fulfilled, (state, action) => {
+        let updatedBookmarks = state.bookmarks.filter(
+          (note) => note.id !== action.payload
+        );
+        state.bookmarkLoading = false;
+        state.bookmarks = [...updatedBookmarks];
+      })
+      .addCase(onCreateBookmark.fulfilled, (state, action) => {
+        state.bookmarkLoading = false;
+        state.bookmarks = [...state.bookmarks, action.payload];
+      })
+      .addCase(onEditBookmark.fulfilled, (state, action) => {
+        let updatedBookmarks = state.bookmarks.map((note) =>
+          note.id === action.payload.id ? action.payload : note
+        );
+        state.bookmarkLoading = false;
+        state.bookmarks = [...updatedBookmarks];
+      })
       .addMatcher(
         (action) =>
           action.type?.endsWith("random/books/fulfilled") ||
@@ -198,6 +251,13 @@ const booksSlice = createSlice({
         }
       )
       .addMatcher(
+        (action) => action.type?.endsWith("/books/bookmarks/pending"),
+        (state) => {
+          state.bookmarkLoading = true;
+          state.error = { error: false, variant: "error", message: "" };
+        }
+      )
+      .addMatcher(
         (action) => action.type?.endsWith("books/pending"),
         (state) => {
           state.loading = true;
@@ -207,10 +267,12 @@ const booksSlice = createSlice({
       .addMatcher(
         (action) =>
           action.type?.endsWith("books/rejected") ||
-          action.type?.endsWith("books/notes/rejected"),
+          action.type?.endsWith("books/notes/rejected") ||
+          action.type?.endsWith("books/bookmarks/rejected"),
         (state) => {
           state.loading = false;
           state.noteLoading = false;
+          state.bookmarkLoading = false;
           state.singleBookLoading = false;
           state.error.error = true;
           state.error.variant = "error";

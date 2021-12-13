@@ -8,6 +8,9 @@ import {
   fetchBookData,
   fetchBookPage,
   fetchSingleBook,
+  onCreateBookmark,
+  onDeleteBookmark,
+  onEditBookmark,
 } from "states/booksSlice";
 import BookmarkModal from "components/BookmarkModal";
 import IconButton from "@mui/material/IconButton";
@@ -23,6 +26,8 @@ const Img = styled("img")({
 const ReadBook = () => {
   const [readingPage, setReadingPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [bookmark, setBookmark] = useState(null);
 
   const { libraryId, title } = useParams();
 
@@ -45,11 +50,45 @@ const ReadBook = () => {
     readingPage !== 0 && dispatch(fetchBookPage({ book, page: readingPage }));
   }, [book, readingPage, dispatch]);
 
+  const handleBookmark = (edit, description, id, page) => {
+    edit
+      ? dispatch(onEditBookmark({ book, id, description, page }))
+      : dispatch(onCreateBookmark({ book, description, page: readingPage }));
+  };
+
+  const deleteBookmark = () => {
+    dispatch(
+      onDeleteBookmark({
+        book,
+        id: bookmark.id,
+        description: bookmark.description,
+        page: bookmark.page,
+      })
+    );
+    setBookmark(null);
+    setShowDialog(false);
+  };
+
+  const onShowConfirmationModal = (description, id, page) => {
+    console.log(description, id, page);
+    setShowDialog(true);
+    setBookmark({ description, id, page });
+  };
+
   return (
-    <PageWrapper>
+    <PageWrapper
+      showDialog={showDialog}
+      dialogTitle="Elimina segnalibro"
+      dialogDescription="Procedere con l'eliminazione del segnalibro?"
+      dialogOnCancel={() => setShowDialog(false)}
+      dialogOnConfirm={deleteBookmark}
+    >
       <BookmarkModal
         showModal={showModal}
         onClose={() => setShowModal(false)}
+        handleBookmark={handleBookmark}
+        setReadingPage={setReadingPage}
+        deleteBookmark={onShowConfirmationModal}
       />
 
       <Grid container justifyContent="center">
@@ -71,8 +110,9 @@ const ReadBook = () => {
           >
             <Typography
               variant="h4"
+              textAlign="center"
               sx={{
-                fontSize: ["15px", "25px", "25px", "25px"],
+                fontSize: ["20px", "25px", "25px", "25px"],
               }}
             >
               {loading ? <Skeleton variant="text" width={250} /> : book?.title}
@@ -128,22 +168,24 @@ const ReadBook = () => {
               onChange={(e, page) => setReadingPage(page)}
             />
           </Grid>
-          <Grid paddingTop="2vh">
-            <IconButton
-              onClick={() => setShowModal(true)}
-              style={{ color: "#222C4A" }}
-            >
-              <BookmarkBorderIcon />
-            </IconButton>
-            <IconButton
-              data-testid="note-icon-button"
-              LinkComponent={Link}
-              to={`/books/notes/${libraryId}/${title}/${readingPage}`}
-              style={{ color: "#222C4A" }}
-            >
-              <ModeIcon />
-            </IconButton>
-          </Grid>
+          {!loading && (
+            <Grid paddingTop="2vh">
+              <IconButton
+                onClick={() => setShowModal(true)}
+                style={{ color: "#222C4A" }}
+              >
+                <BookmarkBorderIcon />
+              </IconButton>
+              <IconButton
+                data-testid="note-icon-button"
+                LinkComponent={Link}
+                to={`/books/notes/${libraryId}/${title}/${readingPage}`}
+                style={{ color: "#222C4A" }}
+              >
+                <ModeIcon />
+              </IconButton>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </PageWrapper>
