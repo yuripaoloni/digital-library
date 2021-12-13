@@ -17,8 +17,8 @@ import TextEditor from "components/TextEditor";
 import Spinner from "components/Spinner";
 
 const Img = styled("img")({
-  height: 400,
-  borderRadius: 5,
+  height: 800,
+  borderRadius: 10,
   boxShadow: 2,
 });
 
@@ -114,7 +114,7 @@ const BookNotes = () => {
               sx={{ position: "relative" }}
             >
               {loading ? (
-                <Skeleton variant="rectangle" height={200} width={300} />
+                <Skeleton variant="rectangle" height={100} width={500} />
               ) : (
                 <TextEditor
                   note={note.note}
@@ -134,22 +134,28 @@ const BookNotes = () => {
                 paddingTop: "20px",
               }}
             >
+              <h3 style={{ color: "#222C4A" }}>{title}</h3>
               {loading ? (
                 <Skeleton
                   data-testid
                   variant="rectangle"
-                  height={400}
-                  width={280}
+                  height={700}
+                  width={580}
                 />
               ) : (
                 <Img src={pageUrl} loading="lazy" />
               )}
-              <Typography variant="subtitle1" xs={12}>
+              <Typography
+                variant="subtitle1"
+                xs={12}
+                style={{ color: "#222C4A" }}
+              >
                 Pagina {readingPage}
               </Typography>
               <IconButton
                 onClick={() => setShowDialog(true)}
                 data-testid="delete-icon"
+                style={{ color: "#222C4A" }}
               >
                 <LibraryBooksIcon data-testid="select-note" />
               </IconButton>

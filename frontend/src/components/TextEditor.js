@@ -10,13 +10,14 @@ const TextEditor = ({ note, onSave, onDelete }) => {
       MUIRichTextEditor: {
         root: {
           width: "90%",
+          height: "90%",
           maxHeight: "400px",
           maxWidth: "700px",
-          border: "1px solid grey",
-          borderRadius: 4,
+          //border: "1px solid grey",
         },
         editor: {
-          maxHeight: "330px",
+          height: "300px",
+          maxHeight: "630px",
           maxWidth: "650px",
           padding: "0 13px",
           marginTop: 2,
@@ -28,12 +29,14 @@ const TextEditor = ({ note, onSave, onDelete }) => {
           display: "flex",
           flexDirection: "column",
           margin: 0,
+          boxShadow: "3px 3px 10px gray",
+          borderRadius: 10,
         },
-        toolbar: {
-          display: "block",
-          order: 2,
-          position: "relative",
-        },
+        // toolbar: {
+        //   display: "block",
+        //   order: 2,
+        //   position: "relative",
+        // },
         placeHolder: {
           position: "relative",
         },
