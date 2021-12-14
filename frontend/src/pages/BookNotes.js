@@ -25,6 +25,7 @@ const Img = styled("img")({
 const BookNotes = () => {
   const { libraryId, title, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [note, setNote] = useState({
     book: null,
     id: -1,
@@ -77,12 +78,19 @@ const BookNotes = () => {
       page: readingPage,
       note: null,
     });
+    setShowConfirmDialog(false);
   };
 
   if (noteLoading) return <Spinner />;
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      showDialog={showConfirmDialog}
+      dialogTitle="Elimina nota"
+      dialogDescription={`Procedere con l'eliminazione della nota ${note.id}?`}
+      dialogOnCancel={() => setShowConfirmDialog(false)}
+      dialogOnConfirm={onDelete}
+    >
       <SelectNotes
         show={showDialog}
         onClose={() => setShowDialog(false)}
@@ -119,7 +127,7 @@ const BookNotes = () => {
                 <TextEditor
                   note={note.note}
                   onSave={onSave}
-                  onDelete={onDelete}
+                  onDelete={() => setShowConfirmDialog(true)}
                 />
               )}
             </Grid>

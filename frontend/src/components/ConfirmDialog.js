@@ -17,6 +17,7 @@ const ConfirmDialog = ({
 }) => {
   return (
     <Dialog
+      data-testid="confirm-dialog"
       open={showDialog}
       sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
       maxWidth="xs"

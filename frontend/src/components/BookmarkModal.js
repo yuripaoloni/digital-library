@@ -82,6 +82,7 @@ const BookmarkModal = ({
 
   return (
     <Modal
+      data-testid="bookmark-modal"
       open={showModal}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
@@ -113,10 +114,14 @@ const BookmarkModal = ({
                       primary={bookmark.description}
                       secondary={`Pagina ${bookmark.page}`}
                     />
-                    <IconButton onClick={() => selectBookmark(bookmark.page)}>
+                    <IconButton
+                      data-testid="page-bookmark-icon"
+                      onClick={() => selectBookmark(bookmark.page)}
+                    >
                       <FileOpenIcon />
                     </IconButton>
                     <IconButton
+                      data-testid="edit-bookmark-icon"
                       onClick={() =>
                         editMode(
                           bookmark.description,
@@ -129,6 +134,7 @@ const BookmarkModal = ({
                       <EditIcon />
                     </IconButton>
                     <IconButton
+                      data-testid="delete-bookmark-icon"
                       onClick={() =>
                         deleteBookmark(
                           bookmark.description,
@@ -158,6 +164,7 @@ const BookmarkModal = ({
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
+                          data-testid="submit-bookmark-icon"
                           onClick={() =>
                             onSubmit(
                               edit,
