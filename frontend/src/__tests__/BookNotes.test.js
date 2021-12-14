@@ -1,4 +1,9 @@
-import { render, screen, waitForElementToBeRemoved } from "utils/testUtils";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  getByText,
+} from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 
@@ -55,6 +60,10 @@ test("should delete an existing note", async () => {
   userEvent.click(await screen.findByTestId(/note-item-0/i));
 
   userEvent.click(screen.getByTestId("remove-icon"));
+
+  const confirmDialog = await screen.findByTestId("confirm-dialog");
+
+  userEvent.click(getByText(confirmDialog, "Ok"));
 
   await waitForElementToBeRemoved(screen.getByRole("progressbar"));
 

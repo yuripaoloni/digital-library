@@ -1,5 +1,6 @@
 import { rest } from "msw";
 import { getMockBooks } from "./models/Book";
+import { getMockBookmark } from "./models/Bookmark";
 import { getMockLibraries } from "./models/Library";
 import { getMockNotes } from "./models/Note";
 
@@ -61,4 +62,19 @@ export const handlers = [
     )
   ),
   rest.delete("/note/delete", (req, res, ctx) => res(ctx.status(200))),
+  rest.post("/bookmark/add", (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(getMockBookmark([req.body.description])[0]))
+  ),
+  rest.post("/bookmark/edit", (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(getMockBookmark([req.body.description])[0]))
+  ),
+  rest.post("/bookmark/all", (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json(
+        getMockBookmark(["MockBookmarkA", "MockBookmarkB", "MockBookmarkC"])
+      )
+    )
+  ),
+  rest.delete("/bookmark/delete", (req, res, ctx) => res(ctx.status(200))),
 ];

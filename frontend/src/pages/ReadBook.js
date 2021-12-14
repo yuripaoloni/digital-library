@@ -70,16 +70,15 @@ const ReadBook = () => {
   };
 
   const onShowConfirmationModal = (description, id, page) => {
-    console.log(description, id, page);
-    setShowDialog(true);
     setBookmark({ description, id, page });
+    setShowDialog(true);
   };
 
   return (
     <PageWrapper
       showDialog={showDialog}
       dialogTitle="Elimina segnalibro"
-      dialogDescription="Procedere con l'eliminazione del segnalibro?"
+      dialogDescription={`Procedere con l'eliminazione del segnalibro "${bookmark?.description}" ?`}
       dialogOnCancel={() => setShowDialog(false)}
       dialogOnConfirm={deleteBookmark}
     >
@@ -171,6 +170,7 @@ const ReadBook = () => {
           {!loading && (
             <Grid paddingTop="2vh">
               <IconButton
+                data-testid="bookmark-icon-button"
                 onClick={() => setShowModal(true)}
                 style={{ color: "#222C4A" }}
               >
