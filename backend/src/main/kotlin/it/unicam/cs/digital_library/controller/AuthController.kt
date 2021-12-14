@@ -4,8 +4,9 @@ import io.swagger.annotations.*
 import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
 import it.unicam.cs.digital_library.controller.errors.SIGNUP_EMAIL_EXISTS
 import it.unicam.cs.digital_library.controller.errors.SIGNUP_USERNAME_EXISTS
+import it.unicam.cs.digital_library.controller.model.SignupRequest
+import it.unicam.cs.digital_library.controller.model.toUser
 import it.unicam.cs.digital_library.controller.password.PasswordValidator
-import it.unicam.cs.digital_library.model.User
 import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import it.unicam.cs.digital_library.security.model.Credentials
@@ -25,21 +26,21 @@ class AuthController(
 ) {
     @PostMapping(JWTConstants.SIGN_UP_URL)
     @ApiOperation(value = "sign up to digital library")
-    fun signup(@RequestBody user: User) {
-        if (this.userRepository.findByEmail(user.email) != null) {
+    fun signup(@RequestBody signupRequest: SignupRequest) {
+        if (this.userRepository.findByEmail(signupRequest.email) != null) {
             throw SIGNUP_EMAIL_EXISTS
         }
-        if (this.userRepository.findByUsername(user.username) != null) {
+        if (this.userRepository.findByUsername(signupRequest.username) != null) {
             throw SIGNUP_USERNAME_EXISTS
         }
-        PasswordValidator.validate(user.password)
+        PasswordValidator.validate(signupRequest.password)
         try {
-            user.password = passwordEncoder.encode(user.password)
+            signupRequest.password = passwordEncoder.encode(signupRequest.password)
         } catch (e: Throwable) {
             throw GENERIC_ERROR
         }
         try {
-            userRepository.save(user)
+            userRepository.save(signupRequest.toUser())
         } catch (e: Throwable) {
             throw GENERIC_ERROR
         }

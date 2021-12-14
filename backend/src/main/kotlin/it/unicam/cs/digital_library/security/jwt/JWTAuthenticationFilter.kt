@@ -5,11 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm.HMAC512
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import it.unicam.cs.digital_library.controller.model.toLoginResponse
+import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.EXPIRATION_TIME
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.HEADER_STRING
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.SECRET
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.TOKEN_PREFIX
 import it.unicam.cs.digital_library.security.model.Credentials
+import it.unicam.cs.digital_library.utils.toJson
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -22,7 +25,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JWTAuthenticationFilter(private val authManager: AuthenticationManager) : UsernamePasswordAuthenticationFilter() {
+class JWTAuthenticationFilter(private val authManager: AuthenticationManager, private val userRepository: UserRepository) : UsernamePasswordAuthenticationFilter() {
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         try {
@@ -48,11 +51,16 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager) : 
         chain: FilterChain,
         authResult: Authentication
     ) {
+        val email = (authResult.principal as User).username
+        val user = userRepository.findByEmail(email)!!
         val token: String = JWT.create()
-            .withSubject((authResult.principal as User).username)
+            .withSubject(email)
             .withExpiresAt(Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .sign(HMAC512(SECRET))
-        response.addHeader("Access-Control-Expose-Headers", HEADER_STRING);
+        response.addHeader("Access-Control-Expose-Headers", HEADER_STRING)
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token)
+        response.contentType = "application/json"
+        response.characterEncoding = "UTF-8"
+        response.writer.print(user.toLoginResponse().toJson())
     }
 }
