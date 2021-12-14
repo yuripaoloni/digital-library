@@ -77,10 +77,11 @@ class BookController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun addNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal): NoteRequest {
+    fun addNote(@RequestBody noteCreation: NoteCreation, @ApiIgnore principal: Principal): NoteResponse {
         val user = userRepository.findByEmail(principal.name)!!
-        val book = (libraryService.parseBook(noteRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
-        return noteRepository.save(Note(0, book, user, noteRequest.page, noteRequest.note)).toNoteRequest()
+        val book = (libraryService.parseBook(noteCreation.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
+        return noteRepository.save(Note(0, book, user, noteCreation.page, noteCreation.title, noteCreation.description))
+            .toNoteResponse()
     }
 
     @PostMapping("/note/edit")
@@ -89,26 +90,30 @@ class BookController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun editNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal) {
+    fun editNote(@RequestBody noteEdit: NoteEdit, @ApiIgnore principal: Principal) {
         val user = userRepository.findByEmail(principal.name)!!
         noteRepository.save(
-            (noteRepository.findByIdAndUserId(noteRequest.id, user.id) ?: throw ErrorException(
+            (noteRepository.findByIdAndUserId(noteEdit.id, user.id) ?: throw ErrorException(
                 HttpStatus.BAD_REQUEST,
                 "Nota non trovata"
-            )).copy(note = noteRequest.note)
+            )).run {
+                val note = copy(title = noteEdit.title, description = noteEdit.description)
+                note.timestamp = timestamp
+                note
+            }
         )
     }
 
-    @DeleteMapping("/note/delete")
+    @DeleteMapping("/note/delete/{id}")
     @ApiOperation(
         value = "deletes a note",
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun deleteNote(@RequestBody noteRequest: NoteRequest, @ApiIgnore principal: Principal) {
+    fun deleteNote(@PathVariable id: Long, @ApiIgnore principal: Principal) {
         val user = userRepository.findByEmail(principal.name)!!
         noteRepository.delete(
-            (noteRepository.findByIdAndUserId(noteRequest.id, user.id) ?: throw ErrorException(
+            (noteRepository.findByIdAndUserId(id, user.id) ?: throw ErrorException(
                 HttpStatus.BAD_REQUEST,
                 "Nota non trovata"
             ))
@@ -124,12 +129,12 @@ class BookController(
     fun getNotesByPage(
         @RequestBody bookPageRequest: BookPageRequest,
         @ApiIgnore principal: Principal
-    ): List<NoteRequest> {
+    ): List<NoteResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         val book = (libraryService.parseBook(bookPageRequest.book) ?: return emptyList()).run(bookRepository::find)
             ?: return emptyList()
         return noteRepository.findAllByBookIdAndPageAndUserId(book.id, bookPageRequest.page, user.id)
-            .map(Note::toNoteRequest)
+            .map(Note::toNoteResponse)
     }
 
     @PostMapping("/note/all")
@@ -141,13 +146,13 @@ class BookController(
     fun getNotesByBook(
         @RequestBody book: Book,
         @ApiIgnore principal: Principal
-    ): List<NoteRequest> {
+    ): List<NoteResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         return noteRepository.findAllByBookIdAndUserId(
             ((libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find)
                 ?: return emptyList()).id,
             user.id
-        ).map(Note::toNoteRequest)
+        ).map(Note::toNoteResponse)
     }
 
     @PostMapping("/bookmark/add")
@@ -156,14 +161,14 @@ class BookController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun addBookmark(@RequestBody bookmarkRequest: BookmarkRequest, @ApiIgnore principal: Principal): BookmarkRequest {
+    fun addBookmark(@RequestBody bookmarkCreation: BookmarkCreation, @ApiIgnore principal: Principal): BookmarkResponse {
         val user = userRepository.findByEmail(principal.name)!!
         val book =
-            (libraryService.parseBook(bookmarkRequest.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
-        val bookmark = bookmarkRepository.findByBookIdAndPageAndUserId(book.id, bookmarkRequest.page, user.id)
+            (libraryService.parseBook(bookmarkCreation.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
+        val bookmark = bookmarkRepository.findByBookIdAndPageAndUserId(book.id, bookmarkCreation.page, user.id)
         if (bookmark != null) throw ErrorException(HttpStatus.FORBIDDEN, "Bookmark già presente sulla pagina")
-        else return bookmarkRepository.save(Bookmark(0, book, user, bookmarkRequest.page, bookmarkRequest.description))
-            .toBookmarkRequest()
+        else return bookmarkRepository.save(Bookmark(0, book, user, bookmarkCreation.page, bookmarkCreation.description))
+            .toBookmarkResponse()
     }
 
     @PostMapping("/bookmark/edit")
@@ -172,27 +177,27 @@ class BookController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun editBookmark(@RequestBody bookmarkRequest: BookmarkRequest, @ApiIgnore principal: Principal) {
+    fun editBookmark(@RequestBody bookmarkEdit: BookmarkEdit, @ApiIgnore principal: Principal) {
         val user = userRepository.findByEmail(principal.name)!!
         bookmarkRepository.save(
-            (bookmarkRepository.findByIdAndUserId(bookmarkRequest.id, user.id)
+            (bookmarkRepository.findByIdAndUserId(bookmarkEdit.id, user.id)
                 ?: throw ErrorException(
                     HttpStatus.BAD_REQUEST,
                     "Bookmark non trovato"
-                )).copy(description = bookmarkRequest.description)
+                )).copy(description = bookmarkEdit.description)
         )
     }
 
-    @DeleteMapping("/bookmark/delete")
+    @DeleteMapping("/bookmark/delete/{id}")
     @ApiOperation(
         value = "deletes a bookmark",
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun deleteBookmark(@RequestBody bookmarkRequest: BookmarkRequest, @ApiIgnore principal: Principal) {
+    fun deleteBookmark(@PathVariable id: Long, @ApiIgnore principal: Principal) {
         val user = userRepository.findByEmail(principal.name)!!
         bookmarkRepository.delete(
-            (bookmarkRepository.findByIdAndUserId(bookmarkRequest.id, user.id) ?: throw ErrorException(
+            (bookmarkRepository.findByIdAndUserId(id, user.id) ?: throw ErrorException(
                 HttpStatus.BAD_REQUEST,
                 "Bookmark non trovato"
             ))
@@ -208,12 +213,12 @@ class BookController(
     fun getBookmarksByBook(
         @RequestBody book: Book,
         @ApiIgnore principal: Principal
-    ): List<BookmarkRequest> {
+    ): List<BookmarkResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         return bookmarkRepository.findAllByBookIdAndUserId(
             book_id = ((libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find)
                 ?: return emptyList()).id,
             user_id = user.id
-        ).map(Bookmark::toBookmarkRequest)
+        ).map(Bookmark::toBookmarkResponse)
     }
 }

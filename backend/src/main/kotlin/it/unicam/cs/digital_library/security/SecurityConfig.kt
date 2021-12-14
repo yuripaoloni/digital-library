@@ -1,5 +1,6 @@
 package it.unicam.cs.digital_library.security
 
+import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTAuthenticationFilter
 import it.unicam.cs.digital_library.security.jwt.JWTAuthorizationFilter
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.LOGIN_URL
@@ -22,7 +23,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 class WebSecurity(
     val userDetailsService: UserDetailsServiceImpl,
-    val passwordEncoder: BCryptPasswordEncoder
+    val passwordEncoder: BCryptPasswordEncoder,
+    val userRepository: UserRepository
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
@@ -34,7 +36,7 @@ class WebSecurity(
             .anyRequest()
             .permitAll()
             .and()
-            .addFilter(JWTAuthenticationFilter(authenticationManager()).apply {
+            .addFilter(JWTAuthenticationFilter(authenticationManager(), userRepository).apply {
                 setFilterProcessesUrl(LOGIN_URL)
                 this.setAuthenticationFailureHandler { _, response, exception ->
                     response.sendError(HttpStatus.BAD_REQUEST.value(), exception.message)
