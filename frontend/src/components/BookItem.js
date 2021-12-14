@@ -6,13 +6,29 @@ import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import MaterialLink from "@mui/material/Link";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { selectBook } from "states/booksSlice";
 
 const Img = styled("img")({
   height: 100,
 });
 
 const BookItem = ({ book, page = 1, index = 0 }) => {
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const openDetails = () => {
+    dispatch(selectBook(book));
+    navigate(`/books/details/${book.library.id}/${book.title}`);
+  };
+
+  const openReading = () => {
+    dispatch(selectBook(book));
+    navigate(`/books/read/${book.library.id}/${book.title}`);
+  };
+
   return (
     <Paper data-testid={`book-item-${index}`} elevation={4} sx={{ px: 2 }}>
       <Grid container alignItems="center" mt={1.5} mb={0.5} columnSpacing={2}>
@@ -59,16 +75,14 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
               <Button
                 style={{ color: "#222C4A" }}
                 data-testid={`read-button-${index}`}
-                LinkComponent={Link}
-                to={`/read/${page - 1}/${index}`}
+                onClick={() => openReading()}
               >
                 Leggi
               </Button>
               <Button
                 style={{ color: "#222C4A" }}
                 data-testid={`details-button-${index}`}
-                LinkComponent={Link}
-                to={`/books/${page - 1}/${index}`}
+                onClick={() => openDetails()}
               >
                 Dettagli
               </Button>

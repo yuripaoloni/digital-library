@@ -39,7 +39,7 @@ const SearchBooks = () => {
                 ))
               ) : (
                 <Typography variant="h2" textAlign="center">
-                  Nessun risultato
+                  Nessun risultato con i parametri di ricerca inseriti
                 </Typography>
               )}
             </Stack>

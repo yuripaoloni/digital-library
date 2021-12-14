@@ -1,69 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import PageWrapper from "components/PageWrapper";
 import { Grid, Typography, Skeleton } from "@mui/material";
-import { onDeleteNote, onCreateNote, onEditNote } from "states/booksSlice";
+import {
+  onDeleteNote,
+  onCreateNote,
+  onEditNote,
+  fetchSingleBook,
+} from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
-import MUIRichTextEditor from "mui-rte";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import DeleteIcon from "@mui/icons-material/Delete";
+import TextEditor from "components/TextEditor";
+import Spinner from "components/Spinner";
 
 const Img = styled("img")({
-  height: 400,
-  borderRadius: 5,
+  height: 800,
+  borderRadius: 10,
   boxShadow: 2,
 });
 
-//TODO adjust loading
-
 const BookNotes = () => {
-  const editorTheme = createTheme();
-  Object.assign(editorTheme, {
-    overrides: {
-      MUIRichTextEditor: {
-        root: {
-          width: "90%",
-          maxHeight: "400px",
-          maxWidth: "700px",
-          border: "1px solid grey",
-          borderRadius: 4,
-        },
-        editor: {
-          maxHeight: "330px",
-          maxWidth: "650px",
-          padding: "0 13px",
-          marginTop: 2,
-          marginBottom: 15,
-          overflowX: "hidden",
-          overflowY: "auto",
-        },
-        container: {
-          display: "flex",
-          flexDirection: "column",
-          margin: 0,
-        },
-        toolbar: {
-          display: "block",
-          order: 2,
-          position: "relative",
-        },
-        placeHolder: {
-          position: "relative",
-        },
-        editorContainer: {
-          padding: 13,
-          margin: 0,
-          fontSize: 13,
-        },
-      },
-    },
-  });
-  const { page, index, readingPage } = useParams();
+  const { libraryId, title, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [note, setNote] = useState({
     book: null,
     id: -1,
@@ -71,15 +33,16 @@ const BookNotes = () => {
     note: null,
   });
 
-  const loading = useSelector((state) => state.books.loading);
-  const book = useSelector((state) =>
-    state.books.books.length > 0 ? state.books.books[page][index] : false
-  );
+  const noteLoading = useSelector((state) => state.books.noteLoading);
+  const loading = useSelector((state) => state.books.singleBookLoading);
+  const book = useSelector((state) => state.books.selectedBook);
   const pageUrl = useSelector((state) => state.books.pageUrl);
 
   const dispatch = useDispatch();
 
-  //TODO improve general layout & implement onDelete
+  useEffect(() => {
+    !book && dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
+  }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
 
   const onSave = (data) => {
     setNote((prev) => {
@@ -115,9 +78,19 @@ const BookNotes = () => {
       page: readingPage,
       note: null,
     });
+    setShowConfirmDialog(false);
   };
+
+  if (noteLoading) return <Spinner />;
+
   return (
-    <PageWrapper>
+    <PageWrapper
+      showDialog={showConfirmDialog}
+      dialogTitle="Elimina nota"
+      dialogDescription={`Procedere con l'eliminazione della nota ${note.id}?`}
+      dialogOnCancel={() => setShowConfirmDialog(false)}
+      dialogOnConfirm={onDelete}
+    >
       <SelectNotes
         show={showDialog}
         onClose={() => setShowDialog(false)}
@@ -132,26 +105,6 @@ const BookNotes = () => {
           alignItems: "baseline",
         }}
       >
-        <Grid container rowSpacing={3}>
-          <Grid
-            item
-            xs
-            container
-            direction="column"
-            sx={{
-              marginLeft: "20px",
-            }}
-            data-testid="book-details-item"
-          ></Grid>
-          <Grid
-            item
-            xs
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-          ></Grid>
-        </Grid>
         <Grid item xs={12}>
           <Grid
             container
@@ -168,32 +121,19 @@ const BookNotes = () => {
               alignItems="center"
               sx={{ position: "relative" }}
             >
-              <ThemeProvider theme={editorTheme}>
-                <MUIRichTextEditor
-                  data-testid="text-editor"
-                  defaultValue={note.note && note.note.toString()}
-                  label={<Typography>Start typing...</Typography>}
+              {loading ? (
+                <Skeleton variant="rectangle" height={100} width={500} />
+              ) : (
+                <TextEditor
+                  note={note.note}
                   onSave={onSave}
-                  controls={["bold", "italic", "bulletList", "save", "delete"]}
-                  customControls={[
-                    {
-                      name: "delete",
-                      icon: <DeleteIcon />,
-                      type: "callback",
-                      onClick: () => onDelete(),
-                    },
-                  ]}
+                  onDelete={() => setShowConfirmDialog(true)}
                 />
-              </ThemeProvider>
-              <Grid
-                container
-                direction="column"
-                sx={{ margin: "50px 0 0 0px" }}
-              ></Grid>
+              )}
             </Grid>
             <Grid
               item
-              container={{ xs: true, sm: false }}
+              container
               direction="column"
               justifyContent="center"
               alignItems="center"
@@ -202,17 +142,28 @@ const BookNotes = () => {
                 paddingTop: "20px",
               }}
             >
+              <h3 style={{ color: "#222C4A" }}>{title}</h3>
               {loading ? (
-                <Skeleton variant="rectangle" height={400} width={280} />
+                <Skeleton
+                  data-testid
+                  variant="rectangle"
+                  height={700}
+                  width={580}
+                />
               ) : (
                 <Img src={pageUrl} loading="lazy" />
               )}
-              <Typography variant="subtitle1" xs={12}>
+              <Typography
+                variant="subtitle1"
+                xs={12}
+                style={{ color: "#222C4A" }}
+              >
                 Pagina {readingPage}
               </Typography>
               <IconButton
                 onClick={() => setShowDialog(true)}
                 data-testid="delete-icon"
+                style={{ color: "#222C4A" }}
               >
                 <LibraryBooksIcon data-testid="select-note" />
               </IconButton>

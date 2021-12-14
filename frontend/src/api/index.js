@@ -81,3 +81,34 @@ export const deleteNote = ({ book, id, note, page }) => {
     data: { book, id, note, page },
   });
 };
+
+export const createBookmark = ({ book, description, page }) => {
+  return axios.post(
+    "/bookmark/add",
+    { book, description, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const editBookmark = ({ book, id, description, page }) => {
+  return axios.post(
+    "/bookmark/edit",
+    { book, id, description, page },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const getAllBookmarks = ({ book }) => {
+  return axios.post("/bookmark/all", book, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const deleteBookmark = ({ book, id, description, page }) => {
+  return axios({
+    method: "delete",
+    url: "/bookmark/delete",
+    headers: { Authorization: localStorage.getItem("authToken") },
+    data: { book, id, description, page },
+  });
+};

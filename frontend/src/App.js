@@ -27,12 +27,16 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route exact path="books" element={<SearchBooks />} />
-        <Route exact path="books/:page/:index" element={<BookDetails />} />
+        <Route
+          exact
+          path="books/details/:libraryId/:title"
+          element={<BookDetails />}
+        />
         <Route exact path="signin" element={<SignIn />} />
         <Route exact path="signup" element={<SignUp />} />
         <Route
           exact
-          path="read/:page/:index"
+          path="books/read/:libraryId/:title"
           element={
             <RequireAuth>
               <ReadBook />
@@ -41,7 +45,7 @@ const App = () => {
         />
         <Route
           exact
-          path="notes/:page/:index/:readingPage"
+          path="books/notes/:libraryId/:title/:readingPage"
           element={
             <RequireAuth>
               <BookNotes />
