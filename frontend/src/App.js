@@ -12,6 +12,7 @@ import BookNotes from "pages/BookNotes";
 import Navbar from "components/Navbar";
 import RequireAuth from "components/RequireAuth";
 import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
+import PersonalPage from "pages/PersonalPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,15 @@ const App = () => {
           element={
             <RequireAuth>
               <BookNotes />
+            </RequireAuth>
+          }
+        />
+        <Route
+          exact
+          path="/profile"
+          element={
+            <RequireAuth>
+              <PersonalPage />
             </RequireAuth>
           }
         />

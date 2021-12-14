@@ -41,7 +41,10 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
                     <ArticleIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={`Nota ${note.id}`} />
+                <ListItemText
+                  primary={`Nota ${note.id}`}
+                  secondary="datetime"
+                />
               </ListItem>
             )
         )}

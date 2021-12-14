@@ -20,6 +20,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
 import { Link } from "react-router-dom";
@@ -175,12 +176,25 @@ export default function Navbar({ test }) {
         <Divider />
         <List>
           {isAuth ? (
-            <ListItem button key="logout" onClick={() => dispatch(onSignOut())}>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItem>
+            <>
+              <ListItem component={Link} to="/profile" button key="home">
+                <ListItemIcon>
+                  {" "}
+                  <AccountCircleIcon />{" "}
+                </ListItemIcon>
+                <ListItemText primary="Profilo" />
+              </ListItem>
+              <ListItem
+                button
+                key="logout"
+                onClick={() => dispatch(onSignOut())}
+              >
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItem>
+            </>
           ) : (
             <ListItem component={Link} to="/signin" button key="login">
               <ListItemIcon>
