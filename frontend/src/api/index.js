@@ -43,18 +43,18 @@ export const getBookPage = ({ book, page }) => {
   );
 };
 
-export const createNote = ({ book, note, page }) => {
+export const createNote = ({ book, title, description, page }) => {
   return axios.post(
     "/note/add",
-    { book, note, page },
+    { book, title, description, page },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };
 
-export const editNote = ({ book, id, note, page }) => {
+export const editNote = ({ id, title, description }) => {
   return axios.post(
     "/note/edit",
-    { book, id, note, page },
+    { id, title, description },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };
@@ -73,12 +73,9 @@ export const getNoteByPage = ({ book, page }) => {
   );
 };
 
-export const deleteNote = ({ book, id, note, page }) => {
-  return axios({
-    method: "delete",
-    url: "/note/delete",
+export const deleteNote = ({ id }) => {
+  return axios.delete(`/note/delete/${id}`, {
     headers: { Authorization: localStorage.getItem("authToken") },
-    data: { book, id, note, page },
   });
 };
 
@@ -90,10 +87,10 @@ export const createBookmark = ({ book, description, page }) => {
   );
 };
 
-export const editBookmark = ({ book, id, description, page }) => {
+export const editBookmark = ({ id, description }) => {
   return axios.post(
     "/bookmark/edit",
-    { book, id, description, page },
+    { id, description },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };
@@ -104,11 +101,8 @@ export const getAllBookmarks = ({ book }) => {
   });
 };
 
-export const deleteBookmark = ({ book, id, description, page }) => {
-  return axios({
-    method: "delete",
-    url: "/bookmark/delete",
+export const deleteBookmark = ({ id }) => {
+  return axios.delete(`/bookmark/delete/${id}`, {
     headers: { Authorization: localStorage.getItem("authToken") },
-    data: { book, id, description, page },
   });
 };

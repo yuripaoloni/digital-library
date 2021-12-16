@@ -59,10 +59,7 @@ const ReadBook = () => {
   const deleteBookmark = () => {
     dispatch(
       onDeleteBookmark({
-        book,
         id: bookmark.id,
-        description: bookmark.description,
-        page: bookmark.page,
       })
     );
     setBookmark(null);

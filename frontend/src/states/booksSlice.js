@@ -112,32 +112,32 @@ export const fetchBookData = createAsyncThunk(
 
 export const onDeleteNote = createAsyncThunk(
   "deleteNote/books/notes",
-  async ({ book, id, note, page }) => {
-    await deleteNote({ book, id, note, page });
+  async ({ id }) => {
+    await deleteNote({ id });
     return id;
   }
 );
 
 export const onCreateNote = createAsyncThunk(
   "createNote/books/notes",
-  async ({ book, note, page }) => {
-    const res = await createNote({ book, note, page });
+  async ({ book, title, description, page }) => {
+    const res = await createNote({ book, title, description, page });
     return res.data;
   }
 );
 
 export const onEditNote = createAsyncThunk(
   "editNote/books/notes",
-  async ({ book, id, note, page }) => {
-    await editNote({ book, id, note, page });
-    return { book, id, note, page };
+  async ({ book, id, title, description, timestamp, page }) => {
+    await editNote({ id, title, description });
+    return { book, id, title, description, timestamp, page };
   }
 );
 
 export const onDeleteBookmark = createAsyncThunk(
   "deleteBookmark/books/bookmarks",
-  async ({ book, id, description, page }) => {
-    await deleteBookmark({ book, id, description, page });
+  async ({ id }) => {
+    await deleteBookmark({ id });
     return id;
   }
 );
@@ -153,7 +153,7 @@ export const onCreateBookmark = createAsyncThunk(
 export const onEditBookmark = createAsyncThunk(
   "editBookmark/books/bookmarks",
   async ({ book, id, description, page }) => {
-    await editBookmark({ book, id, description, page });
+    await editBookmark({ id, description });
     return { book, id, description, page };
   }
 );
