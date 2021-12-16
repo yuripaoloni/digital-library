@@ -21,8 +21,6 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
     onClose();
   };
 
-  //TODO improve layout
-
   return (
     <Dialog onClose={onClose} open={show}>
       <DialogTitle>Seleziona nota</DialogTitle>
@@ -41,10 +39,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
                     <ArticleIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText
-                  primary={`Nota ${note.id}`}
-                  secondary="datetime"
-                />
+                <ListItemText primary={note.title} secondary={note.timestamp} />
               </ListItem>
             )
         )}
@@ -56,7 +51,9 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
               book: null,
               id: -1,
               page: readingPage,
-              note: null,
+              description: "",
+              title: "",
+              timestamp: null,
             })
           }
         >
