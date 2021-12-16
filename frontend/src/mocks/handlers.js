@@ -3,6 +3,7 @@ import { getMockBooks } from "./models/Book";
 import { getMockBookmark } from "./models/Bookmark";
 import { getMockLibraries } from "./models/Library";
 import { getMockNotes } from "./models/Note";
+import { getMockUser } from "./models/User";
 
 export const handlers = [
   rest.get("/library/list", (req, res, ctx) =>
@@ -35,7 +36,11 @@ export const handlers = [
     )
   ),
   rest.post("/login", (req, res, ctx) =>
-    res(ctx.status(200), ctx.set({ Authorization: "Bearer 123456abcdef" }))
+    res(
+      ctx.status(200),
+      ctx.set({ Authorization: "Bearer 123456abcdef" }),
+      ctx.json(getMockUser())
+    )
   ),
   rest.post("/signup", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/book/page", (req, res, ctx) =>
@@ -53,7 +58,7 @@ export const handlers = [
     );
   }),
   rest.post("/note/edit", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(getMockNotes(["EditMockNote"], 1)[0]));
+    return res(ctx.status(200));
   }),
   rest.post("/note/all", (req, res, ctx) =>
     res(
@@ -61,13 +66,11 @@ export const handlers = [
       ctx.json(getMockNotes(["MockNote", "MockNote", "MockNote"]))
     )
   ),
-  rest.delete("/note/delete", (req, res, ctx) => res(ctx.status(200))),
+  rest.delete("/note/delete/:id", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/bookmark/add", (req, res, ctx) =>
     res(ctx.status(200), ctx.json(getMockBookmark([req.body.description])[0]))
   ),
-  rest.post("/bookmark/edit", (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(getMockBookmark([req.body.description])[0]))
-  ),
+  rest.post("/bookmark/edit", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/bookmark/all", (req, res, ctx) =>
     res(
       ctx.status(200),
@@ -76,5 +79,5 @@ export const handlers = [
       )
     )
   ),
-  rest.delete("/bookmark/delete", (req, res, ctx) => res(ctx.status(200))),
+  rest.delete("/bookmark/delete/:id", (req, res, ctx) => res(ctx.status(200))),
 ];
