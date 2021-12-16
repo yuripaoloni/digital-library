@@ -2,23 +2,24 @@ import React from "react";
 import MUIRichTextEditor from "mui-rte";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 
-const TextEditor = ({ note, onSave, onDelete }) => {
+const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
   const editorTheme = createTheme();
   Object.assign(editorTheme, {
     overrides: {
       MUIRichTextEditor: {
         root: {
-          width: "90%",
-          height: "90%",
-          maxHeight: "400px",
+          maxHeight: "800px",
           maxWidth: "700px",
           //border: "1px solid grey",
+          marginBottom: 15,
+          marginTop: 10,
         },
         editor: {
-          height: "300px",
-          maxHeight: "630px",
-          maxWidth: "650px",
+          height: 380,
+          maxHeight: "800px",
+          maxWidth: "700px",
           padding: "0 13px",
           marginTop: 2,
           marginBottom: 15,
@@ -32,11 +33,6 @@ const TextEditor = ({ note, onSave, onDelete }) => {
           boxShadow: "3px 3px 10px gray",
           borderRadius: 10,
         },
-        // toolbar: {
-        //   display: "block",
-        //   order: 2,
-        //   position: "relative",
-        // },
         placeHolder: {
           position: "relative",
         },
@@ -56,13 +52,26 @@ const TextEditor = ({ note, onSave, onDelete }) => {
         defaultValue={note && note.toString()}
         label="Nuova nota..."
         onSave={onSave}
-        controls={["bold", "italic", "bulletList", "save", "delete"]}
+        controls={[
+          "bold",
+          "italic",
+          "bulletList",
+          "save",
+          "delete",
+          "selectNotes",
+        ]}
         customControls={[
           {
             name: "delete",
             icon: <DeleteIcon data-testid="remove-icon" />,
             type: "callback",
             onClick: () => onDelete(),
+          },
+          {
+            name: "selectNotes",
+            icon: <LibraryBooksIcon data-testid="select-note" />,
+            type: "callback",
+            onClick: () => onSelectNotes(),
           },
         ]}
       />

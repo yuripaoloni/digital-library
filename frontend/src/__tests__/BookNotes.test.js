@@ -3,6 +3,7 @@ import {
   screen,
   waitForElementToBeRemoved,
   getByText,
+  getByRole,
 } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
@@ -45,6 +46,12 @@ test("should create a new note", async () => {
 
   userEvent.click(screen.getByTestId("SaveIcon"));
 
+  const titleDialog = await screen.findByTestId("title-dialog");
+
+  userEvent.type(getByRole(titleDialog, "textbox"), "MockTitle");
+
+  userEvent.click(getByText(titleDialog, "Ok"));
+
   await waitForElementToBeRemoved(screen.getByRole("progressbar"));
 
   userEvent.click(await screen.findByTestId("select-note"));
@@ -72,38 +79,26 @@ test("should delete an existing note", async () => {
   expect(await screen.findAllByTestId(/note-item/i)).toHaveLength(1);
 });
 
-//TODO
-xtest("should edit an existing note", async () => {
+test("should edit an existing note", async () => {
   render(<App />);
 
   userEvent.click(await screen.findByTestId("select-note"));
 
-  userEvent.click(await screen.findByTestId(/note-item/i));
+  userEvent.click(await screen.findByText(/Note-Title-0/i));
 
-  userEvent.type(
-    screen.getByText(/test note 1/i),
-    `{"blocks":[{"key":"brhle","text":"test note 2","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
-  );
+  userEvent.click(screen.getByTestId("SaveIcon"));
 
-  screen.debug(null, Infinity);
+  const titleDialog = await screen.findByTestId("title-dialog");
 
-  // userEvent.click(screen.getByTestId("SaveIcon"));
+  userEvent.clear(getByRole(titleDialog, "textbox"));
 
-  // await waitForElementToBeRemoved(screen.getByRole("progressbar"));
+  userEvent.type(getByRole(titleDialog, "textbox"), "Note-Title-Edited-0");
 
-  // userEvent.click(await screen.findByTestId("select-note"));
+  userEvent.click(getByText(titleDialog, "Ok"));
 
-  // userEvent.click(await screen.findByText(/note-item/i));
+  await waitForElementToBeRemoved(screen.getByRole("progressbar"));
 
-  // expect(await screen.findByText(/Nota 2/i)).toHaveLength(2);
+  userEvent.click(await screen.findByTestId("select-note"));
 
-  //TODO find the editor by testid
-
-  //TODO check presence of the existing note content in the editor
-
-  //TODO modify content with userEvent
-
-  //TODO click on the save icon to execute the onEdit method
-
-  //TODO check presence of the updated note in the dialog
+  expect(await screen.findAllByText("Note-Title-Edited-0")).toBeDefined();
 });

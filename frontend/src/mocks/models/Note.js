@@ -21,7 +21,8 @@ export const getMockNotes = (notes, manualIndex) => {
         plot: null,
       },
       page: index,
-      note: `{"blocks":[{"key":"brhle","text":"test note ${
+      title: `Note-Title-${index}`,
+      description: `{"blocks":[{"key":"brhle","text":"test note ${
         manualIndex ? manualIndex : index
       }","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
     };

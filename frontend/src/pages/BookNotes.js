@@ -11,13 +11,12 @@ import {
 } from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
-import IconButton from "@mui/material/IconButton";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import TextEditor from "components/TextEditor";
 import Spinner from "components/Spinner";
+import TitleDialog from "components/TitleDialog";
 
 const Img = styled("img")({
-  height: 800,
+  height: 850,
   borderRadius: 10,
   boxShadow: 2,
 });
@@ -26,11 +25,14 @@ const BookNotes = () => {
   const { libraryId, title, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showTitleDialog, setShowTitleDialog] = useState(false);
   const [note, setNote] = useState({
     book: null,
     id: -1,
     page: readingPage,
-    note: null,
+    title: "",
+    description: "",
+    timestamp: null,
   });
 
   const noteLoading = useSelector((state) => state.books.noteLoading);
@@ -44,31 +46,53 @@ const BookNotes = () => {
     !book && dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
   }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
 
-  const onSave = (data) => {
+  const handleShowTitleDialog = (data) => {
     setNote((prev) => {
-      return { ...prev, page: readingPage, book: book, note: data.toString() };
+      return {
+        ...prev,
+        page: readingPage,
+        book: book,
+        description: data.toString(),
+      };
     });
+    setShowTitleDialog(true);
+  };
+
+  const onSave = (noteTitle) => {
+    setNote((prev) => {
+      return {
+        ...prev,
+        title: noteTitle,
+      };
+    });
+
     //? id = -1 means new note
     note.id === -1
       ? dispatch(
-          onCreateNote({ book: book, page: readingPage, note: data.toString() })
+          onCreateNote({
+            book: book,
+            page: readingPage,
+            description: note.description,
+            title: noteTitle,
+          })
         )
       : dispatch(
           onEditNote({
             book: book,
             page: readingPage,
-            note: data.toString(),
+            timestamp: note.timestamp,
+            title: noteTitle,
+            description: note.description,
             id: note.id,
           })
         );
+
+    setShowTitleDialog(false);
   };
 
   const onDelete = () => {
     dispatch(
       onDeleteNote({
-        book: book,
-        page: readingPage,
-        note: note.note,
         id: note.id,
       })
     );
@@ -76,7 +100,9 @@ const BookNotes = () => {
       book: null,
       id: -1,
       page: readingPage,
-      note: null,
+      description: "",
+      title: "",
+      timestamp: null,
     });
     setShowConfirmDialog(false);
   };
@@ -87,7 +113,7 @@ const BookNotes = () => {
     <PageWrapper
       showDialog={showConfirmDialog}
       dialogTitle="Elimina nota"
-      dialogDescription={`Procedere con l'eliminazione della nota ${note.id}?`}
+      dialogDescription={`Procedere con l'eliminazione della nota "${note.title}" ?`}
       dialogOnCancel={() => setShowConfirmDialog(false)}
       dialogOnConfirm={onDelete}
     >
@@ -97,37 +123,87 @@ const BookNotes = () => {
         readingPage={readingPage}
         setNote={setNote}
       />
-      <Grid
-        container
-        justifyContent="center"
-        sx={{
-          maxWidth: "100%",
-          alignItems: "baseline",
-        }}
-      >
+      <TitleDialog
+        show={showTitleDialog}
+        onClose={() => setShowTitleDialog(false)}
+        title={note.title}
+        onSave={onSave}
+      />
+      <Grid pl={2} pb={2}>
+        {loading ? (
+          <Skeleton variant="text" width="80%" />
+        ) : (
+          <Typography variant="h5">{title}</Typography>
+        )}
+        {loading ? (
+          <Skeleton variant="text" width="40%" />
+        ) : (
+          <Typography variant="subtitle1">Pagina {readingPage}</Typography>
+        )}
         <Grid item xs={12}>
           <Grid
             container
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-evenly"
-            sx={{ marginTop: "20px" }}
+            direction={{ sm: "row" }}
+            mt={4}
+            justifyContent="space-between"
           >
             <Grid
               item
-              sm={5}
+              sm={6}
+              pr={2}
+              xs={12}
               container
               direction="column"
               justifyContent="center"
-              alignItems="center"
-              sx={{ position: "relative" }}
+              sx={{ height: "100%", width: "100%" }}
             >
               {loading ? (
-                <Skeleton variant="rectangle" height={100} width={500} />
+                <Skeleton variant="text" width="80%" />
+              ) : (
+                <Typography variant="h6">
+                  {note.title ? note.title : "Nuova nota"}
+                </Typography>
+              )}
+              {loading ? (
+                <Skeleton variant="text" width="40%" />
+              ) : (
+                <Typography variant="subtitle2">
+                  {note.timestamp && `${note.timestamp}`}
+                </Typography>
+              )}
+
+              {loading ? (
+                <Skeleton
+                  variant="rectangle"
+                  sx={{
+                    "@media (min-width : 1161px)": {
+                      height: 700,
+                      width: 500,
+                    },
+                    "@media (max-width : 1160px)": {
+                      height: 700,
+                      width: 500,
+                    },
+                    "@media (max-width : 953px)": {
+                      height: 600,
+                      width: 400,
+                    },
+                    "@media (max-width : 825px)": {
+                      height: 500,
+                      width: 300,
+                    },
+                    "@media (max-width : 690px)": {
+                      height: 450,
+                      width: 200,
+                    },
+                  }}
+                />
               ) : (
                 <TextEditor
-                  note={note.note}
-                  onSave={onSave}
-                  onDelete={() => setShowConfirmDialog(true)}
+                  note={note.description}
+                  onSave={handleShowTitleDialog}
+                  onDelete={() => note.title && setShowConfirmDialog(true)}
+                  onSelectNotes={() => setShowDialog(true)}
                 />
               )}
             </Grid>
@@ -137,36 +213,56 @@ const BookNotes = () => {
               direction="column"
               justifyContent="center"
               alignItems="center"
-              sm={3}
-              sx={{
-                paddingTop: "20px",
-              }}
+              sm={6}
+              xs={12}
             >
-              <h3 style={{ color: "#222C4A" }}>{title}</h3>
               {loading ? (
                 <Skeleton
                   data-testid
                   variant="rectangle"
-                  height={700}
-                  width={580}
+                  sx={{
+                    "@media (min-width : 1161px)": {
+                      height: 700,
+                      width: 500,
+                    },
+                    "@media (max-width : 1160px)": {
+                      height: 700,
+                      width: 500,
+                    },
+                    "@media (max-width : 953px)": {
+                      height: 600,
+                      width: 400,
+                    },
+                    "@media (max-width : 825px)": {
+                      height: 500,
+                      width: 300,
+                    },
+                    "@media (max-width : 690px)": {
+                      height: 450,
+                      width: 200,
+                    },
+                  }}
                 />
               ) : (
-                <Img src={pageUrl} loading="lazy" />
+                <Img
+                  src={pageUrl}
+                  sx={{
+                    "@media (max-width : 1180px)": {
+                      height: 700,
+                    },
+                    "@media (max-width : 953px)": {
+                      height: 600,
+                    },
+                    "@media (max-width : 825px)": {
+                      height: 500,
+                    },
+                    "@media (max-width : 690px)": {
+                      height: 450,
+                    },
+                  }}
+                  loading="lazy"
+                />
               )}
-              <Typography
-                variant="subtitle1"
-                xs={12}
-                style={{ color: "#222C4A" }}
-              >
-                Pagina {readingPage}
-              </Typography>
-              <IconButton
-                onClick={() => setShowDialog(true)}
-                data-testid="delete-icon"
-                style={{ color: "#222C4A" }}
-              >
-                <LibraryBooksIcon data-testid="select-note" />
-              </IconButton>
             </Grid>
           </Grid>
         </Grid>

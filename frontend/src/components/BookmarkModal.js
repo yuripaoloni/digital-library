@@ -97,7 +97,7 @@ const BookmarkModal = ({
               Segnalibri
             </Typography>
             <List sx={{ pt: 0 }}>
-              {bookmarks &&
+              {bookmarks.length > 0 ? (
                 bookmarks.map((bookmark, index) => (
                   <ListItem
                     disableGutters
@@ -146,8 +146,11 @@ const BookmarkModal = ({
                       <BookmarkRemoveIcon />
                     </IconButton>
                   </ListItem>
-                ))}
-              <Divider />
+                ))
+              ) : (
+                <Typography>Nessun segnalibro aggiunto</Typography>
+              )}
+              <Divider sx={{ my: 1 }} />
               <Typography id="modal-modal-title" variant="h6">
                 {edit ? "Modifica" : "Nuovo"} segnalibro
               </Typography>

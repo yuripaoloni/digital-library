@@ -11,15 +11,14 @@ const initialState = {
     message: "",
   },
   authToken: localStorage.getItem("authToken"),
-  user: {}, //TODO add data after login, like 
+  user: {},
 };
 
 export const onSignIn = createAsyncThunk(
   "signIn/auth",
   async ({ email, password }) => {
     const res = await signIn(email, password);
-    return res.headers.authorization;
-    //TODO return {authToken: res.headers.authorization, user: res.data}
+    return { authToken: res.headers.authorization, user: res.data };
   }
 );
 
@@ -47,9 +46,10 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(onSignIn.fulfilled, (state, action) => {
-        localStorage.setItem("authToken", action.payload);
+        localStorage.setItem("authToken", action.payload.authToken);
         state.isAuth = true;
-        state.authToken = action.payload;
+        state.authToken = action.payload.authToken;
+        state.user = action.payload.user;
         state.loading = false;
       })
       .addCase(onSignUp.fulfilled, (state, action) => {
