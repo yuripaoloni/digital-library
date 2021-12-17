@@ -24,8 +24,8 @@ export const onSignIn = createAsyncThunk(
 
 export const onSignUp = createAsyncThunk(
   "signUp/auth",
-  async ({ name, surname, username, email, password }) => {
-    const res = await signUp(name, surname, username, email, password);
+  async ({ name, surname, username, email, password, image }) => {
+    const res = await signUp(name, surname, username, email, password, image);
     return res.data;
   }
 );

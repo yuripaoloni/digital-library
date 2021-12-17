@@ -6,6 +6,8 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Avatar from "@mui/material/Avatar";
+import Input from "@mui/material/Input";
 import { useSelector, useDispatch } from "react-redux";
 import { onSignUp } from "states/authSlice";
 import Spinner from "components/Spinner";
@@ -22,6 +24,7 @@ export default function SignUp() {
   const [passwordError, setPasswordError] = useState(false);
   const [nameErr, setNameErr] = useState(false);
   const [surnameErr, setSurnameErr] = useState(false);
+  const [image, setImage] = useState(null);
 
   const { loading, isRegistered } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -53,7 +56,8 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(onSignUp({ name, surname, username, email, password }));
+    console.log(image);
+    dispatch(onSignUp({ name, surname, username, email, password, image }));
   };
 
   if (!loading && isRegistered) return <Navigate to="/signin" />;
@@ -83,7 +87,7 @@ export default function SignUp() {
             onSubmit={handleSubmit}
             sx={{ mt: 3 }}
           >
-            <Grid container spacing={2}>
+            <Grid container spacing={2} justifyContent="center">
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
@@ -148,8 +152,34 @@ export default function SignUp() {
                   error={passwordError}
                   autoComplete="new-password"
                   onChange={(e) => changePassword(e.target.value)}
-                  inputProps={{ "data-testid": "signup_password_field" }}
+                  inputProps={{
+                    "data-testid": "signup_password_field",
+                  }}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container justifyContent="center">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    name="myImage"
+                    disableUnderline
+                    onChange={(e) => {
+                      setImage(e.target.files[0]);
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container justifyContent="center">
+                  {image && (
+                    <Avatar
+                      sx={{ width: 120, height: 120 }}
+                      alt="Immagine non trovata"
+                      src={URL.createObjectURL(image)}
+                    />
+                  )}
+                </Grid>
               </Grid>
             </Grid>
             <Button

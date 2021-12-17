@@ -1,4 +1,5 @@
 import { axios } from "api/axios";
+import getBase64 from "utils/getBase64";
 
 export const getLibraries = () => {
   return axios.get("/library/list");
@@ -25,14 +26,28 @@ export const signIn = (email, password) => {
   return axios.post("/login", { email, password });
 };
 
-export const signUp = (name, surname, username, email, password) => {
-  return axios.post("/signup", {
-    name,
-    surname,
-    username,
-    email,
-    password,
-  });
+export const signUp = async (
+  name,
+  surname,
+  username,
+  email,
+  password,
+  image
+) => {
+  const base64 = await getBase64(image);
+
+  return axios.post(
+    "/signup",
+    {
+      name,
+      surname,
+      username,
+      email,
+      password,
+      image: base64,
+    },
+    { headers: { "Content-type": "multipart/form-data" } }
+  );
 };
 
 export const getBookPage = ({ book, page }) => {
