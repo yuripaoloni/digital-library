@@ -138,7 +138,7 @@ class GroupController(
         }
     }
 
-    @PostMapping("/group/created/{id}/remove")
+    @DeleteMapping("/group/created/{id}/remove")
     @Authenticate
     @ApiOperation(
         value = "remove member from group",
