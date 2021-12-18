@@ -7,6 +7,7 @@ import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.controller.model.GroupCreation
 import it.unicam.cs.digital_library.model.Group
 import it.unicam.cs.digital_library.model.GroupMember
+import it.unicam.cs.digital_library.model.User
 import it.unicam.cs.digital_library.repository.GroupMemberRepository
 import it.unicam.cs.digital_library.repository.GroupRepository
 import it.unicam.cs.digital_library.repository.UserRepository
@@ -31,19 +32,35 @@ class GroupController(
     @PostMapping("/group/create")
     @Authenticate
     @ApiOperation(
-        value = "create a group",
-        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+        value = "create a group", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     fun createGroup(groupCreation: GroupCreation, @ApiIgnore principal: Principal) {
-        val user = userRepository.findByEmail(principal.name)!!
+        val creator = userRepository.findByEmail(principal.name)!!
 
-        val users = groupCreation.emails.mapNotNull { userRepository.findByEmail(it) }
+        val users = mutableListOf<User>()
+        val notFoundUsers = mutableListOf<String>()
 
-        if (users.size != groupCreation.emails.size) {
-            throw ErrorException(HttpStatus.BAD_REQUEST, "Utenti non trovati")
+        groupCreation.emails.forEach {
+            val searchedUser = userRepository.findByEmail(it)
+            if (searchedUser == null) {
+                notFoundUsers += it
+            } else {
+                users += searchedUser
+            }
         }
 
-        val group = groupRepository.save(Group(0, user, groupCreation.name))
+        if (notFoundUsers.isNotEmpty()) {
+            throw ErrorException(HttpStatus.BAD_REQUEST, "Utenti non trovati $notFoundUsers")
+        }
+
+        if (creator in users) {
+            throw ErrorException(
+                HttpStatus.BAD_REQUEST,
+                "Il creatore del gruppo non può essere tra i membri poiché già presente"
+            )
+        }
+
+        val group = groupRepository.save(Group(0, creator, groupCreation.name))
 
         val members = users.map { GroupMember(0, group, it) }
 
@@ -52,8 +69,5 @@ class GroupController(
         } catch (e: Throwable) {
             groupRepository.delete(group)
         }
-
-        // TODO verificare creatore non tra i membri
-        // TODO ....
     }
 }
