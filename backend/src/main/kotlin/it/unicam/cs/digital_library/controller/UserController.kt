@@ -1,7 +1,8 @@
 package it.unicam.cs.digital_library.controller
 
 import io.swagger.annotations.*
-import it.unicam.cs.digital_library.model.User
+import it.unicam.cs.digital_library.controller.model.UserResponse
+import it.unicam.cs.digital_library.controller.model.toUserResponse
 import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
@@ -31,11 +32,11 @@ class UserController(@Autowired val userRepository: UserRepository) {
         ]
     )
     @Authenticate
-    fun searchUsers(@RequestParam query: String): List<User> {
+    fun searchUsers(@RequestParam query: String): List<UserResponse> {
         return userRepository.findAllByEmailStartsWithOrUsernameStartsWithOrNameStartsWithOrSurnameStartsWithOrderByNameAsc(
             query,
             query,
             query,
-            query)
+            query).map { it.toUserResponse() }
     }
 }

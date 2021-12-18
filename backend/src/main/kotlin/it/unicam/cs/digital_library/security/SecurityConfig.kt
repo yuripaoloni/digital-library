@@ -42,7 +42,7 @@ class WebSecurity(
                     response.sendError(HttpStatus.BAD_REQUEST.value(), exception.message)
                 }
             })
-            .addFilter(JWTAuthorizationFilter(authenticationManager()))
+            .addFilter(JWTAuthorizationFilter(authenticationManager(), userRepository))
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }

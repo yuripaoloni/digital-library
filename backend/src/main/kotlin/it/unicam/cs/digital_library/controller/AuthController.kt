@@ -1,6 +1,7 @@
 package it.unicam.cs.digital_library.controller
 
 import io.swagger.annotations.*
+import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
 import it.unicam.cs.digital_library.controller.errors.SIGNUP_EMAIL_EXISTS
 import it.unicam.cs.digital_library.controller.errors.SIGNUP_USERNAME_EXISTS
@@ -8,14 +9,15 @@ import it.unicam.cs.digital_library.controller.model.SignupRequest
 import it.unicam.cs.digital_library.controller.model.toUser
 import it.unicam.cs.digital_library.controller.password.PasswordValidator
 import it.unicam.cs.digital_library.repository.UserRepository
+import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import it.unicam.cs.digital_library.security.model.Credentials
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import springfox.documentation.annotations.ApiIgnore
+import java.security.Principal
 
 @RestController
 @RequestMapping("")
@@ -63,5 +65,20 @@ class AuthController(
     )
     fun login(@RequestBody credentials: Credentials) {
         // fake to show docs
+    }
+
+    @DeleteMapping("/account/delete")
+    @ApiOperation(
+        value = "deletes the account",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun deleteProfile(@ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
+        try {
+            userRepository.delete(user)
+        } catch (e: Throwable) {
+            throw ErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore")
+        }
     }
 }
