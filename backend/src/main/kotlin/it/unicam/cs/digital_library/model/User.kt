@@ -27,7 +27,7 @@ data class User(
 
     @Lob
     @Type(type = "org.hibernate.type.BinaryType")
-    val picture: ByteArray
+    val picture: ByteArray?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -8,7 +8,7 @@ class LoginResponse(
     val username: String,
     val name: String,
     val surname: String,
-    val picture: String
+    val picture: String?
 )
 
 fun User.toLoginResponse(): LoginResponse {
@@ -17,6 +17,6 @@ fun User.toLoginResponse(): LoginResponse {
         username,
         name,
         surname,
-        Base64Utils.encodeToString(picture)
+        picture?.let { Base64Utils.encodeToString(it) }
     )
 }
