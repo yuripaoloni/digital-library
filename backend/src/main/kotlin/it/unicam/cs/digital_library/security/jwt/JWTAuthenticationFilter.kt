@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm.HMAC512
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import it.unicam.cs.digital_library.controller.model.toLoginResponse
+import it.unicam.cs.digital_library.controller.model.toUserResponse
 import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.EXPIRATION_TIME
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.HEADER_STRING
@@ -61,6 +61,6 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager, pr
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token)
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
-        response.writer.print(user.toLoginResponse().toJson())
+        response.writer.print(user.toUserResponse().toJson())
     }
 }
