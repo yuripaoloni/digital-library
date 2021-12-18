@@ -2,9 +2,11 @@ package it.unicam.cs.digital_library.controller
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import io.swagger.annotations.Authorization
 import it.unicam.cs.digital_library.controller.errors.ErrorException
 import it.unicam.cs.digital_library.controller.model.GroupCreation
+import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.model.Group
 import it.unicam.cs.digital_library.model.GroupMember
 import it.unicam.cs.digital_library.model.User
@@ -15,9 +17,7 @@ import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import springfox.documentation.annotations.ApiIgnore
 import java.security.Principal
 
@@ -70,4 +70,21 @@ class GroupController(
             groupRepository.delete(group)
         }
     }
+
+    @GetMapping("/group/created")
+    @ApiOperation(value = "get groups created")
+    fun getCreatedGroups(@ApiIgnore principal: Principal): List<GroupMember> {
+        val creator = userRepository.findByEmail(principal.name)!!
+        return groupRepository.findAllByCreator_Id(creator.id)
+    }
+
+/*
+    @GetMapping("/group/joined")
+    @ApiOperation(value = "get groups joined")
+    fun getJoinedGroups(@ApiIgnore principal: Principal): List<GroupRespose> {
+        return null
+    }
+*/
+
+
 }

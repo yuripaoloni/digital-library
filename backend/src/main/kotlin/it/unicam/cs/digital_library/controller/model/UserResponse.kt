@@ -3,7 +3,7 @@ package it.unicam.cs.digital_library.controller.model
 import it.unicam.cs.digital_library.model.User
 import org.springframework.util.Base64Utils
 
-class LoginResponse(
+class UserResponse(
     val email: String,
     val username: String,
     val name: String,
@@ -11,8 +11,8 @@ class LoginResponse(
     val picture: String?
 )
 
-fun User.toLoginResponse(): LoginResponse {
-    return LoginResponse(
+fun User.toUserResponse(): UserResponse {
+    return UserResponse(
         email,
         username,
         name,
