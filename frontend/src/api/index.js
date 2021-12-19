@@ -34,20 +34,16 @@ export const signUp = async (
   password,
   image
 ) => {
-  const base64 = await getBase64(image);
+  let picture = await getBase64(image);
 
-  return axios.post(
-    "/signup",
-    {
-      name,
-      surname,
-      username,
-      email,
-      password,
-      image: base64,
-    },
-    { headers: { "Content-type": "multipart/form-data" } }
-  );
+  return axios.post("/signup", {
+    name,
+    surname,
+    username,
+    email,
+    password,
+    picture,
+  });
 };
 
 export const getBookPage = ({ book, page }) => {
@@ -118,6 +114,14 @@ export const getAllBookmarks = ({ book }) => {
 
 export const deleteBookmark = ({ id }) => {
   return axios.delete(`/bookmark/delete/${id}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+//? param could be username, email, name or surname
+export const searchUser = (param) => {
+  return axios.get("/user/search", {
+    params: { query: param },
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };

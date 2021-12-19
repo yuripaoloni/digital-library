@@ -1,6 +1,5 @@
 const getBase64 = (file) => {
   return new Promise((resolve) => {
-    let fileInfo;
     let baseURL = "";
     // Make new FileReader
     let reader = new FileReader();
@@ -12,9 +11,9 @@ const getBase64 = (file) => {
     reader.onload = () => {
       // Make a fileInfo Object
       baseURL = reader.result;
-      resolve(baseURL);
+
+      resolve(baseURL.split(",")[1]);
     };
-    console.log(fileInfo);
   });
 };
 

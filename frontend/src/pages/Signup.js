@@ -56,7 +56,6 @@ export default function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(image);
     dispatch(onSignUp({ name, surname, username, email, password, image }));
   };
 
@@ -67,7 +66,7 @@ export default function SignUp() {
   }
 
   return (
-    <PageWrapper>
+    <PageWrapper auth>
       <Container component="main" maxWidth="xs" data-testid="signup_root">
         <CssBaseline />
         <Box
