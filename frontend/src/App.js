@@ -13,6 +13,7 @@ import Navbar from "components/Navbar";
 import RequireAuth from "components/RequireAuth";
 import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 import PersonalPage from "pages/PersonalPage";
+import GroupsPage from "pages/GroupsPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -59,6 +60,15 @@ const App = () => {
           element={
             <RequireAuth>
               <PersonalPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          exact
+          path="/groups"
+          element={
+            <RequireAuth>
+              <GroupsPage />
             </RequireAuth>
           }
         />
