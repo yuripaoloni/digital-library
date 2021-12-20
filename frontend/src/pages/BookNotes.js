@@ -111,6 +111,7 @@ const BookNotes = () => {
 
   return (
     <PageWrapper
+      reducer="books"
       showDialog={showConfirmDialog}
       dialogTitle="Elimina nota"
       dialogDescription={`Procedere con l'eliminazione della nota "${note.title}" ?`}

@@ -34,7 +34,6 @@ export const onSignUp = createAsyncThunk(
 export const onSearchUser = createAsyncThunk(
   "searchUser/user",
   async ({ param }) => {
-    console.log("execute", param);
     const res = await searchUser(param);
     return res.data[0];
   }

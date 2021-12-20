@@ -66,7 +66,7 @@ export default function SignUp() {
   }
 
   return (
-    <PageWrapper auth>
+    <PageWrapper reducer="auth">
       <Container component="main" maxWidth="xs" data-testid="signup_root">
         <CssBaseline />
         <Box

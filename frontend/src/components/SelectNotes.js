@@ -24,7 +24,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
   return (
     <Dialog onClose={onClose} open={show}>
       <DialogTitle>Seleziona nota</DialogTitle>
-      <List sx={{ pt: 0 }}>
+      <List sx={{ pt: 0 }} dense>
         {notes.map(
           (note, index) =>
             note.page.toString() === readingPage && (

@@ -96,7 +96,7 @@ const BookmarkModal = ({
             <Typography id="modal-modal-title" variant="h5">
               Segnalibri
             </Typography>
-            <List sx={{ pt: 0 }}>
+            <List sx={{ pt: 0 }} dense>
               {bookmarks.length > 0 ? (
                 bookmarks.map((bookmark, index) => (
                   <ListItem

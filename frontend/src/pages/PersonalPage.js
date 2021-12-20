@@ -6,7 +6,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import GroupIcon from "@mui/icons-material/Group";
@@ -19,6 +18,7 @@ import Spinner from "components/Spinner";
 import { onSearchUser } from "states/authSlice";
 import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
+import { Link } from "react-router-dom";
 
 /**
  * TODO
@@ -43,12 +43,11 @@ const PersonalPage = () => {
       dispatch(onSearchUser({ param: localStorage.getItem("username") }));
   }, [user, dispatch]);
 
-  console.log(user);
   //TODO spinner o skeleton
   if (loading) return <Spinner />;
 
   return (
-    <PageWrapper>
+    <PageWrapper reducer="auth">
       <Container container component="main" sx={{ maxWidth: "80vw" }}>
         <CssBaseline />
 
@@ -138,7 +137,12 @@ const PersonalPage = () => {
               <Typography variant="body2" component="h2">
                 {user.name} & {user.surname}
               </Typography>
-              <IconButton aria-label="delete" size="large">
+              <IconButton
+                aria-label="delete"
+                size="large"
+                LinkComponent={Link}
+                to="/groups"
+              >
                 <GroupIcon />
               </IconButton>
             </Grid>

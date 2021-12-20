@@ -44,7 +44,7 @@ const BookDetails = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper reducer="books">
       <Grid container justifyContent="center">
         <Grid item md={10} sm={11} xs={11}>
           <Grid container rowSpacing={3}>

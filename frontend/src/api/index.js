@@ -34,7 +34,7 @@ export const signUp = async (
   password,
   image
 ) => {
-  let picture = await getBase64(image);
+  let picture = image ? await getBase64(image) : image;
 
   return axios.post("/signup", {
     name,
@@ -122,6 +122,55 @@ export const deleteBookmark = ({ id }) => {
 export const searchUser = (param) => {
   return axios.get("/user/search", {
     params: { query: param },
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const createGroup = (emails, name) => {
+  return axios.post(
+    "/group/create",
+    { emails, name },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const getCreatedGroups = () => {
+  return axios.get("/group/created", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const deleteGroup = (id) => {
+  return axios.delete(`/group/created/${id}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const addUsersToGroup = (emails, id) => {
+  return axios.post(
+    `/group/created/${id}/add`,
+    { emails },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const removeUsersFromGroup = (emails, id) => {
+  return axios({
+    method: "delete",
+    url: `/group/created/${id}/remove`,
+    data: { emails },
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getJoinedGroups = () => {
+  return axios.get("/group/joined", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const leaveGroup = (id) => {
+  return axios.delete(`/group/joined/${id}`, {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };

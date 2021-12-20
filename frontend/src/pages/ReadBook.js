@@ -73,6 +73,7 @@ const ReadBook = () => {
 
   return (
     <PageWrapper
+      reducer="books"
       showDialog={showDialog}
       dialogTitle="Elimina segnalibro"
       dialogDescription={`Procedere con l'eliminazione del segnalibro "${bookmark?.description}" ?`}
