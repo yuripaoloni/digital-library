@@ -1,5 +1,6 @@
 import booksSlice from "states/booksSlice";
 import authSlice from "states/authSlice";
+import groupsSlice from "states/groupsSlice";
 
 test("booksSlice: should return the initial state", () => {
   expect(booksSlice(undefined, {})).toEqual({
@@ -24,7 +25,8 @@ test("booksSlice: should return the initial state", () => {
 test("authSlice: should return the initial state", () => {
   expect(authSlice(undefined, {})).toEqual({
     loading: false,
-    isAuth: false,
+    userLoading: false,
+    isAuth: localStorage.getItem("authToken") ? true : false,
     isRegistered: false,
     error: {
       error: false,
@@ -33,5 +35,14 @@ test("authSlice: should return the initial state", () => {
     },
     authToken: localStorage.getItem("authToken"),
     user: {},
+  });
+});
+
+test("groupsSlice: should return the initial state", () => {
+  expect(groupsSlice(undefined, {})).toEqual({
+    loading: false,
+    joinedGroups: [],
+    createdGroups: [],
+    error: false,
   });
 });
