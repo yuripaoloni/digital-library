@@ -35,7 +35,7 @@ class GroupController(
     @ApiOperation(
         value = "create a group", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
-    fun createGroup(groupCreation: GroupCreation, @ApiIgnore principal: Principal) {
+    fun createGroup(@RequestBody groupCreation: GroupCreation, @ApiIgnore principal: Principal): GroupResponse {
         val creator = userRepository.findByEmail(principal.name)!!
 
         val users = mutableListOf<User>()
@@ -66,15 +66,22 @@ class GroupController(
         val members = users.map { GroupMember(0, group, it) }
 
         try {
-            groupMemberRepository.saveAll(members)
+            val groupMembers = groupMemberRepository.saveAll(members)
+            return toGroupResponse(group, groupMembers)
         } catch (e: Throwable) {
             groupRepository.delete(group)
+            throw ErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore")
         }
+
+
     }
 
     @GetMapping("/group/created")
     @Authenticate
-    @ApiOperation(value = "get groups created by the user", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)])
+    @ApiOperation(
+        value = "get groups created by the user",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
     fun getCreatedGroups(@ApiIgnore principal: Principal): List<GroupResponse> {
         val creator = userRepository.findByEmail(principal.name)!!
         val groups = groupRepository.findAllByCreator_Id(creator.id)
@@ -188,7 +195,10 @@ class GroupController(
 
     @DeleteMapping("/group/created/{id}")
     @Authenticate
-    @ApiOperation(value = "deletes the group created by the user", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)])
+    @ApiOperation(
+        value = "deletes the group created by the user",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
     fun deleteGroup(@PathVariable id: Long, @ApiIgnore principal: Principal) {
         val creator = userRepository.findByEmail(principal.name)!!
         val group =
@@ -203,7 +213,10 @@ class GroupController(
 
     @GetMapping("/group/joined")
     @Authenticate
-    @ApiOperation(value = "get groups joined by the user", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)])
+    @ApiOperation(
+        value = "get groups joined by the user",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
     fun getJoinedGroups(@ApiIgnore principal: Principal): List<GroupResponse> {
         val member = userRepository.findByEmail(principal.name)!!
         val groups = groupMemberRepository.findAllByMember_Id(member.id).map { it.group }
@@ -212,7 +225,10 @@ class GroupController(
 
     @DeleteMapping("/group/joined/{id}")
     @Authenticate
-    @ApiOperation(value = "leaves the group joined by the user", authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)])
+    @ApiOperation(
+        value = "leaves the group joined by the user",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
     fun leaveGroup(@PathVariable id: Long, @ApiIgnore principal: Principal) {
         val member = userRepository.findByEmail(principal.name)!!
         val membership = groupMemberRepository.findByGroup_IdAndMember_Id(id, member.id) ?: throw ErrorException(
