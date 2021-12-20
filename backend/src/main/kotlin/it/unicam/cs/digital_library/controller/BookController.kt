@@ -6,6 +6,7 @@ import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
 import it.unicam.cs.digital_library.controller.model.*
 import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.model.Bookmark
+import it.unicam.cs.digital_library.model.FavoriteBook
 import it.unicam.cs.digital_library.model.Note
 import it.unicam.cs.digital_library.network.LibraryService
 import it.unicam.cs.digital_library.repository.*
@@ -24,7 +25,8 @@ class BookController(
     @Autowired val userRepository: UserRepository,
     @Autowired val noteRepository: NoteRepository,
     @Autowired val bookmarkRepository: BookmarkRepository,
-    @Autowired val bookRepository: BookRepository
+    @Autowired val bookRepository: BookRepository,
+    @Autowired val favoriteBookRepository: FavoriteBookRepository,
 ) {
     private val libraryService = LibraryService()
 
@@ -32,7 +34,7 @@ class BookController(
     @ApiOperation(value = "search book", notes = "search book by title and optionally by library ids")
     fun searchBook(
         @RequestParam query: String,
-        @RequestParam(required = false) @ApiParam(required = false) libraryIds: List<Long>? = null
+        @RequestParam(required = false) @ApiParam(required = false) libraryIds: List<Long>? = null,
     ): List<List<Book>> {
         return libraryService.searchBook(query, libraryIds)
     }
@@ -128,7 +130,7 @@ class BookController(
     @Authenticate
     fun getNotesByPage(
         @RequestBody bookPageRequest: BookPageRequest,
-        @ApiIgnore principal: Principal
+        @ApiIgnore principal: Principal,
     ): List<NoteResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         val book = (libraryService.parseBook(bookPageRequest.book) ?: return emptyList()).run(bookRepository::find)
@@ -145,7 +147,7 @@ class BookController(
     @Authenticate
     fun getNotesByBook(
         @RequestBody book: Book,
-        @ApiIgnore principal: Principal
+        @ApiIgnore principal: Principal,
     ): List<NoteResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         return noteRepository.findAllByBookIdAndUserId(
@@ -161,13 +163,20 @@ class BookController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun addBookmark(@RequestBody bookmarkCreation: BookmarkCreation, @ApiIgnore principal: Principal): BookmarkResponse {
+    fun addBookmark(
+        @RequestBody bookmarkCreation: BookmarkCreation,
+        @ApiIgnore principal: Principal,
+    ): BookmarkResponse {
         val user = userRepository.findByEmail(principal.name)!!
         val book =
             (libraryService.parseBook(bookmarkCreation.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
         val bookmark = bookmarkRepository.findByBookIdAndPageAndUserId(book.id, bookmarkCreation.page, user.id)
         if (bookmark != null) throw ErrorException(HttpStatus.FORBIDDEN, "Bookmark già presente sulla pagina")
-        else return bookmarkRepository.save(Bookmark(0, book, user, bookmarkCreation.page, bookmarkCreation.description))
+        else return bookmarkRepository.save(Bookmark(0,
+            book,
+            user,
+            bookmarkCreation.page,
+            bookmarkCreation.description))
             .toBookmarkResponse()
     }
 
@@ -212,7 +221,7 @@ class BookController(
     @Authenticate
     fun getBookmarksByBook(
         @RequestBody book: Book,
-        @ApiIgnore principal: Principal
+        @ApiIgnore principal: Principal,
     ): List<BookmarkResponse> {
         val user = userRepository.findByEmail(principal.name)!!
         return bookmarkRepository.findAllByBookIdAndUserId(
@@ -221,4 +230,60 @@ class BookController(
             user_id = user.id
         ).map(Bookmark::toBookmarkResponse)
     }
+
+
+    @GetMapping("/book/saved")
+    @ApiOperation(
+        value = "get saved books",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun getSavedBooks(@ApiIgnore principal: Principal): List<Book> {
+        val user = userRepository.findByEmail(principal.name)!!
+        return favoriteBookRepository.findAllByUser_Id(user.id).map { it.book }
+    }
+
+    @PostMapping("/book/saved/add")
+    @ApiOperation(
+        value = "saves a book to saved books",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun addToSavedBooks(
+        @RequestBody book: Book,
+        @ApiIgnore principal: Principal,
+    ) {
+        val user = userRepository.findByEmail(principal.name)!!
+        try {
+            favoriteBookRepository.save(FavoriteBook(0,
+                (libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave),
+                user))
+        } catch (e: Throwable) {
+            throw GENERIC_ERROR
+        }
+    }
+
+
+    @DeleteMapping("/book/saved/delete")
+    @ApiOperation(
+        value = "deletes a book to saved books",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun deleteFromSavedBooks(
+        @RequestBody book: Book,
+        @ApiIgnore principal: Principal,
+    ) {
+        val user = userRepository.findByEmail(principal.name)!!
+        val book =
+            (libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::find) ?: throw GENERIC_ERROR
+        val favoriteBook = favoriteBookRepository.findByBook_IdAndUser_Id(book.id, user.id)
+            ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Il libro non è tra i libri salvati")
+        try {
+            favoriteBookRepository.delete(favoriteBook)
+        } catch (e: Throwable) {
+            throw GENERIC_ERROR
+        }
+    }
+
 }

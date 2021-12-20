@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FavoriteBookRepository : JpaRepository<FavoriteBook, Long> {
-    fun findByUser_Id(user_id: Int)
+    fun findAllByUser_Id(user_id: Int): List<FavoriteBook>
+    fun findByBook_IdAndUser_Id(book_id: Long, user_id: Int): FavoriteBook?
 }
