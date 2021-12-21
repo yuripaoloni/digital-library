@@ -80,4 +80,15 @@ export const handlers = [
     )
   ),
   rest.delete("/bookmark/delete/:id", (req, res, ctx) => res(ctx.status(200))),
+  rest.get("/user/search", (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(getMockUser()))
+  ),
+  rest.get("/book/saved", (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json(getMockBooks(["MockSavedBook1", "MockSavedBook2"]))
+    )
+  ),
+  rest.delete("/book/saved/delete", (req, res, ctx) => res(ctx.status(200))),
+  rest.post("/book/saved/add", (req, res, ctx) => res(ctx.status(200))),
 ];
