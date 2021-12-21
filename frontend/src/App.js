@@ -9,11 +9,14 @@ import SignIn from "pages/Signin";
 import SignUp from "pages/Signup";
 import ReadBook from "pages/ReadBook";
 import BookNotes from "pages/BookNotes";
-import Navbar from "components/Navbar";
-import RequireAuth from "components/RequireAuth";
-import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 import PersonalPage from "pages/PersonalPage";
 import GroupsPage from "pages/GroupsPage";
+
+import Navbar from "components/Navbar";
+import RequireAuth from "components/RequireAuth";
+
+import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
+import { onSearchUser } from "states/authSlice";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -21,6 +24,9 @@ const App = () => {
   useEffect(() => {
     dispatch(fetchRandomBooks());
     dispatch(fetchLibraries());
+    localStorage.getItem("username") &&
+      localStorage.getItem("authToken") &&
+      dispatch(onSearchUser({ param: localStorage.getItem("username") }));
   }, [dispatch]);
 
   return (

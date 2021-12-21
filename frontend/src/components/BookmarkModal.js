@@ -97,7 +97,7 @@ const BookmarkModal = ({
               Segnalibri
             </Typography>
             <List sx={{ pt: 0 }} dense>
-              {bookmarks.length > 0 ? (
+              {bookmarks?.length > 0 ? (
                 bookmarks.map((bookmark, index) => (
                   <ListItem
                     disableGutters

@@ -35,6 +35,7 @@ test("authSlice: should return the initial state", () => {
     },
     authToken: localStorage.getItem("authToken"),
     user: {},
+    isFavorite: false,
   });
 });
 

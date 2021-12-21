@@ -174,3 +174,31 @@ export const leaveGroup = (id) => {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
+
+export const getSavedBooks = () => {
+  return axios.get("/book/saved", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const saveBook = (book) => {
+  return axios.post(
+    "/book/saved/add",
+    {
+      ...book,
+    },
+    {
+      headers: { Authorization: localStorage.getItem("authToken") },
+    }
+  );
+};
+
+export const deleteBook = (book) => {
+  //? added to load page images in frontend
+  return axios({
+    method: "delete",
+    url: "/book/saved/delete",
+    data: { ...book },
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
