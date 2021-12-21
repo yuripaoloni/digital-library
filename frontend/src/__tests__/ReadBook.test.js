@@ -26,6 +26,8 @@ test("should display the reading page", async () => {
   expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
 });
 
+test("should add/remove a book from favorites", async () => {});
+
 test("should show saved bookmarks", async () => {
   render(<App />);
 
@@ -108,7 +110,7 @@ test("should delete and existing bookmark", async () => {
   expect(await screen.findAllByText(/MockBookmark/i)).toHaveLength(2);
 });
 
-test("should go to the bookmark page", async () => {
+test("should open the page of a bookmark", async () => {
   render(<App />);
 
   expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
