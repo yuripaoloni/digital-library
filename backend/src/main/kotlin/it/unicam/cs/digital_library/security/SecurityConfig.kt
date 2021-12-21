@@ -1,5 +1,6 @@
 package it.unicam.cs.digital_library.security
 
+import it.unicam.cs.digital_library.repository.FavoriteBookRepository
 import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTAuthenticationFilter
 import it.unicam.cs.digital_library.security.jwt.JWTAuthorizationFilter
@@ -24,7 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class WebSecurity(
     val userDetailsService: UserDetailsServiceImpl,
     val passwordEncoder: BCryptPasswordEncoder,
-    val userRepository: UserRepository
+    val userRepository: UserRepository,
+    val favoriteBookRepository: FavoriteBookRepository
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
@@ -36,7 +38,7 @@ class WebSecurity(
             .anyRequest()
             .permitAll()
             .and()
-            .addFilter(JWTAuthenticationFilter(authenticationManager(), userRepository).apply {
+            .addFilter(JWTAuthenticationFilter(authenticationManager(), userRepository, favoriteBookRepository).apply {
                 setFilterProcessesUrl(LOGIN_URL)
                 this.setAuthenticationFailureHandler { _, response, exception ->
                     response.sendError(HttpStatus.BAD_REQUEST.value(), exception.message)

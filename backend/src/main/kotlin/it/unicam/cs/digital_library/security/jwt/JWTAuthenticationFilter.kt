@@ -5,7 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm.HMAC512
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import it.unicam.cs.digital_library.controller.model.toUserResponse
+import it.unicam.cs.digital_library.controller.model.toLoginResponse
+import it.unicam.cs.digital_library.repository.FavoriteBookRepository
 import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.EXPIRATION_TIME
 import it.unicam.cs.digital_library.security.jwt.JWTConstants.HEADER_STRING
@@ -25,7 +26,11 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JWTAuthenticationFilter(private val authManager: AuthenticationManager, private val userRepository: UserRepository) : UsernamePasswordAuthenticationFilter() {
+class JWTAuthenticationFilter(
+    private val authManager: AuthenticationManager,
+    private val userRepository: UserRepository,
+    private val favoriteBookRepository: FavoriteBookRepository,
+) : UsernamePasswordAuthenticationFilter() {
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         try {
@@ -49,10 +54,11 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager, pr
         request: HttpServletRequest,
         response: HttpServletResponse,
         chain: FilterChain,
-        authResult: Authentication
+        authResult: Authentication,
     ) {
         val email = (authResult.principal as User).username
         val user = userRepository.findByEmail(email)!!
+        val savedBooks = favoriteBookRepository.findAllByUser_Id(user.id).map { it.book }
         val token: String = JWT.create()
             .withSubject(email)
             .withExpiresAt(Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -61,6 +67,6 @@ class JWTAuthenticationFilter(private val authManager: AuthenticationManager, pr
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token)
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
-        response.writer.print(user.toUserResponse().toJson())
+        response.writer.print(user.toLoginResponse(savedBooks).toJson())
     }
 }
