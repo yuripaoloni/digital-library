@@ -1,5 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { searchUser, signIn, signUp } from "api";
+import {
+  deleteBook,
+  getSavedBooks,
+  saveBook,
+  searchUser,
+  signIn,
+  signUp,
+} from "api";
 
 const initialState = {
   loading: false,
@@ -13,6 +20,7 @@ const initialState = {
   },
   authToken: localStorage.getItem("authToken"),
   user: {},
+  isFavorite: false,
 };
 
 export const onSignIn = createAsyncThunk(
@@ -34,8 +42,25 @@ export const onSignUp = createAsyncThunk(
 export const onSearchUser = createAsyncThunk(
   "searchUser/user",
   async ({ param }) => {
-    const res = await searchUser(param);
-    return res.data[0];
+    const user = await searchUser(param);
+    const savedBooks = await getSavedBooks();
+    return { ...user.data[0], savedBooks: savedBooks.data };
+  }
+);
+
+export const onSaveBook = createAsyncThunk(
+  "saveBook/user",
+  async ({ book }) => {
+    await saveBook(book);
+    return book;
+  }
+);
+
+export const onDeleteBook = createAsyncThunk(
+  "deleteBook/user",
+  async ({ book }) => {
+    await deleteBook(book);
+    return book.id;
   }
 );
 
@@ -52,6 +77,15 @@ const authSlice = createSlice({
       state.authToken = null;
       state.isAuth = false;
       state.user = {};
+    },
+    isFavoriteBook: (state, action) => {
+      state.isFavorite = state.user?.savedBooks
+        ? state.user?.savedBooks.find(
+            (book) =>
+              book.title === action.payload.title &&
+              book.library.id === action.payload.libraryId
+          )
+        : false;
     },
   },
   extraReducers: (builder) => {
@@ -71,6 +105,15 @@ const authSlice = createSlice({
       .addCase(onSearchUser.fulfilled, (state, action) => {
         state.userLoading = false;
         state.user = action.payload;
+      })
+      .addCase(onSaveBook.fulfilled, (state, action) => {
+        state.user.savedBooks = [...state.user.savedBooks, action.payload];
+      })
+      .addCase(onDeleteBook.fulfilled, (state, action) => {
+        let updatedBooks = state.user.savedBooks.filter(
+          (book) => book.id !== action.payload
+        );
+        state.user.savedBooks = [...updatedBooks];
       })
       .addMatcher(
         (action) => action.type?.endsWith("user/pending"),
@@ -106,6 +149,6 @@ const authSlice = createSlice({
 
 const { actions, reducer } = authSlice;
 
-export const { unsetError, onSignOut } = actions;
+export const { unsetError, onSignOut, isFavoriteBook } = actions;
 
 export default reducer;

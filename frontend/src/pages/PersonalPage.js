@@ -20,19 +20,9 @@ import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
 import { Link } from "react-router-dom";
 
-/**
- * TODO
- * - profile image (?)
- * - personal info (username, name, surname, email)
- * - list of available groups (to do defined better)
- * - list of saved books
- */
+//? user.savedBooks contains the list of saved books
 
 const PersonalPage = () => {
-  /**
-   * should have: user.name, user.surname, user.email. user.groups, user.
-   */
-
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.userLoading);
 
