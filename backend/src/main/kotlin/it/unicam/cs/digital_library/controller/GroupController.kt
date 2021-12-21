@@ -4,15 +4,13 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.Authorization
 import it.unicam.cs.digital_library.controller.errors.ErrorException
-import it.unicam.cs.digital_library.controller.model.GroupCreation
-import it.unicam.cs.digital_library.controller.model.GroupResponse
-import it.unicam.cs.digital_library.controller.model.toGroupResponse
+import it.unicam.cs.digital_library.controller.errors.GENERIC_ERROR
+import it.unicam.cs.digital_library.controller.model.*
 import it.unicam.cs.digital_library.model.Group
 import it.unicam.cs.digital_library.model.GroupMember
+import it.unicam.cs.digital_library.model.SharedNote
 import it.unicam.cs.digital_library.model.User
-import it.unicam.cs.digital_library.repository.GroupMemberRepository
-import it.unicam.cs.digital_library.repository.GroupRepository
-import it.unicam.cs.digital_library.repository.UserRepository
+import it.unicam.cs.digital_library.repository.*
 import it.unicam.cs.digital_library.security.Authenticate
 import it.unicam.cs.digital_library.security.jwt.JWTConstants
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,6 +27,9 @@ class GroupController(
     @Autowired val userRepository: UserRepository,
     @Autowired val groupRepository: GroupRepository,
     @Autowired val groupMemberRepository: GroupMemberRepository,
+    @Autowired val sharedNoteRepository: SharedNoteRepository,
+    @Autowired val noteRepository: NoteRepository,
+    @Autowired val groupUtils: GroupUtils
 ) {
     @PostMapping("/group/create")
     @Authenticate
@@ -238,5 +239,78 @@ class GroupController(
         kotlin.runCatching {
             groupMemberRepository.delete(membership)
         }.getOrElse { throw ErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore") }
+    }
+
+    @PostMapping("/group/share/{groupId}/{noteId}")
+    @ApiOperation(
+        value = "shares a note with a group",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun shareNotes(@PathVariable groupId: Long, @PathVariable noteId: Long, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
+        val note =
+            noteRepository.findByIdOrNull(noteId) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Nota non trovata")
+        val group = groupRepository.findByIdOrNull(groupId) ?: throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Gruppo non trovato"
+        )
+        if (note.user.id != user.id || !groupUtils.isUserGroupCreatorOrMember(user.id, groupId)) throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Non puoi condividere la nota"
+        )
+        try {
+            sharedNoteRepository.save(SharedNote(0, group, note))
+        } catch (e: Throwable) {
+            throw GENERIC_ERROR
+        }
+    }
+
+    @DeleteMapping("/group/share/{groupId}/{noteId}")
+    @ApiOperation(
+        value = "unshares a note from a group",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun unshareNote(@PathVariable groupId: Long, @PathVariable noteId: Long, @ApiIgnore principal: Principal) {
+        val user = userRepository.findByEmail(principal.name)!!
+        val note =
+            noteRepository.findByIdOrNull(noteId) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Nota non trovata")
+        val group = groupRepository.findByIdOrNull(groupId) ?: throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Gruppo non trovato"
+        )
+        if (note.user.id != user.id || !groupUtils.isUserGroupCreatorOrMember(user.id, groupId)) throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Non puoi rimuovere la condivisione della nota"
+        )
+        val sharedNote = sharedNoteRepository.findByGroup_IdAndNote_Id(group.id, note.id) ?: throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Nota non condivisa col gruppo"
+        )
+        try {
+            sharedNoteRepository.delete(sharedNote)
+        } catch (e: Throwable) {
+            throw GENERIC_ERROR
+        }
+    }
+
+    @GetMapping("/group/shared/{groupId}")
+    @ApiOperation(
+        value = "gets a group sharing notes",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun getSharedNotes(@PathVariable groupId: Long, @ApiIgnore principal: Principal): List<NoteResponse> {
+        val user = userRepository.findByEmail(principal.name)!!
+        val group = groupRepository.findByIdOrNull(groupId) ?: throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Gruppo non trovato"
+        )
+        if (!groupUtils.isUserGroupCreatorOrMember(user.id, groupId)) throw ErrorException(
+            HttpStatus.BAD_REQUEST,
+            "Non fai parte del gruppo"
+        )
+        return sharedNoteRepository.findAllByGroup_Id(group.id).map { it.note.toNoteResponse() }
     }
 }

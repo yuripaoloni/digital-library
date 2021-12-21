@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GroupRepository : JpaRepository<Group, Long> {
     fun findAllByCreator_Id(creator_id: Int): List<Group>
+    fun findByIdAndCreator_Id(id: Long, creator_id: Int): Group?
 }
