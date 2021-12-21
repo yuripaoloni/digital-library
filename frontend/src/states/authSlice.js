@@ -83,11 +83,13 @@ const authSlice = createSlice({
         ? state.user?.savedBooks.find(
             (book) =>
               book.title === action.payload.title &&
-              book.library.id === action.payload.libraryId
+              book.library.id.toString() === action.payload.libraryId
           )
         : false;
     },
   },
+
+  //? deleteBook and addBook pending and rejected state are not handled since they do not need a UI update
   extraReducers: (builder) => {
     builder
       .addCase(onSignIn.fulfilled, (state, action) => {
@@ -108,21 +110,19 @@ const authSlice = createSlice({
       })
       .addCase(onSaveBook.fulfilled, (state, action) => {
         state.user.savedBooks = [...state.user.savedBooks, action.payload];
+        state.isFavorite = true;
       })
       .addCase(onDeleteBook.fulfilled, (state, action) => {
         let updatedBooks = state.user.savedBooks.filter(
           (book) => book.id !== action.payload
         );
         state.user.savedBooks = [...updatedBooks];
+        state.isFavorite = false;
       })
-      .addMatcher(
-        (action) => action.type?.endsWith("user/pending"),
-        (state) => {
-          state.userLoading = true;
-          state.error = { error: false, variant: "error", message: "" };
-        }
-      )
-
+      .addCase(onSearchUser.pending, (state) => {
+        state.userLoading = true;
+        state.error = { error: false, variant: "error", message: "" };
+      })
       .addMatcher(
         (action) => action.type?.endsWith("auth/pending"),
         (state) => {
@@ -133,7 +133,7 @@ const authSlice = createSlice({
       .addMatcher(
         (action) =>
           action.type?.endsWith("auth/rejected") ||
-          action.type?.endsWith("user/rejected"),
+          action.type?.endsWith("searchUser/user/rejected"),
         (state) => {
           state.loading = false;
           state.userLoading = false;

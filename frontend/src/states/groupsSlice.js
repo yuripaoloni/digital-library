@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createGroup, searchUser, signIn, signUp } from "api";
+import { createGroup } from "api";
 
 const initialState = {
   loading: false,

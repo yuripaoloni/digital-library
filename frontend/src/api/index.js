@@ -195,7 +195,6 @@ export const saveBook = (book) => {
 
 export const deleteBook = (book) => {
   //? added to load page images in frontend
-  delete book.image;
   return axios({
     method: "delete",
     url: "/book/saved/delete",

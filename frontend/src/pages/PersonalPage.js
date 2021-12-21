@@ -1,5 +1,5 @@
-import { useSelector, useDispatch } from "react-redux";
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -25,13 +25,6 @@ import { Link } from "react-router-dom";
 const PersonalPage = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.userLoading);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    Object.keys(user).length === 0 &&
-      dispatch(onSearchUser({ param: localStorage.getItem("username") }));
-  }, [user, dispatch]);
 
   //TODO spinner o skeleton
   if (loading) return <Spinner />;
