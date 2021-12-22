@@ -261,7 +261,7 @@ const BookNotes = () => {
                       height: 450,
                     },
                   }}
-                  loading="lazy"
+                  loading="eager"
                 />
               )}
             </Grid>

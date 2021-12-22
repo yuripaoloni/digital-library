@@ -109,7 +109,7 @@ const BookDetails = () => {
                   {loading ? (
                     <Skeleton variant="rectangle" height={400} width={280} />
                   ) : (
-                    <Img src={book?.image} loading="lazy" />
+                    <Img src={book?.image} loading="eager" />
                   )}
                 </Grid>
               </Grid>

@@ -80,11 +80,12 @@ const authSlice = createSlice({
     },
     isFavoriteBook: (state, action) => {
       state.isFavorite = state.user?.savedBooks
-        ? state.user?.savedBooks.find(
-            (book) =>
-              book.title === action.payload.title &&
+        ? state.user.savedBooks.some((book) => {
+            return (
+              book.title.trim() === action.payload.title.trim() &&
               book.library.id.toString() === action.payload.libraryId
-          )
+            );
+          })
         : false;
     },
   },

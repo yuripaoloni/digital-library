@@ -155,7 +155,7 @@ const ReadBook = () => {
                 },
               }}
               src={pageUrl}
-              loading="lazy"
+              loading="eager"
             />
           )}
         </Grid>
