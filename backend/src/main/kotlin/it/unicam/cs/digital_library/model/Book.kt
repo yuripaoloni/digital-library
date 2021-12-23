@@ -22,5 +22,6 @@ data class Book(
     val language: String?,
     val year: Int?,
     val genre: String?,
-    val plot: String?
+    val plot: String?,
+    val cover: String?
 )

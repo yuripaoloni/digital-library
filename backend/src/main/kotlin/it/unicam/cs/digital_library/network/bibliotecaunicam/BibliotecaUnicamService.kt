@@ -52,7 +52,7 @@ class BibliotecaUnicamService : ILibraryService {
     override fun search(query: String): List<Book> {
         return getBooks().filter {
             it.title.contains(query, ignoreCase = true)
-        }
+        }.map { it.copy(cover = getCover(it)) }
     }
 
     private fun toBook(remoteBook: RemoteBook): Book {
@@ -65,7 +65,8 @@ class BibliotecaUnicamService : ILibraryService {
             genre = remoteBook.classification,
             year = remoteBook.date,
             plot = remoteBook.description,
-            language = remoteBook.language
+            language = remoteBook.language,
+            cover = null
         )
     }
 
@@ -77,7 +78,7 @@ class BibliotecaUnicamService : ILibraryService {
     }
 
     override fun getRandomBooks(): List<Book> {
-        return getBooks().shuffled().take(10)
+        return getBooks().shuffled().take(10).map { it.copy(cover = getCover(it)) }
     }
 
     private fun getBookPages(remoteBookId: Long): List<BookPage> {
@@ -99,6 +100,8 @@ class BibliotecaUnicamService : ILibraryService {
     }
 
     override fun getBook(book: Book): Book? {
-        return getRemoteBookById(book.remoteId)?.run(this::toBook)
+        return getRemoteBookById(book.remoteId)?.run(this::toBook)?.let {
+            it.copy(cover = getCover(it))
+        }
     }
 }
