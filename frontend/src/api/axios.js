@@ -15,6 +15,7 @@ axios.interceptors.response.use(
   (err) => {
     if (err.response.status === 403) {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("username");
     }
 
     return Promise.reject(err);

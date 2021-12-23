@@ -138,11 +138,11 @@ const authSlice = createSlice({
         (state) => {
           state.loading = false;
           state.userLoading = false;
-          state.error = {
-            error: true,
-            variant: "error",
-            message: "Errore nella richiesta. Prova di nuovo.",
-          };
+          state.error.error = true;
+          state.error.variant = "error";
+          state.error.message = localStorage.getItem("authToken")
+            ? "Errore durante il recupero dei dati. Prova di nuovo."
+            : "Effettua nuovamente il login.";
         }
       );
   },
