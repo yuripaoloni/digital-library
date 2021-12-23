@@ -15,6 +15,8 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import ListItemButton from "@mui/material/ListItemButton";
 import Checkbox from "@mui/material/Checkbox";
+import Skeleton from "@mui/material/Skeleton";
+import CardHeader from "@mui/material/CardHeader";
 
 import { searchUser } from "api";
 import { onCreateGroup, setError } from "states/groupsSlice";
@@ -24,12 +26,14 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  minWidth: "50%",
+  minWidth: "40%",
   minHeight: "20%",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 2,
 };
+
+//TODO array for added elements o usa find per elements in checked
 
 const GroupModal = ({ show, onClose }) => {
   const [groupName, setGroupName] = useState("");
@@ -60,8 +64,10 @@ const GroupModal = ({ show, onClose }) => {
     try {
       const res = await searchUser(param);
       setUsers(res.data);
+      setSearchLoading(false);
     } catch (err) {
       dispatch(setError());
+      setSearchLoading(false);
     }
   };
 
@@ -77,7 +83,6 @@ const GroupModal = ({ show, onClose }) => {
       setTypingTimeout(
         setTimeout(() => {
           fetchUsers(text);
-          setSearchLoading(false);
         }, 1500)
       );
     }
@@ -86,6 +91,11 @@ const GroupModal = ({ show, onClose }) => {
   const onSubmit = () => {
     let emails = checked.map((item) => users[item].email);
     dispatch(onCreateGroup({ emails, name: groupName }));
+    onClose();
+    setSearch("");
+    setGroupName("");
+    setUsers([]);
+    setChecked([]);
   };
 
   return (
@@ -134,40 +144,67 @@ const GroupModal = ({ show, onClose }) => {
               dense
               sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
             >
-              {users.map((user, index) => (
-                <ListItem
-                  key={index}
-                  disableGutters
-                  secondaryAction={
-                    <Checkbox
-                      edge="end"
-                      onChange={() => handleToggle(index)}
-                      checked={checked.indexOf(index) !== -1}
-                      inputProps={{
-                        "aria-labelledby": `checkbox-list-secondary-label-${index}`,
-                      }}
-                    />
-                  }
-                >
-                  <ListItemButton>
-                    <ListItemAvatar>
-                      <Avatar
-                        alt={`user-picture-${index}`}
-                        src={`data:image/jpeg;base64,${user.picture}`}
+              {searchLoading
+                ? Array(2)
+                    .fill(0)
+                    .map((i, index) => (
+                      <CardHeader
+                        key={index}
+                        avatar={
+                          <Skeleton
+                            animation="wave"
+                            variant="circular"
+                            width={40}
+                            height={40}
+                          />
+                        }
+                        title={
+                          <Skeleton
+                            animation="wave"
+                            height={10}
+                            width="80%"
+                            style={{ marginBottom: 6 }}
+                          />
+                        }
+                        subheader={
+                          <Skeleton animation="wave" height={10} width="40%" />
+                        }
                       />
-                    </ListItemAvatar>
-                    <ListItemText
-                      id={`checkbox-list-secondary-label-${index}`}
-                      primary={`${user.name} ${user.surname} (${user.username})`}
-                      secondary={`${user.email}`}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                    ))
+                : users.map((user, index) => (
+                    <ListItem
+                      key={index}
+                      disableGutters
+                      secondaryAction={
+                        <Checkbox
+                          edge="end"
+                          onChange={() => handleToggle(index)}
+                          checked={checked.indexOf(index) !== -1}
+                          inputProps={{
+                            "aria-labelledby": `checkbox-list-secondary-label-${index}`,
+                          }}
+                        />
+                      }
+                    >
+                      <ListItemButton>
+                        <ListItemAvatar>
+                          <Avatar
+                            alt={`user-picture-${index}`}
+                            src={`data:image/jpeg;base64,${user.picture}`}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText
+                          id={`checkbox-list-secondary-label-${index}`}
+                          primary={`${user.name} ${user.surname} (${user.username})`}
+                          secondary={`${user.email}`}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
             </List>
           </>
         )}
-        <Button onClick={() => onSubmit()}>INVIA</Button>
+        <Button onClick={() => onSubmit()}>CREA</Button>
       </Box>
     </Modal>
   );

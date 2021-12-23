@@ -1,0 +1,69 @@
+import React from "react";
+import Skeleton from "@mui/material/Skeleton";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardHeader from "@mui/material/CardHeader";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SettingsIcon from "@mui/icons-material/Settings";
+import IconButton from "@mui/material/IconButton";
+
+const GroupItem = ({
+  owned,
+  group,
+  onDelete,
+  onEdit,
+  onShowMembers,
+  onShowNotes,
+}) => {
+  return (
+    <Card sx={{ minWidth: 275 }} elevation={4}>
+      <CardHeader
+        title={group ? group.name : <Skeleton width="70%" variant="text" />}
+        subheader={
+          group ? (
+            group.creator.username
+          ) : (
+            <Skeleton width="40%" variant="text" />
+          )
+        }
+        action={
+          owned && (
+            <>
+              <IconButton
+                data-testid="edit-group-icon"
+                onClick={() => onEdit(group)}
+              >
+                <SettingsIcon />
+              </IconButton>
+              <IconButton
+                data-testid="delete-group-icon"
+                onClick={() => onDelete(group)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )
+        }
+      />
+      <CardActions>
+        {group ? (
+          <Button size="small" onClick={() => onShowNotes(group)}>
+            Leggi note
+          </Button>
+        ) : (
+          <Skeleton width="30%" height={15} variant="rectangle" />
+        )}
+        {group ? (
+          <Button size="small" onClick={() => onShowMembers(group)}>
+            Membri
+          </Button>
+        ) : (
+          <Skeleton width="30%" height={15} variant="rectangle" />
+        )}
+      </CardActions>
+    </Card>
+  );
+};
+
+export default GroupItem;

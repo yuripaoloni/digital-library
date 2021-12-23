@@ -158,7 +158,7 @@ export const removeUsersFromGroup = (emails, id) => {
   return axios({
     method: "delete",
     url: `/group/created/${id}/remove`,
-    data: { emails },
+    data: emails,
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
