@@ -37,7 +37,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
             <Skeleton variant="rectangular" height={100} />
           ) : (
             <Img
-              src={book.image}
+              src={book.cover}
               loading="lazy"
               style={{ borderRadius: "3px" }}
             />

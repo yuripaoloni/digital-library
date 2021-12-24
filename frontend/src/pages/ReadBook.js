@@ -137,7 +137,7 @@ const ReadBook = () => {
               variant="rectangle"
               animation="wave"
               height={700}
-              width={500}
+              width={430}
               sx={{
                 "@media (max-width : 600px)": {
                   width: 300,
