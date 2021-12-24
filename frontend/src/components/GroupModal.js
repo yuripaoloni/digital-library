@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import Modal from "@mui/material/Modal";
@@ -17,23 +17,24 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Checkbox from "@mui/material/Checkbox";
 import Skeleton from "@mui/material/Skeleton";
 import CardHeader from "@mui/material/CardHeader";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 
 import { searchUser } from "api";
-import { onCreateGroup, setError } from "states/groupsSlice";
+import { onCreateGroup, onEditGroup, setError } from "states/groupsSlice";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  minWidth: "40%",
+  minWidth: "45%",
   minHeight: "20%",
   bgcolor: "background.paper",
   boxShadow: 24,
+  borderRadius: 3,
   p: 2,
 };
-
-//TODO array for added elements o usa find per elements in checked
 
 const GroupModal = ({ show, onClose }) => {
   const [groupName, setGroupName] = useState("");
@@ -41,23 +42,38 @@ const GroupModal = ({ show, onClose }) => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(0);
   const [users, setUsers] = useState([]);
-  const [checked, setChecked] = useState([]);
+  const [addedUsers, setAddedUsers] = useState([]);
+  const [editMode, setEditMode] = useState(false);
 
   const groupsLoading = useSelector((state) => state.groups.loading);
+  const selectedGroup = useSelector((state) => state.groups.selectedGroup);
+
+  useEffect(() => {
+    if (selectedGroup) {
+      let emails = selectedGroup.members.map((member) => member.email);
+      setGroupName(selectedGroup.name);
+      setAddedUsers(emails);
+      setEditMode(true);
+    } else {
+      setGroupName("");
+      setAddedUsers("");
+      setEditMode(false);
+    }
+  }, [selectedGroup]);
 
   const dispatch = useDispatch();
 
-  const handleToggle = (value) => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+  const handleToggle = (email) => {
+    const currentIndex = addedUsers.indexOf(email);
+    const updatedUsers = [...addedUsers];
 
     if (currentIndex === -1) {
-      newChecked.push(value);
+      updatedUsers.push(email);
     } else {
-      newChecked.splice(currentIndex, 1);
+      updatedUsers.splice(currentIndex, 1);
     }
 
-    setChecked(newChecked);
+    setAddedUsers(updatedUsers);
   };
 
   const fetchUsers = async (param) => {
@@ -75,7 +91,6 @@ const GroupModal = ({ show, onClose }) => {
     setSearch(text);
     if (text.length === 0) {
       setUsers([]);
-      setChecked([]);
     }
     if (text.length > 2) {
       setSearchLoading(true);
@@ -89,13 +104,16 @@ const GroupModal = ({ show, onClose }) => {
   };
 
   const onSubmit = () => {
-    let emails = checked.map((item) => users[item].email);
-    dispatch(onCreateGroup({ emails, name: groupName }));
+    dispatch(
+      editMode
+        ? onEditGroup({ emails: addedUsers, name: groupName })
+        : onCreateGroup({ emails: addedUsers, name: groupName })
+    );
     onClose();
     setSearch("");
     setGroupName("");
     setUsers([]);
-    setChecked([]);
+    setAddedUsers([]);
   };
 
   return (
@@ -112,7 +130,7 @@ const GroupModal = ({ show, onClose }) => {
         ) : (
           <>
             <Typography id="modal-modal-title" variant="h5">
-              Gruppo
+              {editMode ? "Modifica" : "Nuovo"} Gruppo
             </Typography>
             <TextField
               fullWidth
@@ -122,6 +140,7 @@ const GroupModal = ({ show, onClose }) => {
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               FormHelperTextProps={{ sx: { margin: 0 } }}
+              sx={{ my: 3 }}
             />
             <TextField
               fullWidth
@@ -140,6 +159,23 @@ const GroupModal = ({ show, onClose }) => {
                 ),
               }}
             />
+            <Stack
+              direction="row"
+              sx={{
+                flexWrap: "wrap",
+              }}
+            >
+              {addedUsers.length > 0 &&
+                addedUsers.map((addedUser, index) => (
+                  <Chip
+                    size="small"
+                    key={index}
+                    sx={{ mb: 1, mr: 1 }}
+                    label={addedUser}
+                    onDelete={() => handleToggle(addedUser)}
+                  />
+                ))}
+            </Stack>
             <List
               dense
               sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
@@ -163,7 +199,7 @@ const GroupModal = ({ show, onClose }) => {
                             animation="wave"
                             height={10}
                             width="80%"
-                            style={{ marginBottom: 6 }}
+                            style={{ marginBottom: 4 }}
                           />
                         }
                         subheader={
@@ -178,8 +214,8 @@ const GroupModal = ({ show, onClose }) => {
                       secondaryAction={
                         <Checkbox
                           edge="end"
-                          onChange={() => handleToggle(index)}
-                          checked={checked.indexOf(index) !== -1}
+                          onChange={() => handleToggle(user.email)}
+                          checked={addedUsers.indexOf(user.email) !== -1}
                           inputProps={{
                             "aria-labelledby": `checkbox-list-secondary-label-${index}`,
                           }}
@@ -204,7 +240,9 @@ const GroupModal = ({ show, onClose }) => {
             </List>
           </>
         )}
-        <Button onClick={() => onSubmit()}>CREA</Button>
+        <Button size="small" sx={{ mt: 2 }} onClick={() => onSubmit()}>
+          {editMode ? "Modifica" : "Crea"}
+        </Button>
       </Box>
     </Modal>
   );

@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SettingsIcon from "@mui/icons-material/Settings";
 import IconButton from "@mui/material/IconButton";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const GroupItem = ({
   owned,
@@ -28,7 +29,7 @@ const GroupItem = ({
           )
         }
         action={
-          owned && (
+          owned ? (
             <>
               <IconButton
                 data-testid="edit-group-icon"
@@ -38,11 +39,32 @@ const GroupItem = ({
               </IconButton>
               <IconButton
                 data-testid="delete-group-icon"
-                onClick={() => onDelete(group)}
+                onClick={() =>
+                  onDelete(
+                    group,
+                    "Elimina gruppo",
+                    "Procedere con l'eliminazione del gruppo ?",
+                    false
+                  )
+                }
               >
                 <DeleteIcon />
               </IconButton>
             </>
+          ) : (
+            <IconButton
+              data-testid="exit-group-icon"
+              onClick={() =>
+                onDelete(
+                  group,
+                  "Esci dal gruppo",
+                  "Procedere con l'uscita dal gruppo ?",
+                  true
+                )
+              }
+            >
+              <ExitToAppIcon />
+            </IconButton>
           )
         }
       />
@@ -55,7 +77,7 @@ const GroupItem = ({
           <Skeleton width="30%" height={15} variant="rectangle" />
         )}
         {group ? (
-          <Button size="small" onClick={() => onShowMembers(group)}>
+          <Button size="small" onClick={() => onShowMembers(group, owned)}>
             Membri
           </Button>
         ) : (

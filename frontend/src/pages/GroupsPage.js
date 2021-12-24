@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Divider, Grid, Typography, Button, Stack, Box } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { onDeleteGroup, onFetchGroups, selectGroup } from "states/groupsSlice";
+import {
+  onDeleteGroup,
+  onExitGroup,
+  onFetchGroups,
+  selectGroup,
+} from "states/groupsSlice";
 import PageWrapper from "components/PageWrapper";
 import GroupModal from "components/GroupModal";
 import GroupItem from "components/GroupItem";
@@ -11,6 +16,12 @@ const GroupsPage = () => {
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showMembersDialog, setShowMembersDialog] = useState(false);
+  const [confirmDialogContent, setConfirmDialogContent] = useState({
+    title: "",
+    description: "",
+    onConfirm: () => {},
+  });
+  const [owned, setOwned] = useState(false);
 
   const createdGroups = useSelector((state) => state.groups.createdGroups);
   const joinedGroups = useSelector((state) => state.groups.joinedGroups);
@@ -22,14 +33,25 @@ const GroupsPage = () => {
     dispatch(onFetchGroups());
   }, [dispatch]);
 
-  const handleShowConfirmDialog = (book) => {
+  const handleShowConfirmDialog = (book, title, description, exit) => {
     dispatch(selectGroup(book));
+    setConfirmDialogContent({
+      title,
+      description,
+      onConfirm: exit ? () => handleExitGroup() : () => handleDeleteGroup(),
+    });
     setShowConfirmDialog(true);
   };
 
-  const handleShowMembersDialog = (book) => {
+  const handleShowMembersDialog = (book, owned) => {
     dispatch(selectGroup(book));
     setShowMembersDialog(true);
+    setOwned(owned);
+  };
+
+  const handleCreateGroup = () => {
+    dispatch(selectGroup(null));
+    setShowGroupModal(true);
   };
 
   const handleDeleteGroup = () => {
@@ -37,14 +59,24 @@ const GroupsPage = () => {
     setShowConfirmDialog(false);
   };
 
+  const handleExitGroup = () => {
+    dispatch(onExitGroup());
+    setShowConfirmDialog(false);
+  };
+
+  const handleEditGroup = (book) => {
+    dispatch(selectGroup(book));
+    setShowGroupModal(true);
+  };
+
   return (
     <PageWrapper
       reducer="groups"
       showDialog={showConfirmDialog}
-      dialogTitle="Elimina gruppo"
-      dialogDescription="Procedere con l'eliminazione del gruppo ?"
+      dialogTitle={confirmDialogContent.title}
+      dialogDescription={confirmDialogContent.description}
       dialogOnCancel={() => setShowConfirmDialog(false)}
-      dialogOnConfirm={() => handleDeleteGroup()}
+      dialogOnConfirm={confirmDialogContent.onConfirm}
     >
       <GroupModal
         show={showGroupModal}
@@ -53,6 +85,7 @@ const GroupsPage = () => {
       <GroupMembersDialog
         showDialog={showMembersDialog}
         onClose={() => setShowMembersDialog(false)}
+        owned={owned}
       />
       <Box px={2}>
         <Grid container alignItems="center" columnSpacing={4}>
@@ -60,7 +93,7 @@ const GroupsPage = () => {
             <Typography variant="h4">Gruppi creati</Typography>
           </Grid>
           <Grid item>
-            <Button variant="outlined" onClick={() => setShowGroupModal(true)}>
+            <Button variant="outlined" onClick={() => handleCreateGroup()}>
               Crea nuovo gruppo
             </Button>
           </Grid>
@@ -77,7 +110,7 @@ const GroupsPage = () => {
                   group={createdGroup}
                   onDelete={handleShowConfirmDialog}
                   onShowMembers={handleShowMembersDialog}
-                  onEdit={() => {}}
+                  onEdit={handleEditGroup}
                   onShowNotes={() => {}}
                 />
               ))}
@@ -95,6 +128,7 @@ const GroupsPage = () => {
                     key={index}
                     group={joinedGroup}
                     onShowMembers={handleShowMembersDialog}
+                    onDelete={handleShowConfirmDialog}
                     onShowNotes={() => {}}
                   />
                 ))}

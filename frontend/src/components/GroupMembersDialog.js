@@ -16,9 +16,10 @@ import ConfirmDialog from "components/ConfirmDialog";
 import { useSelector, useDispatch } from "react-redux";
 import { onDeleteMember } from "states/groupsSlice";
 
-const GroupMembersDialog = ({ showDialog, onClose }) => {
+const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [member, setMember] = useState(null);
+
   const group = useSelector((state) => state.groups.selectedGroup);
 
   const dispatch = useDispatch();
@@ -57,37 +58,41 @@ const GroupMembersDialog = ({ showDialog, onClose }) => {
             dense
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
-            {group &&
-              group.members.map((member, index) => (
-                <ListItem
-                  key={index}
-                  disableGutters
-                  secondaryAction={
-                    <IconButton
-                      data-testid="remove-member-icon"
-                      onClick={() =>
-                        handleShowConfirmDialog([member.email], group.id)
-                      }
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemButton>
-                    <ListItemAvatar>
-                      <Avatar
-                        alt={`member-picture-${index}`}
-                        src={`data:image/jpeg;base64,${member.picture}`}
+            {group && group.members.length > 0
+              ? group.members.map((member, index) => (
+                  <ListItem
+                    key={index}
+                    disableGutters
+                    disablePadding
+                    secondaryAction={
+                      owned && (
+                        <IconButton
+                          data-testid="remove-member-icon"
+                          onClick={() =>
+                            handleShowConfirmDialog([member.email], group.id)
+                          }
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )
+                    }
+                  >
+                    <ListItemButton>
+                      <ListItemAvatar>
+                        <Avatar
+                          alt={`member-picture-${index}`}
+                          src={`data:image/jpeg;base64,${member.picture}`}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        id={`member-list-secondary-label-${index}`}
+                        primary={`${member.name} ${member.surname} (${member.username})`}
+                        secondary={`${member.email}`}
                       />
-                    </ListItemAvatar>
-                    <ListItemText
-                      id={`member-list-secondary-label-${index}`}
-                      primary={`${member.name} ${member.surname} (${member.username})`}
-                      secondary={`${member.email}`}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              : "Nessun membro nel gruppo"}
           </List>
         </DialogContent>
         <DialogActions>

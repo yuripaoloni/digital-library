@@ -4,6 +4,7 @@ import {
   deleteGroup,
   getCreatedGroups,
   getJoinedGroups,
+  leaveGroup,
   removeUsersFromGroup,
 } from "api";
 
@@ -16,10 +17,17 @@ const initialState = {
 };
 
 export const onCreateGroup = createAsyncThunk(
-  "create/groups",
+  "createGroup/groups",
   async ({ emails, name }) => {
     const res = await createGroup(emails, name);
     return res.data;
+  }
+);
+
+export const onEditGroup = createAsyncThunk(
+  "editGroup/groups",
+  async ({ emails, name }) => {
+    //TODO add edit function
   }
 );
 
@@ -48,6 +56,15 @@ export const onDeleteGroup = createAsyncThunk(
   async (arg, { getState }) => {
     const state = getState();
     await deleteGroup(state.groups.selectedGroup.id);
+    return state.groups.selectedGroup.id;
+  }
+);
+
+export const onExitGroup = createAsyncThunk(
+  "exitGroup/groups",
+  async (arg, { getState }) => {
+    const state = getState();
+    await leaveGroup(state.groups.selectedGroup.id);
     return state.groups.selectedGroup.id;
   }
 );
@@ -84,6 +101,20 @@ const groupsSlice = createSlice({
       .addCase(onDeleteGroup.fulfilled, (state, action) => {
         let updatedGroups = state.createdGroups.filter(
           (group) => group.id !== action.payload
+        );
+        state.loading = false;
+        state.createdGroups = [...updatedGroups];
+      })
+      .addCase(onExitGroup.fulfilled, (state, action) => {
+        let updatedGroups = state.joinedGroups.filter(
+          (group) => group.id !== action.payload
+        );
+        state.loading = false;
+        state.joinedGroups = [...updatedGroups];
+      })
+      .addCase(onEditGroup.fulfilled, (state, action) => {
+        let updatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
         );
         state.loading = false;
         state.createdGroups = [...updatedGroups];
