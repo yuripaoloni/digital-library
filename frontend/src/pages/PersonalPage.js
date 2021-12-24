@@ -28,6 +28,22 @@ const PersonalPage = () => {
 
   //TODO spinner o skeleton
   if (loading) return <Spinner />;
+  const renderBook = (book) => {
+    return (
+      <Grid
+        margin="20px 0 20px 0"
+        width="900px"
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        sx={{}}
+        key={book.id}
+      >
+        <BookItem book={book} />
+      </Grid>
+    );
+  };
 
   return (
     <PageWrapper reducer="auth">
@@ -51,49 +67,6 @@ const PersonalPage = () => {
             spacing={3}
             direction={{ xs: "column", md: "row" }}
           >
-            {/* <Grid
-            container
-            direction={{ xs: "column", md: "row" }}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Avatar
-              alt="Cindy Baker"
-              // src={}
-              style={{
-                margin: "3vh",
-                width: "100px",
-                height: "100px",
-              }}
-            />
-
-            <Grid
-              xs={12}
-              container
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Typography variant="subtitle1" component="h2">
-                {user.name}
-              </Typography>
-              <Typography variant="subtitle1" component="h2">
-                {user.name}
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={6}
-              container
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Typography variant="subtitle1" component="h2">
-                display groups
-              </Typography>
-            </Grid>
-          </Grid> */}
             <Grid
               item
               xs={12}
@@ -136,8 +109,9 @@ const PersonalPage = () => {
               direction="column"
               justifyContent="center"
               alignItems="center"
+              margin="20px 0 20px 0"
             >
-              books list
+              {loading ? <Spinner /> : user?.savedBooks?.map(renderBook)}
             </Grid>
           </Grid>
         </Box>

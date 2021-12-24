@@ -51,10 +51,18 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
             </>
           ) : (
             <>
-              <Typography variant="h6" style={{ wordWrap: "break-word" }}>
+              <Typography
+                variant="h6"
+                style={{ wordWrap: "break-word", margin: "1vh" }}
+              >
                 {book.title}
               </Typography>
-              <Typography variant="subtitle2">{book.author}</Typography>
+              <Typography
+                variant="subtitle2"
+                style={{ wordWrap: "break-word", margin: "1vh" }}
+              >
+                {book.author}{" "}
+              </Typography>
             </>
           )}
         </Grid>
