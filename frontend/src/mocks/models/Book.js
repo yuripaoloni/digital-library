@@ -16,6 +16,8 @@ export const getMockBooks = (titles) => {
       remoteId: index,
       title: title,
       year: 1720 + index,
+      cover:
+        "https://bibliotecadigitale.unicam.it/Library/DIR.CIV.-IV-B-601/DIR.CIV.-IV-B-601_0000.JPG",
     };
   });
 };

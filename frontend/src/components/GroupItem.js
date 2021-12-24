@@ -18,7 +18,11 @@ const GroupItem = ({
   onShowNotes,
 }) => {
   return (
-    <Card sx={{ minWidth: 275 }} elevation={4}>
+    <Card
+      sx={{ minWidth: 275 }}
+      elevation={4}
+      data-testid={`group-${owned ? "created" : "joined"}-item`}
+    >
       <CardHeader
         title={group ? group.name : <Skeleton width="70%" variant="text" />}
         subheader={

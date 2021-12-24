@@ -1,11 +1,12 @@
 import { getMockBooks } from "./Book";
 
-export const getMockUser = () => {
+export const getMockUser = (name) => {
   return {
-    name: "MockName",
+    name: name ? name : "MockName",
     surname: "MockSurname",
     email: "MockEmail",
+    picture: null,
     username: "MockUsername",
-    savedBooks: getMockBooks(["MockSavedBooks"]),
+    savedBooks: getMockBooks(["MockSavedBook1", "MockSavedBook2"]),
   };
 };

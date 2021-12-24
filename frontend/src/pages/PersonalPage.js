@@ -1,21 +1,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import GroupIcon from "@mui/icons-material/Group";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import BookItem from "components/BookItem";
 import Spinner from "components/Spinner";
-import { onSearchUser } from "states/authSlice";
 import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
 import { Link } from "react-router-dom";
@@ -28,6 +21,7 @@ const PersonalPage = () => {
 
   //TODO spinner o skeleton
   if (loading) return <Spinner />;
+
   const renderBook = (book) => {
     return (
       <Grid
@@ -47,7 +41,7 @@ const PersonalPage = () => {
 
   return (
     <PageWrapper reducer="auth">
-      <Container container component="main" sx={{ maxWidth: "80vw" }}>
+      <Container component="main" sx={{ maxWidth: "80vw" }}>
         <CssBaseline />
 
         <Box
@@ -61,12 +55,7 @@ const PersonalPage = () => {
             alignItems: "center",
           }}
         >
-          <Grid
-            container
-            direction="column"
-            spacing={3}
-            direction={{ xs: "column", md: "row" }}
-          >
+          <Grid container direction="column" spacing={3}>
             <Grid
               item
               xs={12}
@@ -76,7 +65,7 @@ const PersonalPage = () => {
               alignItems="center"
             >
               <Avatar
-                alt="Cindy Baker"
+                alt={user.username}
                 src={`data:image/jpeg;base64,${user.picture}`}
                 style={{
                   margin: "3vh",
@@ -94,7 +83,7 @@ const PersonalPage = () => {
                 {user.name} & {user.surname}
               </Typography>
               <IconButton
-                aria-label="delete"
+                data-testid="groups-link-icon"
                 size="large"
                 LinkComponent={Link}
                 to="/groups"
