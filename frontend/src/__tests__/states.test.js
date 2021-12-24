@@ -44,6 +44,7 @@ test("groupsSlice: should return the initial state", () => {
     loading: false,
     joinedGroups: [],
     createdGroups: [],
+    selectedGroup: null,
     error: false,
   });
 });
