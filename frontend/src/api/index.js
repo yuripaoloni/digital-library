@@ -146,10 +146,10 @@ export const deleteGroup = (id) => {
   });
 };
 
-export const addUsersToGroup = (emails, id) => {
+export const editGroup = (id, emails, name) => {
   return axios.post(
-    `/group/created/${id}/add`,
-    { emails },
+    `/group/edit/${id}`,
+    { emails, name },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };

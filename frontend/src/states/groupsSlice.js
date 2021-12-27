@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   createGroup,
   deleteGroup,
+  editGroup,
   getCreatedGroups,
   getJoinedGroups,
   leaveGroup,
@@ -26,8 +27,10 @@ export const onCreateGroup = createAsyncThunk(
 
 export const onEditGroup = createAsyncThunk(
   "editGroup/groups",
-  async ({ emails, name }) => {
-    //TODO add edit function
+  async ({ emails, name }, { getState }) => {
+    const state = getState();
+    const res = await editGroup(state.groups.selectedGroup.id, emails, name);
+    return res.data;
   }
 );
 
