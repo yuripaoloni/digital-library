@@ -3,7 +3,6 @@ import {
   getLibraries,
   getBooks,
   getRandomBooks,
-  getBookCover,
   getBookPage,
   getAllNotes,
   deleteNote,
@@ -42,14 +41,7 @@ export const fetchBooks = createAsyncThunk(
   "books/books",
   async ({ title, libraryId }) => {
     let res = await getBooks(title, libraryId);
-    let books = res.data;
-    for (const booksPage of books) {
-      for (const book of booksPage) {
-        const res = await getBookCover(book);
-        book.image = res.data;
-      }
-    }
-    return books;
+    return res.data;
   }
 );
 
@@ -58,8 +50,6 @@ export const fetchSingleBook = createAsyncThunk(
   async ({ title, libraryId, page = null }) => {
     let books = await getBooks(title, libraryId);
     let book = books.data[0][0];
-    const cover = await getBookCover(book);
-    book.image = cover.data;
     if (page) {
       const pageUrl = await getBookPage({ book, page });
       const notes = await getAllNotes({ book });
@@ -78,14 +68,7 @@ export const fetchSingleBook = createAsyncThunk(
 
 export const fetchRandomBooks = createAsyncThunk("random/books", async () => {
   const res = await getRandomBooks();
-  let books = res.data;
-  for (const booksPage of books) {
-    for (const book of booksPage) {
-      const res = await getBookCover(book);
-      book.image = res.data;
-    }
-  }
-  return books;
+  return res.data;
 });
 
 export const fetchBookPage = createAsyncThunk(

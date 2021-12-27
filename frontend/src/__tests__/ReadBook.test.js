@@ -5,6 +5,7 @@ import {
   getByRole,
   getByTestId,
   getByText,
+  waitFor,
 } from "utils/testUtils";
 import userEvent from "@testing-library/user-event";
 import App from "App";
@@ -24,6 +25,24 @@ test("should display the reading page", async () => {
 
   //? after login should redirect to read page
   expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
+});
+
+test("should add/remove a book from favorites", async () => {
+  render(<App />);
+
+  expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
+
+  userEvent.click(screen.getByTestId("favorite-icon-button"));
+
+  await waitFor(() =>
+    expect(screen.getByTestId("FavoriteIcon")).toHaveStyle("color: red")
+  );
+
+  userEvent.click(screen.getByTestId("favorite-icon-button"));
+
+  await waitFor(() =>
+    expect(screen.getByTestId("FavoriteIcon")).not.toHaveStyle("color: red")
+  );
 });
 
 test("should show saved bookmarks", async () => {
@@ -108,7 +127,7 @@ test("should delete and existing bookmark", async () => {
   expect(await screen.findAllByText(/MockBookmark/i)).toHaveLength(2);
 });
 
-test("should go to the bookmark page", async () => {
+test("should open the page of a bookmark", async () => {
   render(<App />);
 
   expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();

@@ -16,6 +16,8 @@ import BookmarkModal from "components/BookmarkModal";
 import IconButton from "@mui/material/IconButton";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ModeIcon from "@mui/icons-material/Mode";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { isFavoriteBook, onDeleteBook, onSaveBook } from "states/authSlice";
 
 const Img = styled("img")({
   height: 700,
@@ -33,8 +35,9 @@ const ReadBook = () => {
 
   const loading = useSelector((state) => state.books.loading);
   const pageUrl = useSelector((state) => state.books.pageUrl);
-
   const book = useSelector((state) => state.books.selectedBook);
+
+  const isFavorite = useSelector((state) => state.auth.isFavorite);
 
   const dispatch = useDispatch();
 
@@ -43,6 +46,8 @@ const ReadBook = () => {
     book
       ? dispatch(fetchBookData({ book, page: 0 }))
       : dispatch(fetchSingleBook({ libraryId, title }));
+
+    dispatch(isFavoriteBook({ title, libraryId }));
   }, [book, dispatch, libraryId, title]);
 
   //? fetch new page on readingPage change
@@ -71,8 +76,15 @@ const ReadBook = () => {
     setShowDialog(true);
   };
 
+  const handleFavoriteBook = () => {
+    isFavorite
+      ? dispatch(onDeleteBook({ book }))
+      : dispatch(onSaveBook({ book }));
+  };
+
   return (
     <PageWrapper
+      reducer="books"
       showDialog={showDialog}
       dialogTitle="Elimina segnalibro"
       dialogDescription={`Procedere con l'eliminazione del segnalibro "${bookmark?.description}" ?`}
@@ -125,7 +137,7 @@ const ReadBook = () => {
               variant="rectangle"
               animation="wave"
               height={700}
-              width={500}
+              width={430}
               sx={{
                 "@media (max-width : 600px)": {
                   width: 300,
@@ -143,7 +155,7 @@ const ReadBook = () => {
                 },
               }}
               src={pageUrl}
-              loading="lazy"
+              loading="eager"
             />
           )}
         </Grid>
@@ -169,7 +181,6 @@ const ReadBook = () => {
               <IconButton
                 data-testid="bookmark-icon-button"
                 onClick={() => setShowModal(true)}
-                style={{ color: "#222C4A" }}
               >
                 <BookmarkBorderIcon />
               </IconButton>
@@ -177,9 +188,14 @@ const ReadBook = () => {
                 data-testid="note-icon-button"
                 LinkComponent={Link}
                 to={`/books/notes/${libraryId}/${title}/${readingPage}`}
-                style={{ color: "#222C4A" }}
               >
                 <ModeIcon />
+              </IconButton>
+              <IconButton
+                data-testid="favorite-icon-button"
+                onClick={() => handleFavoriteBook()}
+              >
+                <FavoriteIcon sx={{ color: isFavorite ? "red" : "primary" }} />
               </IconButton>
             </Grid>
           )}

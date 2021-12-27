@@ -44,7 +44,7 @@ const BookDetails = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper reducer="books">
       <Grid container justifyContent="center">
         <Grid item md={10} sm={11} xs={11}>
           <Grid container rowSpacing={3}>
@@ -109,7 +109,7 @@ const BookDetails = () => {
                   {loading ? (
                     <Skeleton variant="rectangle" height={400} width={280} />
                   ) : (
-                    <Img src={book?.image} loading="lazy" />
+                    <Img src={book?.cover} loading="eager" />
                   )}
                 </Grid>
               </Grid>

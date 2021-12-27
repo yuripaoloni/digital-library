@@ -1,4 +1,5 @@
 import { axios } from "api/axios";
+import getBase64 from "utils/getBase64";
 
 export const getLibraries = () => {
   return axios.get("/library/list");
@@ -25,13 +26,23 @@ export const signIn = (email, password) => {
   return axios.post("/login", { email, password });
 };
 
-export const signUp = (name, surname, username, email, password) => {
+export const signUp = async (
+  name,
+  surname,
+  username,
+  email,
+  password,
+  image
+) => {
+  let picture = image ? await getBase64(image) : image;
+
   return axios.post("/signup", {
     name,
     surname,
     username,
     email,
     password,
+    picture,
   });
 };
 
@@ -103,6 +114,91 @@ export const getAllBookmarks = ({ book }) => {
 
 export const deleteBookmark = ({ id }) => {
   return axios.delete(`/bookmark/delete/${id}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+//? param could be username, email, name or surname
+export const searchUser = (param) => {
+  return axios.get("/user/search", {
+    params: { query: param },
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const createGroup = (emails, name) => {
+  return axios.post(
+    "/group/create",
+    { emails, name },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const getCreatedGroups = () => {
+  return axios.get("/group/created", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const deleteGroup = (id) => {
+  return axios.delete(`/group/created/${id}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const editGroup = (id, emails, name) => {
+  return axios.post(
+    `/group/edit/${id}`,
+    { emails, name },
+    { headers: { Authorization: localStorage.getItem("authToken") } }
+  );
+};
+
+export const removeUsersFromGroup = (emails, id) => {
+  return axios({
+    method: "delete",
+    url: `/group/created/${id}/remove`,
+    data: emails,
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getJoinedGroups = () => {
+  return axios.get("/group/joined", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const leaveGroup = (id) => {
+  return axios.delete(`/group/joined/${id}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getSavedBooks = () => {
+  return axios.get("/book/saved", {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const saveBook = (book) => {
+  return axios.post(
+    "/book/saved/add",
+    {
+      ...book,
+    },
+    {
+      headers: { Authorization: localStorage.getItem("authToken") },
+    }
+  );
+};
+
+export const deleteBook = (book) => {
+  //? added to load page images in frontend
+  return axios({
+    method: "delete",
+    url: "/book/saved/delete",
+    data: { ...book },
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };

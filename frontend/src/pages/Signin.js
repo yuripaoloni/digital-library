@@ -52,7 +52,7 @@ export default function SignIn() {
   }
 
   return (
-    <PageWrapper auth>
+    <PageWrapper reducer="auth">
       <Container component="main" maxWidth="xs" data-testid="signin_root">
         <CssBaseline />
 

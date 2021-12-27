@@ -3,10 +3,11 @@ import { Snackbar, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import * as booksSlice from "states/booksSlice";
 import * as authSlice from "states/authSlice";
+import * as groupsSlice from "states/groupsSlice";
 import ConfirmDialog from "components/ConfirmDialog";
 
 const PageWrapper = ({
-  auth,
+  reducer,
   children,
   showDialog,
   dialogTitle,
@@ -15,13 +16,23 @@ const PageWrapper = ({
   dialogOnCancel,
 }) => {
   const { error, variant, message } = useSelector((state) =>
-    auth ? state.auth.error : state.books.error
+    reducer === "auth"
+      ? state.auth.error
+      : reducer === "groups"
+      ? state.groups.error
+      : state.books.error
   );
 
   const dispatch = useDispatch();
 
   const onClose = () =>
-    dispatch(auth ? authSlice.unsetError() : booksSlice.unsetError());
+    dispatch(
+      reducer === "auth"
+        ? authSlice.unsetError()
+        : reducer === "groups"
+        ? groupsSlice.unsetError()
+        : booksSlice.unsetError()
+    );
 
   return (
     <>

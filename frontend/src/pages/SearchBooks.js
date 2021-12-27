@@ -18,7 +18,7 @@ const SearchBooks = () => {
   const books = useSelector((state) => state.books.books);
 
   return (
-    <PageWrapper>
+    <PageWrapper reducer="books">
       <Grid container rowSpacing={3}>
         <Grid item xs mb={3}>
           <Typography variant="h4" textAlign="center">
