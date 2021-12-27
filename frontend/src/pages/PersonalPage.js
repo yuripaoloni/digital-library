@@ -25,8 +25,10 @@ const PersonalPage = () => {
   const renderBook = (book) => {
     return (
       <Grid
-        margin="20px 0 20px 0"
-        width="900px"
+        margin="20px"
+        maxWidth="70%"
+        minWidth="70%"
+        width="70%"
         container
         direction="column"
         justifyContent="center"

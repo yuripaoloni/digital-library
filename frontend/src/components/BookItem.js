@@ -53,13 +53,20 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
             <>
               <Typography
                 variant="h6"
-                style={{ wordWrap: "break-word", margin: "1vh" }}
+                style={{
+                  wordWrap: "break-word",
+                  margin: "1vh",
+                }}
               >
                 {book.title}
               </Typography>
               <Typography
                 variant="subtitle2"
-                style={{ wordWrap: "break-word", margin: "1vh" }}
+                style={{
+                  wordWrap: "break-word",
+                  margin: "1vh",
+                  padding: "0.4vh",
+                }}
               >
                 {book.author}{" "}
               </Typography>
