@@ -24,7 +24,13 @@ const GroupItem = ({
       data-testid={`group-${owned ? "created" : "joined"}-item`}
     >
       <CardHeader
-        title={group ? group.name : <Skeleton width="70%" variant="text" />}
+        title={
+          group ? (
+            group.name
+          ) : (
+            <Skeleton data-testid="skeleton" width="70%" variant="text" />
+          )
+        }
         subheader={
           group ? (
             group.creator.username

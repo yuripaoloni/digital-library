@@ -141,6 +141,7 @@ const GroupModal = ({ show, onClose }) => {
               onChange={(e) => setGroupName(e.target.value)}
               FormHelperTextProps={{ sx: { margin: 0 } }}
               sx={{ my: 3 }}
+              inputProps={{ "data-testid": "group-name-textbox" }}
             />
             <TextField
               fullWidth
@@ -157,6 +158,7 @@ const GroupModal = ({ show, onClose }) => {
                     {searchLoading && <Spinner />}
                   </InputAdornment>
                 ),
+                "data-testid": "search-user-group-textbox",
               }}
             />
             <Stack
@@ -240,7 +242,12 @@ const GroupModal = ({ show, onClose }) => {
             </List>
           </>
         )}
-        <Button size="small" sx={{ mt: 2 }} onClick={() => onSubmit()}>
+        <Button
+          data-testid="group-modal-submit"
+          size="small"
+          sx={{ mt: 2 }}
+          onClick={() => onSubmit()}
+        >
           {editMode ? "Modifica" : "Crea"}
         </Button>
       </Box>

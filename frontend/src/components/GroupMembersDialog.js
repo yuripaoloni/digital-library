@@ -26,7 +26,6 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
 
   const handleShowConfirmDialog = (emails, id) => {
     setShowConfirmDialog(true);
-    console.log(emails, id);
     setMember({ id: id, emails: emails });
   };
 
@@ -46,6 +45,7 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
         onConfirm={() => handleDeleteMember()}
       />
       <Dialog
+        data-testid="group-members-dialog"
         open={showDialog}
         onClose={onClose}
         scroll="paper"
@@ -62,6 +62,7 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
               ? group.members.map((member, index) => (
                   <ListItem
                     key={index}
+                    data-testid={`group-member-item-${index}`}
                     disableGutters
                     disablePadding
                     secondaryAction={

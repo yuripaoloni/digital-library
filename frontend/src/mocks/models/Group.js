@@ -1,11 +1,13 @@
 import { getMockUser } from "./User";
 
-export const getMockGroup = (groups, user) => {
-  return groups.map((group) => {
+export const getMockGroup = (groups, remove) => {
+  return groups.map((group, index) => {
     return {
       creator: getMockUser(),
-      id: 1,
-      members: [getMockUser(), user && getMockUser(user)],
+      id: index,
+      members: remove
+        ? [getMockUser()]
+        : [getMockUser(), getMockUser("MockMember")],
       name: group,
     };
   });

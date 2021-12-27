@@ -93,7 +93,11 @@ const GroupsPage = () => {
             <Typography variant="h4">Gruppi creati</Typography>
           </Grid>
           <Grid item>
-            <Button variant="outlined" onClick={() => handleCreateGroup()}>
+            <Button
+              data-testid="create-group-button"
+              variant="outlined"
+              onClick={() => handleCreateGroup()}
+            >
               Crea nuovo gruppo
             </Button>
           </Grid>
