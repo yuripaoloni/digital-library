@@ -89,27 +89,26 @@ class GroupController(
         return groups.map { toGroupResponse(it, groupMemberRepository.findAllByGroup_Id(it.id)) }
     }
 
-    @PostMapping("/group/created/{id}/add")
+    @PostMapping("/group/edit/{id}")
     @Authenticate
     @ApiOperation(
-        value = "add member to the group created by the user",
+        value = "edis the group created by the user",
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
-    fun addMemberToGroup(
+    fun editGroup(
         @PathVariable id: Long,
-        @RequestBody emails: List<String>,
+        @RequestBody groupEdit: GroupEdit,
         @ApiIgnore principal: Principal
     ): GroupResponse {
         val creator = userRepository.findByEmail(principal.name)!!
-        val group =
-            groupRepository.findByIdOrNull(id) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Gruppo non trovato")
+        val group = groupRepository.findByIdOrNull(id) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Gruppo non trovato")
         if (group.creator.id != creator.id) {
             throw ErrorException(HttpStatus.BAD_REQUEST, "Non sei il creatore del gruppo!")
         } else {
             val users = mutableListOf<User>()
             val notFoundUsers = mutableListOf<String>()
 
-            emails.forEach {
+            groupEdit.emails.forEach {
                 val searchedUser = userRepository.findByEmail(it)
                 if (searchedUser == null) {
                     notFoundUsers += it
@@ -131,18 +130,13 @@ class GroupController(
 
             val alreadyMembers = groupMemberRepository.findAllByGroup_Id(group.id)
 
-            val duplicateMembers = alreadyMembers.filter { it.member in users }
+            val membersToRemove = alreadyMembers.filter { it.member !in users }
+            val membersToAdd = (users - alreadyMembers.map { it.member }.toSet()).map { GroupMember(0, group, it) }
 
-            if (duplicateMembers.isNotEmpty()) {
-                throw ErrorException(
-                    HttpStatus.BAD_REQUEST,
-                    "Alcuni membri fanno già parte del gruppo"
-                )
-            }
+            groupMemberRepository.saveAll(membersToAdd)
+            groupMemberRepository.deleteAll(membersToRemove)
 
-            val members = users.map { GroupMember(0, group, it) }
-
-            return toGroupResponse(group, groupMemberRepository.saveAll(members))
+            return toGroupResponse(groupRepository.save(group.copy(name = groupEdit.name)), groupMemberRepository.findAllByGroup_Id(group.id))
         }
     }
 
