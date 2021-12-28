@@ -4,6 +4,7 @@ import { getMockBookmark } from "./models/Bookmark";
 import { getMockGroup } from "./models/Group";
 import { getMockLibraries } from "./models/Library";
 import { getMockNotes } from "./models/Note";
+import { getMockSharedNotes } from "./models/SharedNote";
 import { getMockUser } from "./models/User";
 
 export const handlers = [
@@ -115,4 +116,16 @@ export const handlers = [
   ),
   rest.delete("/book/saved/delete", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/book/saved/add", (req, res, ctx) => res(ctx.status(200))),
+  rest.post("/group/share/:groupId/:noteId", (req, res, ctx) =>
+    res(ctx.status(200))
+  ),
+  rest.delete("/group/share/:groupId/:noteId", (req, res, ctx) =>
+    res(ctx.status(200))
+  ),
+  rest.get("/group/shared/:groupId", (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json(getMockSharedNotes(["MockSharedNotes", "MockSharingUser"]))
+    )
+  ),
 ];
