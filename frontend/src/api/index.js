@@ -202,3 +202,25 @@ export const deleteBook = (book) => {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
+
+export const getGroupSharedNotes = (groupId) => {
+  return axios.get(`/group/shared/${groupId}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const shareNote = (groupId, noteId) => {
+  return axios.post(
+    `/group/share/${groupId}/${noteId}`,
+    {},
+    {
+      headers: { Authorization: localStorage.getItem("authToken") },
+    }
+  );
+};
+
+export const unshareNote = (groupId, noteId) => {
+  return axios.delete(`/group/share/${groupId}/${noteId}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
