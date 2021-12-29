@@ -8,12 +8,14 @@ import {
   onCreateNote,
   onEditNote,
   fetchSingleBook,
+  setError,
 } from "states/booksSlice";
 import { styled } from "@mui/material/styles";
 import SelectNotes from "components/SelectNotes";
 import TextEditor from "components/TextEditor";
 import Spinner from "components/Spinner";
 import TitleDialog from "components/TitleDialog";
+import SelectGroup from "components/SelectGroup";
 
 const Img = styled("img")({
   height: 850,
@@ -26,6 +28,8 @@ const BookNotes = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTitleDialog, setShowTitleDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  //TODO update the note object with the fields used to distinguish the shared notes (e.g. user, groupId, groupName)
   const [note, setNote] = useState({
     book: null,
     id: -1,
@@ -35,10 +39,17 @@ const BookNotes = () => {
     timestamp: null,
   });
 
+  const [confirmDialogContent, setConfirmDialogContent] = useState({
+    title: "",
+    description: "",
+    onConfirm: () => {},
+  });
+
   const noteLoading = useSelector((state) => state.books.noteLoading);
   const loading = useSelector((state) => state.books.singleBookLoading);
   const book = useSelector((state) => state.books.selectedBook);
   const pageUrl = useSelector((state) => state.books.pageUrl);
+  const username = useSelector((state) => state.auth.user.username);
 
   const dispatch = useDispatch();
 
@@ -56,6 +67,15 @@ const BookNotes = () => {
       };
     });
     setShowTitleDialog(true);
+  };
+
+  const handleShowConfirmDialog = (title, description, onConfirm) => {
+    setConfirmDialogContent({
+      title,
+      description,
+      onConfirm,
+    });
+    setShowConfirmDialog(true);
   };
 
   const onSave = (noteTitle) => {
@@ -107,22 +127,39 @@ const BookNotes = () => {
     setShowConfirmDialog(false);
   };
 
+  const onShareNote = (groupId) => {
+    //? id = -1 means new note
+    note.id === -1
+      ? dispatch(
+          setError(
+            "La nota deve essere salvata prima di essere condivisa con un gruppo"
+          )
+        )
+      : console.log("share function");
+    //TODO add share function
+  };
+
   if (noteLoading) return <Spinner />;
 
   return (
     <PageWrapper
       reducer="books"
       showDialog={showConfirmDialog}
-      dialogTitle="Elimina nota"
-      dialogDescription={`Procedere con l'eliminazione della nota "${note.title}" ?`}
+      dialogTitle={confirmDialogContent.title}
+      dialogDescription={confirmDialogContent.description}
       dialogOnCancel={() => setShowConfirmDialog(false)}
-      dialogOnConfirm={onDelete}
+      dialogOnConfirm={confirmDialogContent.onConfirm}
     >
       <SelectNotes
         show={showDialog}
         onClose={() => setShowDialog(false)}
         readingPage={readingPage}
         setNote={setNote}
+      />
+      <SelectGroup
+        show={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        onShareNote={onShareNote}
       />
       <TitleDialog
         show={showTitleDialog}
@@ -203,8 +240,19 @@ const BookNotes = () => {
                 <TextEditor
                   note={note.description}
                   onSave={handleShowTitleDialog}
-                  onDelete={() => note.title && setShowConfirmDialog(true)}
+                  onDelete={() =>
+                    note.title &&
+                    handleShowConfirmDialog(
+                      "Elimina nota",
+                      `Procedere con l'eliminazione della nota "${note.title}" ?`,
+                      () => onDelete()
+                    )
+                  }
                   onSelectNotes={() => setShowDialog(true)}
+                  onShare={() => setShowShareDialog(true)}
+                  //TODO onUnshare={() => handleUnshareNote("Annulla condivisione nota", "Procedere con l'annullamento della condivisione della nota "${note.title}" ?", () => onUnshareNote())}
+                  //TODO shared={note?.groupId ? true : false}
+                  //TODO removable={note?.groupId ? note.user.username === username ? true : false : true}
                 />
               )}
             </Grid>

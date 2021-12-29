@@ -148,6 +148,13 @@ const booksSlice = createSlice({
     unsetError: (state) => {
       state.error = { error: false, variant: "error", message: "" };
     },
+    setError: (state, action) => {
+      state.error = {
+        error: true,
+        variant: "error",
+        message: action.payload,
+      };
+    },
     selectBook: (state, action) => {
       state.selectedBook = action.payload;
     },
@@ -269,6 +276,6 @@ const booksSlice = createSlice({
 
 const { actions, reducer } = booksSlice;
 
-export const { unsetError, selectBook } = actions;
+export const { unsetError, selectBook, setError } = actions;
 
 export default reducer;

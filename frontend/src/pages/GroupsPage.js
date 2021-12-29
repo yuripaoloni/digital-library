@@ -11,11 +11,14 @@ import PageWrapper from "components/PageWrapper";
 import GroupModal from "components/GroupModal";
 import GroupItem from "components/GroupItem";
 import GroupMembersDialog from "components/GroupMembersDialog";
+import GroupNotesList from "components/GroupNotesList";
 
 const GroupsPage = () => {
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showMembersDialog, setShowMembersDialog] = useState(false);
+  const [showNotesDialog, setShowNotesDialog] = useState(false);
+
   const [confirmDialogContent, setConfirmDialogContent] = useState({
     title: "",
     description: "",
@@ -47,6 +50,11 @@ const GroupsPage = () => {
     dispatch(selectGroup(book));
     setShowMembersDialog(true);
     setOwned(owned);
+  };
+
+  const handleShowSharedNotes = (book) => {
+    dispatch(selectGroup(book));
+    setShowNotesDialog(true);
   };
 
   const handleCreateGroup = () => {
@@ -87,6 +95,10 @@ const GroupsPage = () => {
         onClose={() => setShowMembersDialog(false)}
         owned={owned}
       />
+      <GroupNotesList
+        show={showNotesDialog}
+        onClose={() => setShowNotesDialog(false)}
+      />
       <Box px={2}>
         <Grid container alignItems="center" columnSpacing={4}>
           <Grid item>
@@ -115,7 +127,7 @@ const GroupsPage = () => {
                   onDelete={handleShowConfirmDialog}
                   onShowMembers={handleShowMembersDialog}
                   onEdit={handleEditGroup}
-                  onShowNotes={() => {}}
+                  onShowNotes={handleShowSharedNotes}
                 />
               ))}
         </Stack>
@@ -133,7 +145,7 @@ const GroupsPage = () => {
                     group={joinedGroup}
                     onShowMembers={handleShowMembersDialog}
                     onDelete={handleShowConfirmDialog}
-                    onShowNotes={() => {}}
+                    onShowNotes={handleShowSharedNotes}
                   />
                 ))}
           </Stack>

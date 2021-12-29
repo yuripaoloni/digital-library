@@ -13,13 +13,10 @@ import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
 import { Link } from "react-router-dom";
 
-//? user.savedBooks contains the list of saved books
-
 const PersonalPage = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.userLoading);
 
-  //TODO spinner o skeleton
   if (loading) return <Spinner />;
 
   const renderBook = (book) => {
