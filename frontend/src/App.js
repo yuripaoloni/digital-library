@@ -18,6 +18,7 @@ import RequireAuth from "components/RequireAuth";
 import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 import { onSearchUser } from "states/authSlice";
 import { onFetchGroups } from "states/groupsSlice";
+document.body.style = "background: #F3F4F7;";
 
 const App = () => {
   const dispatch = useDispatch();

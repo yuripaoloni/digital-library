@@ -45,10 +45,10 @@ const PersonalPage = () => {
 
         <Box
           sx={{
-            backgroundColor: "#F5F5F7",
+            backgroundColor: "white",
             borderRadius: "2vh",
-            boxShadow: 7,
-            marginTop: 8,
+            // boxShadow: 7,
+
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
