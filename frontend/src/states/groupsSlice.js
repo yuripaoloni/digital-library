@@ -7,6 +7,8 @@ import {
   getJoinedGroups,
   leaveGroup,
   removeUsersFromGroup,
+  shareNote,
+  unshareNote,
 } from "api";
 
 const initialState = {
@@ -72,6 +74,24 @@ export const onExitGroup = createAsyncThunk(
   }
 );
 
+//TODO the related API should return the updated group
+export const onShareNote = createAsyncThunk(
+  "shareNote/groups",
+  async ({ groupId, noteId }) => {
+    const res = await shareNote(groupId, noteId);
+    return res.data;
+  }
+);
+
+//TODO the related API should return the updated group
+export const onUnshareNote = createAsyncThunk(
+  "unshareNote/groups",
+  async ({ groupId, noteId }) => {
+    const res = await unshareNote(groupId, noteId);
+    return res.data;
+  }
+);
+
 const groupsSlice = createSlice({
   name: "groups",
   initialState,
@@ -121,6 +141,28 @@ const groupsSlice = createSlice({
         );
         state.loading = false;
         state.createdGroups = [...updatedGroups];
+      })
+      .addCase(onShareNote.fulfilled, (state, action) => {
+        let updateCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        let updateJoinedGroups = state.joinedGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        state.loading = false;
+        state.createdGroups = [...updateCreatedGroups];
+        state.joinedGroups = [...updateJoinedGroups];
+      })
+      .addCase(onUnshareNote.fulfilled, (state, action) => {
+        let updateCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        let updateJoinedGroups = state.joinedGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        state.loading = false;
+        state.createdGroups = [...updateCreatedGroups];
+        state.joinedGroups = [...updateJoinedGroups];
       })
       .addCase(onDeleteMember.fulfilled, (state, action) => {
         let updatedGroups = state.createdGroups.map((group) =>

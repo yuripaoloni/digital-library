@@ -16,6 +16,7 @@ import TextEditor from "components/TextEditor";
 import Spinner from "components/Spinner";
 import TitleDialog from "components/TitleDialog";
 import SelectGroup from "components/SelectGroup";
+import { onShareNote, onUnshareNote } from "states/groupsSlice";
 
 const Img = styled("img")({
   height: 850,
@@ -47,6 +48,7 @@ const BookNotes = () => {
 
   const noteLoading = useSelector((state) => state.books.noteLoading);
   const loading = useSelector((state) => state.books.singleBookLoading);
+  const shareLoading = useSelector((state) => state.groups.loading);
   const book = useSelector((state) => state.books.selectedBook);
   const pageUrl = useSelector((state) => state.books.pageUrl);
   const username = useSelector((state) => state.auth.user.username);
@@ -127,7 +129,7 @@ const BookNotes = () => {
     setShowConfirmDialog(false);
   };
 
-  const onShareNote = (groupId) => {
+  const handleNoteShare = (groupId) => {
     //? id = -1 means new note
     note.id === -1
       ? dispatch(
@@ -135,11 +137,17 @@ const BookNotes = () => {
             "La nota deve essere salvata prima di essere condivisa con un gruppo"
           )
         )
-      : console.log("share function");
-    //TODO add share function
+      : dispatch(onShareNote({ groupId, noteId: note.id }));
   };
 
-  if (noteLoading) return <Spinner />;
+  const handleNoteUnshare = () => {
+    handleShowConfirmDialog(
+      `Annulla condivisione nota", "Procedere con l'annullamento della condivisione della nota "${note.title}" ?`,
+      () => dispatch(onUnshareNote({ groupId: note.groupId, noteId: note.id }))
+    );
+  };
+
+  if (noteLoading || shareLoading) return <Spinner />;
 
   return (
     <PageWrapper
@@ -159,7 +167,7 @@ const BookNotes = () => {
       <SelectGroup
         show={showShareDialog}
         onClose={() => setShowShareDialog(false)}
-        onShareNote={onShareNote}
+        onShareNote={handleNoteShare}
       />
       <TitleDialog
         show={showTitleDialog}
@@ -250,7 +258,7 @@ const BookNotes = () => {
                   }
                   onSelectNotes={() => setShowDialog(true)}
                   onShare={() => setShowShareDialog(true)}
-                  //TODO onUnshare={() => handleUnshareNote("Annulla condivisione nota", "Procedere con l'annullamento della condivisione della nota "${note.title}" ?", () => onUnshareNote())}
+                  onUnshare={handleNoteUnshare}
                   //TODO shared={note?.groupId ? true : false}
                   //TODO removable={note?.groupId ? note.user.username === username ? true : false : true}
                 />
