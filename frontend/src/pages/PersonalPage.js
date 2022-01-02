@@ -12,6 +12,9 @@ import Spinner from "components/Spinner";
 import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
 import { Link } from "react-router-dom";
+import { Divider } from "@mui/material";
+
+
 
 const PersonalPage = () => {
   const user = useSelector((state) => state.auth.user);
@@ -23,14 +26,13 @@ const PersonalPage = () => {
     return (
       <Grid
         margin="20px"
-        maxWidth="70%"
+        maxWidth="00%"
         minWidth="70%"
-        width="70%"
         container
         direction="column"
         justifyContent="center"
         alignItems="center"
-        sx={{}}
+
         key={book.id}
       >
         <BookItem book={book} />
@@ -45,7 +47,7 @@ const PersonalPage = () => {
 
         <Box
           sx={{
-            backgroundColor: "white",
+            //backgroundColor: "white",
             borderRadius: "2vh",
             // boxShadow: 7,
 
@@ -62,12 +64,13 @@ const PersonalPage = () => {
               direction="column"
               justifyContent="center"
               alignItems="center"
+              sx={{ paddingBottom: "2vh" }}
             >
               <Avatar
                 alt={user.username}
                 src={`data:image/jpeg;base64,${user.picture}`}
                 style={{
-                  margin: "3vh",
+                  margin: "2vh",
                   width: "100px",
                   height: "100px",
                 }}
@@ -75,12 +78,26 @@ const PersonalPage = () => {
               <Typography variant="h5" component="h2">
                 {user.username}
               </Typography>
+
               <Typography variant="body2" component="h2">
                 {user.email}
               </Typography>
               <Typography variant="body2" component="h2">
                 {user.name} & {user.surname}
               </Typography>
+
+            </Grid>
+            <Divider />
+
+            <Grid
+              item
+              xs={12}
+              container
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+            //margin="10px 0 10px 0"
+            >
               <IconButton
                 data-testid="groups-link-icon"
                 size="large"
@@ -89,16 +106,6 @@ const PersonalPage = () => {
               >
                 <GroupIcon />
               </IconButton>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              container
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
-              margin="20px 0 20px 0"
-            >
               {loading ? <Spinner /> : user?.savedBooks?.map(renderBook)}
             </Grid>
           </Grid>

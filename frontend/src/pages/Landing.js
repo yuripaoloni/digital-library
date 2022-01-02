@@ -27,7 +27,7 @@ export default function Landing() {
         <Container
           component="img"
           sx={{
-            height: "23vh",
+            height: "25vh",
             width: "30vh",
           }}
           alt="The house from the offer."
