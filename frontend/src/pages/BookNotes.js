@@ -30,7 +30,6 @@ const BookNotes = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTitleDialog, setShowTitleDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  //TODO update the note object with the fields used to distinguish the shared notes (e.g. user, groupId, groupName)
   const [note, setNote] = useState({
     book: null,
     id: -1,
@@ -38,6 +37,7 @@ const BookNotes = () => {
     title: "",
     description: "",
     timestamp: null,
+    group: null,
   });
 
   const [confirmDialogContent, setConfirmDialogContent] = useState({
@@ -125,6 +125,7 @@ const BookNotes = () => {
       description: "",
       title: "",
       timestamp: null,
+      groupId: null,
     });
     setShowConfirmDialog(false);
   };
@@ -142,8 +143,15 @@ const BookNotes = () => {
 
   const handleNoteUnshare = () => {
     handleShowConfirmDialog(
-      `Annulla condivisione nota", "Procedere con l'annullamento della condivisione della nota "${note.title}" ?`,
-      () => dispatch(onUnshareNote({ groupId: note.groupId, noteId: note.id }))
+      "Annulla condivisione nota",
+      `Procedere con l'annullamento della condivisione della nota "${note.title}" ?`,
+      () => {
+        dispatch(onUnshareNote({ groupId: note.group.id, noteId: note.id }));
+        setShowConfirmDialog(false);
+        setNote((prev) => {
+          return { ...prev, groupId: null };
+        });
+      }
     );
   };
 
@@ -187,37 +195,40 @@ const BookNotes = () => {
           <Typography variant="subtitle1">Pagina {readingPage}</Typography>
         )}
         <Grid item xs={12}>
+          <Grid item my={2}>
+            {loading ? (
+              <Skeleton variant="text" width="60%" />
+            ) : (
+              <Typography variant="h6">
+                {note.title ? note.title : "Nuova nota"}
+              </Typography>
+            )}
+            {loading ? (
+              <Skeleton variant="text" width="40%" />
+            ) : (
+              <Typography variant="subtitle2">
+                {note.group && `${note.group.name}`}
+                {note.timestamp && `, ${note.timestamp}`}
+              </Typography>
+            )}
+          </Grid>
           <Grid
             container
             direction={{ sm: "row" }}
-            mt={4}
             justifyContent="space-between"
           >
             <Grid
               item
               sm={6}
               pr={2}
+              pb={{ xs: 2, sm: 0 }}
               xs={12}
               container
               direction="column"
+              // alignItems="center"
               justifyContent="center"
               sx={{ height: "100%", width: "100%" }}
             >
-              {loading ? (
-                <Skeleton variant="text" width="80%" />
-              ) : (
-                <Typography variant="h6">
-                  {note.title ? note.title : "Nuova nota"}
-                </Typography>
-              )}
-              {loading ? (
-                <Skeleton variant="text" width="40%" />
-              ) : (
-                <Typography variant="subtitle2">
-                  {note.timestamp && `${note.timestamp}`}
-                </Typography>
-              )}
-
               {loading ? (
                 <Skeleton
                   variant="rectangle"
@@ -230,17 +241,21 @@ const BookNotes = () => {
                       height: 700,
                       width: 500,
                     },
-                    "@media (max-width : 953px)": {
+                    "@media (max-width : 1075px)": {
                       height: 600,
                       width: 400,
                     },
-                    "@media (max-width : 825px)": {
+                    "@media (max-width : 885px)": {
                       height: 500,
                       width: 300,
                     },
-                    "@media (max-width : 690px)": {
+                    "@media (max-width : 685px)": {
                       height: 450,
-                      width: 200,
+                      width: 250,
+                    },
+                    "@media (max-width : 600px)": {
+                      height: 450,
+                      width: 250,
                     },
                   }}
                 />
@@ -259,8 +274,14 @@ const BookNotes = () => {
                   onSelectNotes={() => setShowDialog(true)}
                   onShare={() => setShowShareDialog(true)}
                   onUnshare={handleNoteUnshare}
-                  //TODO shared={note?.groupId ? true : false}
-                  //TODO removable={note?.groupId ? note.user.username === username ? true : false : true}
+                  shared={note?.group ? true : false}
+                  removable={
+                    note?.group
+                      ? note.user.username === username
+                        ? true
+                        : false
+                      : true
+                  }
                 />
               )}
             </Grid>
@@ -286,17 +307,21 @@ const BookNotes = () => {
                       height: 700,
                       width: 500,
                     },
-                    "@media (max-width : 953px)": {
+                    "@media (max-width : 1075px)": {
                       height: 600,
                       width: 400,
                     },
-                    "@media (max-width : 825px)": {
+                    "@media (max-width : 885px)": {
                       height: 500,
                       width: 300,
                     },
-                    "@media (max-width : 690px)": {
+                    "@media (max-width : 685px)": {
                       height: 450,
-                      width: 200,
+                      width: 250,
+                    },
+                    "@media (max-width : 600px)": {
+                      height: 450,
+                      width: 250,
                     },
                   }}
                 />
@@ -307,13 +332,19 @@ const BookNotes = () => {
                     "@media (max-width : 1180px)": {
                       height: 700,
                     },
-                    "@media (max-width : 953px)": {
+                    "@media (max-width : 1000px)": {
                       height: 600,
                     },
-                    "@media (max-width : 825px)": {
+                    "@media (max-width : 880px)": {
                       height: 500,
                     },
-                    "@media (max-width : 690px)": {
+                    "@media (max-width : 780px)": {
+                      height: 450,
+                    },
+                    "@media (max-width : 680px)": {
+                      height: 400,
+                    },
+                    "@media (max-width : 600px)": {
                       height: 450,
                     },
                   }}

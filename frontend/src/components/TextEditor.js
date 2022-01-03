@@ -23,9 +23,7 @@ const TextEditor = ({
         root: {
           maxHeight: "800px",
           maxWidth: "700px",
-          //border: "1px solid grey",
           marginBottom: 15,
-          marginTop: 10,
         },
         editor: {
           height: 380,
@@ -72,7 +70,6 @@ const TextEditor = ({
         defaultValue={note && note.toString()}
         label="Nuova nota..."
         onSave={onSave}
-        //TODO if owner of a note, the user can delete it. Otherwise not
         controls={removable ? [...controls, "delete"] : [...controls]}
         customControls={[
           {

@@ -4,12 +4,14 @@ import {
   deleteGroup,
   editGroup,
   getCreatedGroups,
+  getGroupSharedNotes,
   getJoinedGroups,
   leaveGroup,
   removeUsersFromGroup,
   shareNote,
   unshareNote,
 } from "api";
+import { addSharedNote, removeUnsharedNote } from "./booksSlice";
 
 const initialState = {
   loading: false,
@@ -41,6 +43,14 @@ export const onFetchGroups = createAsyncThunk(
   async () => {
     const joinedGroups = await getJoinedGroups();
     const createdGroups = await getCreatedGroups();
+    for (const joinedGroup of joinedGroups.data) {
+      let res = await getGroupSharedNotes(joinedGroup.id);
+      joinedGroup.notes = res.data;
+    }
+    for (const createdGroup of createdGroups.data) {
+      let res = await getGroupSharedNotes(createdGroup.id);
+      createdGroup.notes = res.data;
+    }
     return {
       joinedGroups: joinedGroups.data,
       createdGroups: createdGroups.data,
@@ -74,21 +84,21 @@ export const onExitGroup = createAsyncThunk(
   }
 );
 
-//TODO the related API should return the updated group
 export const onShareNote = createAsyncThunk(
   "shareNote/groups",
-  async ({ groupId, noteId }) => {
+  async ({ groupId, noteId }, { dispatch }) => {
     const res = await shareNote(groupId, noteId);
-    return res.data;
+    dispatch(addSharedNote(res.data));
+    return { note: res.data, groupId: groupId };
   }
 );
 
-//TODO the related API should return the updated group
 export const onUnshareNote = createAsyncThunk(
   "unshareNote/groups",
-  async ({ groupId, noteId }) => {
-    const res = await unshareNote(groupId, noteId);
-    return res.data;
+  async ({ groupId, noteId }, { dispatch }) => {
+    await unshareNote(groupId, noteId);
+    dispatch(removeUnsharedNote(noteId));
+    return { noteId: noteId, groupId: groupId };
   }
 );
 
@@ -144,10 +154,14 @@ const groupsSlice = createSlice({
       })
       .addCase(onShareNote.fulfilled, (state, action) => {
         let updateCreatedGroups = state.createdGroups.map((group) =>
-          group.id === action.payload.id ? action.payload : group
+          group.id === action.payload.groupId
+            ? { ...group, notes: [...group.notes, action.payload.note] }
+            : group
         );
         let updateJoinedGroups = state.joinedGroups.map((group) =>
-          group.id === action.payload.id ? action.payload : group
+          group.id === action.payload.groupId
+            ? { ...group, notes: [...group.notes, action.payload.note] }
+            : group
         );
         state.loading = false;
         state.createdGroups = [...updateCreatedGroups];
@@ -155,10 +169,24 @@ const groupsSlice = createSlice({
       })
       .addCase(onUnshareNote.fulfilled, (state, action) => {
         let updateCreatedGroups = state.createdGroups.map((group) =>
-          group.id === action.payload.id ? action.payload : group
+          group.id === action.payload.groupId
+            ? {
+                ...group,
+                notes: group.notes.filter(
+                  (note) => note.id !== action.payload.noteId
+                ),
+              }
+            : group
         );
         let updateJoinedGroups = state.joinedGroups.map((group) =>
-          group.id === action.payload.id ? action.payload : group
+          group.id === action.payload.groupId
+            ? {
+                ...group,
+                notes: group.notes.filter(
+                  (note) => note.id !== action.payload.noteId
+                ),
+              }
+            : group
         );
         state.loading = false;
         state.createdGroups = [...updateCreatedGroups];

@@ -70,8 +70,14 @@ export const editNote = ({ id, title, description }) => {
   );
 };
 
-export const getAllNotes = ({ book }) => {
+export const getPersonalNotes = ({ book }) => {
   return axios.post("/note/all", book, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getSharedNotes = ({ book }) => {
+  return axios.post("/note/all/shared", book, {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };

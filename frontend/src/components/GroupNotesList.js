@@ -10,14 +10,14 @@ import {
   DialogContentText,
   DialogContent,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import GroupIcon from "@mui/icons-material/Group";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-
-//TODO check "note" object fields are correct
 
 const GroupNotesList = ({ show, onClose }) => {
   const group = useSelector((state) => state.groups.selectedGroup);
+
+  const navigate = useNavigate();
 
   return (
     <Dialog onClose={onClose} open={show}>
@@ -34,8 +34,11 @@ const GroupNotesList = ({ show, onClose }) => {
                   disableGutters
                   data-testid={`group-note-item-${index}`}
                   button
-                  LinkComponent={Link}
-                  to={`/books/notes/${note.book.library.id}/${note.book.title}/${note.page}`}
+                  onClick={() =>
+                    navigate(
+                      `/books/notes/${note.book.library.id}/${note.book.title}/${note.page}`
+                    )
+                  }
                 >
                   <ListItemAvatar>
                     <Avatar>

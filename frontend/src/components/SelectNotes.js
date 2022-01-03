@@ -11,19 +11,17 @@ import {
 } from "@mui/material";
 import ArticleIcon from "@mui/icons-material/Article";
 import AddIcon from "@mui/icons-material/Add";
+import GroupIcon from "@mui/icons-material/Group";
+
 import { useSelector } from "react-redux";
 
 const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
-  //TODO note should now contain also the shared notes coming from the groups the user participates in
   const notes = useSelector((state) => state.books.notes);
 
   const handleSelection = (note) => {
     setNote(note);
     onClose();
   };
-
-  //TODO based on the fields added in the shared notes objects (e.g. user: {} or groupId: 1, groupName: "abc"),
-  //TODO change the background color of the note or something similar to distinguish them
 
   return (
     <Dialog onClose={onClose} open={show}>
@@ -40,7 +38,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
               >
                 <ListItemAvatar>
                   <Avatar>
-                    <ArticleIcon />
+                    {note?.group ? <GroupIcon /> : <ArticleIcon />}
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={note.title} secondary={note.timestamp} />
