@@ -291,7 +291,7 @@ class GroupController(
 
     @GetMapping("/group/shared/{groupId}")
     @ApiOperation(
-        value = "gets a group sharing notes",
+        value = "gets a group shared notes",
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate

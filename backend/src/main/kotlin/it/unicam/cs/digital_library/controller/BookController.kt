@@ -27,6 +27,11 @@ class BookController(
     @Autowired val bookmarkRepository: BookmarkRepository,
     @Autowired val bookRepository: BookRepository,
     @Autowired val favoriteBookRepository: FavoriteBookRepository,
+    @Autowired val sharedNoteRepository: SharedNoteRepository,
+    @Autowired val groupRepository: GroupRepository,
+    @Autowired val groupMemberRepository: GroupMemberRepository,
+    @Autowired val groupUtils: GroupUtils,
+    @Autowired val groupController: GroupController
 ) {
     private val libraryService = LibraryService()
 
@@ -157,6 +162,28 @@ class BookController(
         ).map(Note::toNoteResponse)
     }
 
+    @PostMapping("/note/all/shared")
+    @ApiOperation(
+        value = "get all notes for a given book shared by groups joined and created",
+        authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
+    )
+    @Authenticate
+    fun getSharedNotesByBook(
+        @RequestBody book: Book,
+        @ApiIgnore principal: Principal,
+    ): List<NoteGroupResponse> {
+        val book = (libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find) ?: return emptyList()
+        val created = groupController.getCreatedGroups(principal)
+        val joined = groupController.getJoinedGroups(principal)
+        return (created + joined).flatMap { group ->
+            sharedNoteRepository.findAllByGroup_IdAndNote_Book_Id(group.id, book.id).map {
+                it.note.toNoteGroupResponse(group)
+            }
+        }.distinctBy {
+            it.id
+        }
+    }
+
     @PostMapping("/bookmark/add")
     @ApiOperation(
         value = "create a bookmark",
@@ -172,11 +199,15 @@ class BookController(
             (libraryService.parseBook(bookmarkCreation.book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave)
         val bookmark = bookmarkRepository.findByBookIdAndPageAndUserId(book.id, bookmarkCreation.page, user.id)
         if (bookmark != null) throw ErrorException(HttpStatus.FORBIDDEN, "Bookmark già presente sulla pagina")
-        else return bookmarkRepository.save(Bookmark(0,
-            book,
-            user,
-            bookmarkCreation.page,
-            bookmarkCreation.description))
+        else return bookmarkRepository.save(
+            Bookmark(
+                0,
+                book,
+                user,
+                bookmarkCreation.page,
+                bookmarkCreation.description
+            )
+        )
             .toBookmarkResponse()
     }
 
@@ -255,9 +286,13 @@ class BookController(
     ) {
         val user = userRepository.findByEmail(principal.name)!!
         try {
-            favoriteBookRepository.save(FavoriteBook(0,
-                (libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave),
-                user))
+            favoriteBookRepository.save(
+                FavoriteBook(
+                    0,
+                    (libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::findAndSave),
+                    user
+                )
+            )
         } catch (e: Throwable) {
             throw GENERIC_ERROR
         }

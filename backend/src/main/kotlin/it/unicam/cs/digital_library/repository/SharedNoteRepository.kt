@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface SharedNoteRepository : JpaRepository<SharedNote, Long> {
     fun findByGroup_IdAndNote_Id(group_id: Long, note_id: Long): SharedNote?
     fun findAllByGroup_Id(group_id: Long): List<SharedNote>
+    fun findAllByGroup_IdAndNote_Book_Id(group_id: Long, note_book_id: Long): List<SharedNote>
 }

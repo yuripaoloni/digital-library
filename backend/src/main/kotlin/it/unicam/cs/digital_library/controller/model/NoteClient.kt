@@ -8,7 +8,12 @@ data class NoteCreation(val book: Book, val page: Int, val title: String, val de
 data class NoteEdit(val id: Long, val title: String, val description: String)
 
 data class NoteResponse(val id: Long, val book: Book, val user: UserResponse, val page: Int, val title: String, val description: String, val timestamp: String)
+data class NoteGroupResponse(val id: Long, val book: Book, val user: UserResponse, val group: GroupResponse, val page: Int, val title: String, val description: String, val timestamp: String)
 
 fun Note.toNoteResponse(): NoteResponse {
     return NoteResponse(id, book, user.toUserResponse(), page, title, description, timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+}
+
+fun Note.toNoteGroupResponse(group: GroupResponse): NoteGroupResponse {
+    return NoteGroupResponse(id, book, user.toUserResponse(), group, page, title, description, timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
 }
