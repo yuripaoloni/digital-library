@@ -241,7 +241,7 @@ class GroupController(
         authorizations = [Authorization(value = JWTConstants.TOKEN_PREFIX)]
     )
     @Authenticate
-    fun shareNotes(@PathVariable groupId: Long, @PathVariable noteId: Long, @ApiIgnore principal: Principal) {
+    fun shareNotes(@PathVariable groupId: Long, @PathVariable noteId: Long, @ApiIgnore principal: Principal): NoteGroupResponse {
         val user = userRepository.findByEmail(principal.name)!!
         val note =
             noteRepository.findByIdOrNull(noteId) ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Nota non trovata")
@@ -254,7 +254,9 @@ class GroupController(
             "Non puoi condividere la nota"
         )
         try {
-            sharedNoteRepository.save(SharedNote(0, group, note))
+            val shared = sharedNoteRepository.save(SharedNote(0, group, note))
+            val members = groupMemberRepository.findAllByGroup_Id(shared.group.id)
+            return shared.note.toNoteGroupResponse(toGroupResponse(shared.group, members))
         } catch (e: Throwable) {
             throw GENERIC_ERROR
         }
