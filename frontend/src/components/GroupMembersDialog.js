@@ -58,7 +58,7 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
             dense
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
-            {group && group.members.length > 0
+            {group && group?.members.length > 0
               ? group.members.map((member, index) => (
                   <ListItem
                     key={index}

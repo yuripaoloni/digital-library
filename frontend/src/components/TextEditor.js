@@ -54,14 +54,7 @@ const TextEditor = ({
     },
   });
 
-  let controls = [
-    "bold",
-    "italic",
-    "bulletList",
-    "save",
-    "selectNotes",
-    "share",
-  ];
+  let controls = ["bold", "italic", "bulletList", "save", "selectNotes"];
 
   return (
     <ThemeProvider theme={editorTheme}>
@@ -70,7 +63,7 @@ const TextEditor = ({
         defaultValue={note && note.toString()}
         label="Nuova nota..."
         onSave={onSave}
-        controls={removable ? [...controls, "delete"] : [...controls]}
+        controls={removable ? [...controls, "share", "delete"] : [...controls]}
         customControls={[
           {
             name: "delete",

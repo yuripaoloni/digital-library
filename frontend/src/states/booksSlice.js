@@ -182,7 +182,10 @@ const booksSlice = createSlice({
       state.selectedBook = action.payload;
     },
     addSharedNote: (state, action) => {
-      state.notes = [...state.notes, action.payload];
+      let updatedNotes = state.notes.map((note) =>
+        note.id === action.payload.id ? action.payload : note
+      );
+      state.notes = [...updatedNotes];
     },
     removeUnsharedNote: (state, action) => {
       let updatedNotes = state.notes.map((note) =>

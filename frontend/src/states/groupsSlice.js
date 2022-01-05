@@ -34,6 +34,8 @@ export const onEditGroup = createAsyncThunk(
   async ({ emails, name }, { getState }) => {
     const state = getState();
     const res = await editGroup(state.groups.selectedGroup.id, emails, name);
+    let notes = await getGroupSharedNotes(state.groups.selectedGroup.id);
+    res.data.notes = notes.data;
     return res.data;
   }
 );
@@ -62,6 +64,8 @@ export const onDeleteMember = createAsyncThunk(
   "deleteMember/groups",
   async ({ id, emails }) => {
     const res = await removeUsersFromGroup(emails, id);
+    let notes = await getGroupSharedNotes(id);
+    res.data.notes = notes.data;
     return res.data;
   }
 );
