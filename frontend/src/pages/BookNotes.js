@@ -24,6 +24,33 @@ const Img = styled("img")({
   boxShadow: 2,
 });
 
+const skeletonStyles = {
+  "@media (min-width : 1161px)": {
+    height: 700,
+    width: 500,
+  },
+  "@media (max-width : 1160px)": {
+    height: 700,
+    width: 500,
+  },
+  "@media (max-width : 1075px)": {
+    height: 600,
+    width: 400,
+  },
+  "@media (max-width : 885px)": {
+    height: 500,
+    width: 300,
+  },
+  "@media (max-width : 685px)": {
+    height: 450,
+    width: 250,
+  },
+  "@media (max-width : 600px)": {
+    height: 450,
+    width: 250,
+  },
+};
+
 const BookNotes = () => {
   const { libraryId, title, readingPage } = useParams();
   const [showDialog, setShowDialog] = useState(false);
@@ -38,6 +65,7 @@ const BookNotes = () => {
     description: "",
     timestamp: null,
     group: null,
+    user: null,
   });
 
   const [confirmDialogContent, setConfirmDialogContent] = useState({
@@ -125,20 +153,29 @@ const BookNotes = () => {
       description: "",
       title: "",
       timestamp: null,
-      groupId: null,
+      group: null,
+      user: null,
     });
     setShowConfirmDialog(false);
   };
 
-  const handleNoteShare = (groupId) => {
+  const handleNoteShare = (group) => {
     //? id = -1 means new note
-    note.id === -1
-      ? dispatch(
-          setError(
-            "La nota deve essere salvata prima di essere condivisa con un gruppo"
-          )
+    if (note.id === -1) {
+      dispatch(
+        setError(
+          note.title
+            ? "Seleziona la nota per condividerla"
+            : "La nota deve essere salvata prima di essere condivisa con un gruppo"
         )
-      : dispatch(onShareNote({ groupId, noteId: note.id }));
+      );
+    } else {
+      dispatch(onShareNote({ groupId: group.id, noteId: note.id }));
+      setNote((prev) => {
+        return { ...prev, group: group };
+      });
+    }
+    setShowShareDialog(false);
   };
 
   const handleNoteUnshare = () => {
@@ -149,7 +186,7 @@ const BookNotes = () => {
         dispatch(onUnshareNote({ groupId: note.group.id, noteId: note.id }));
         setShowConfirmDialog(false);
         setNote((prev) => {
-          return { ...prev, groupId: null };
+          return { ...prev, group: null };
         });
       }
     );
@@ -207,8 +244,8 @@ const BookNotes = () => {
               <Skeleton variant="text" width="40%" />
             ) : (
               <Typography variant="subtitle2">
-                {note.group && `${note.group.name}`}
-                {note.timestamp && `, ${note.timestamp}`}
+                {note.group && `${note.group.name}, `}
+                {note.timestamp && `${note.timestamp}`}
               </Typography>
             )}
           </Grid>
@@ -225,40 +262,11 @@ const BookNotes = () => {
               xs={12}
               container
               direction="column"
-              // alignItems="center"
               justifyContent="center"
               sx={{ height: "100%", width: "100%" }}
             >
               {loading ? (
-                <Skeleton
-                  variant="rectangle"
-                  sx={{
-                    "@media (min-width : 1161px)": {
-                      height: 700,
-                      width: 500,
-                    },
-                    "@media (max-width : 1160px)": {
-                      height: 700,
-                      width: 500,
-                    },
-                    "@media (max-width : 1075px)": {
-                      height: 600,
-                      width: 400,
-                    },
-                    "@media (max-width : 885px)": {
-                      height: 500,
-                      width: 300,
-                    },
-                    "@media (max-width : 685px)": {
-                      height: 450,
-                      width: 250,
-                    },
-                    "@media (max-width : 600px)": {
-                      height: 450,
-                      width: 250,
-                    },
-                  }}
-                />
+                <Skeleton variant="rectangle" sx={skeletonStyles} />
               ) : (
                 <TextEditor
                   note={note.description}
@@ -276,7 +284,7 @@ const BookNotes = () => {
                   onUnshare={handleNoteUnshare}
                   shared={note?.group ? true : false}
                   removable={
-                    note?.group
+                    note.group
                       ? note.user.username === username
                         ? true
                         : false
@@ -295,36 +303,7 @@ const BookNotes = () => {
               xs={12}
             >
               {loading ? (
-                <Skeleton
-                  data-testid
-                  variant="rectangle"
-                  sx={{
-                    "@media (min-width : 1161px)": {
-                      height: 700,
-                      width: 500,
-                    },
-                    "@media (max-width : 1160px)": {
-                      height: 700,
-                      width: 500,
-                    },
-                    "@media (max-width : 1075px)": {
-                      height: 600,
-                      width: 400,
-                    },
-                    "@media (max-width : 885px)": {
-                      height: 500,
-                      width: 300,
-                    },
-                    "@media (max-width : 685px)": {
-                      height: 450,
-                      width: 250,
-                    },
-                    "@media (max-width : 600px)": {
-                      height: 450,
-                      width: 250,
-                    },
-                  }}
-                />
+                <Skeleton variant="rectangle" sx={skeletonStyles} />
               ) : (
                 <Img
                   src={pageUrl}
