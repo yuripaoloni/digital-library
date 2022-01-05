@@ -19,7 +19,11 @@ const SelectGroup = ({ show, onClose, onShareNote }) => {
   );
 
   return (
-    <Dialog onClose={onClose} open={show}>
+    <Dialog
+      onClose={onClose}
+      open={show}
+      data-testid="select-group-sharing-dialog"
+    >
       <DialogTitle>Condivisione nota</DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -32,7 +36,7 @@ const SelectGroup = ({ show, onClose, onShareNote }) => {
               disableGutters
               data-testid={`group-share-item-${index}`}
               button
-              onClick={() => onShareNote(group.id)}
+              onClick={() => onShareNote(group)}
             >
               <ListItemAvatar>
                 <Avatar>

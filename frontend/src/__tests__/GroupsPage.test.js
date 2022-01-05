@@ -136,7 +136,7 @@ test("should remove a participant from a group", async () => {
 
   userEvent.click(screen.getAllByText("Membri")[0]);
 
-  let memberDialog = await screen.findByTestId("group-members-dialog");
+  let memberDialog = screen.getByTestId("group-members-dialog");
 
   const membersNumber = getAllByTestId(
     memberDialog,
@@ -153,9 +153,24 @@ test("should remove a participant from a group", async () => {
 
   userEvent.click(screen.getAllByText("Membri")[0]);
 
-  memberDialog = await screen.findByTestId("group-members-dialog");
+  memberDialog = screen.getByTestId("group-members-dialog");
 
   expect(
     getAllByTestId(memberDialog, /group-member-item/i).length
   ).toBeLessThan(membersNumber);
+});
+
+test("should open a shared note", async () => {
+  render(<App />);
+
+  expect(await screen.findAllByTestId(/group-created-item/i)).toBeDefined();
+  expect(await screen.findAllByTestId(/group-joined-item/i)).toBeDefined();
+
+  userEvent.click(screen.getAllByText("Leggi note")[0]);
+
+  let notesDialog = screen.getByTestId("group-notes-dialog");
+
+  userEvent.click(getByTestId(notesDialog, "group-note-item-0"));
+
+  expect(await screen.findByTestId("select-note")).toBeDefined();
 });
