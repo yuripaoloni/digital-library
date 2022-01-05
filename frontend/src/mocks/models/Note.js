@@ -1,3 +1,5 @@
+import { getMockUser } from "./User";
+
 export const getMockNotes = (notes, manualIndex) => {
   return notes.map((note, index) => {
     return {
@@ -20,8 +22,9 @@ export const getMockNotes = (notes, manualIndex) => {
         genre: "B.G.1-6",
         plot: null,
       },
+      user: getMockUser(),
       page: index,
-      title: `Note-Title-${index}`,
+      title: `${note}-${index}`,
       description: `{"blocks":[{"key":"brhle","text":"test note ${
         manualIndex ? manualIndex : index
       }","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,

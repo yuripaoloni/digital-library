@@ -17,6 +17,8 @@ import RequireAuth from "components/RequireAuth";
 
 import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 import { onSearchUser } from "states/authSlice";
+import { onFetchGroups } from "states/groupsSlice";
+document.body.style = "background: #F3F4F7;";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -24,9 +26,10 @@ const App = () => {
   useEffect(() => {
     dispatch(fetchRandomBooks());
     dispatch(fetchLibraries());
-    localStorage.getItem("username") &&
-      localStorage.getItem("authToken") &&
+    if (localStorage.getItem("username") && localStorage.getItem("authToken")) {
       dispatch(onSearchUser({ param: localStorage.getItem("username") }));
+      dispatch(onFetchGroups());
+    }
   }, [dispatch]);
 
   return (

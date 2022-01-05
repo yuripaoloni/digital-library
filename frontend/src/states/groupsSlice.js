@@ -4,10 +4,14 @@ import {
   deleteGroup,
   editGroup,
   getCreatedGroups,
+  getGroupSharedNotes,
   getJoinedGroups,
   leaveGroup,
   removeUsersFromGroup,
+  shareNote,
+  unshareNote,
 } from "api";
+import { addSharedNote, removeUnsharedNote } from "./booksSlice";
 
 const initialState = {
   loading: false,
@@ -30,6 +34,8 @@ export const onEditGroup = createAsyncThunk(
   async ({ emails, name }, { getState }) => {
     const state = getState();
     const res = await editGroup(state.groups.selectedGroup.id, emails, name);
+    let notes = await getGroupSharedNotes(state.groups.selectedGroup.id);
+    res.data.notes = notes.data;
     return res.data;
   }
 );
@@ -39,6 +45,14 @@ export const onFetchGroups = createAsyncThunk(
   async () => {
     const joinedGroups = await getJoinedGroups();
     const createdGroups = await getCreatedGroups();
+    for (const joinedGroup of joinedGroups.data) {
+      let res = await getGroupSharedNotes(joinedGroup.id);
+      joinedGroup.notes = res.data;
+    }
+    for (const createdGroup of createdGroups.data) {
+      let res = await getGroupSharedNotes(createdGroup.id);
+      createdGroup.notes = res.data;
+    }
     return {
       joinedGroups: joinedGroups.data,
       createdGroups: createdGroups.data,
@@ -50,6 +64,8 @@ export const onDeleteMember = createAsyncThunk(
   "deleteMember/groups",
   async ({ id, emails }) => {
     const res = await removeUsersFromGroup(emails, id);
+    let notes = await getGroupSharedNotes(id);
+    res.data.notes = notes.data;
     return res.data;
   }
 );
@@ -69,6 +85,24 @@ export const onExitGroup = createAsyncThunk(
     const state = getState();
     await leaveGroup(state.groups.selectedGroup.id);
     return state.groups.selectedGroup.id;
+  }
+);
+
+export const onShareNote = createAsyncThunk(
+  "shareNote/groups",
+  async ({ groupId, noteId }, { dispatch }) => {
+    const res = await shareNote(groupId, noteId);
+    dispatch(addSharedNote(res.data));
+    return { note: res.data, groupId: groupId };
+  }
+);
+
+export const onUnshareNote = createAsyncThunk(
+  "unshareNote/groups",
+  async ({ groupId, noteId }, { dispatch }) => {
+    await unshareNote(groupId, noteId);
+    dispatch(removeUnsharedNote(noteId));
+    return { noteId: noteId, groupId: groupId };
   }
 );
 
@@ -121,6 +155,46 @@ const groupsSlice = createSlice({
         );
         state.loading = false;
         state.createdGroups = [...updatedGroups];
+      })
+      .addCase(onShareNote.fulfilled, (state, action) => {
+        let updateCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.groupId
+            ? { ...group, notes: [...group.notes, action.payload.note] }
+            : group
+        );
+        let updateJoinedGroups = state.joinedGroups.map((group) =>
+          group.id === action.payload.groupId
+            ? { ...group, notes: [...group.notes, action.payload.note] }
+            : group
+        );
+        state.loading = false;
+        state.createdGroups = [...updateCreatedGroups];
+        state.joinedGroups = [...updateJoinedGroups];
+      })
+      .addCase(onUnshareNote.fulfilled, (state, action) => {
+        let updateCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.groupId
+            ? {
+                ...group,
+                notes: group.notes.filter(
+                  (note) => note.id !== action.payload.noteId
+                ),
+              }
+            : group
+        );
+        let updateJoinedGroups = state.joinedGroups.map((group) =>
+          group.id === action.payload.groupId
+            ? {
+                ...group,
+                notes: group.notes.filter(
+                  (note) => note.id !== action.payload.noteId
+                ),
+              }
+            : group
+        );
+        state.loading = false;
+        state.createdGroups = [...updateCreatedGroups];
+        state.joinedGroups = [...updateJoinedGroups];
       })
       .addCase(onDeleteMember.fulfilled, (state, action) => {
         let updatedGroups = state.createdGroups.map((group) =>

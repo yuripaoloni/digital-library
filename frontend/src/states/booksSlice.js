@@ -4,7 +4,7 @@ import {
   getBooks,
   getRandomBooks,
   getBookPage,
-  getAllNotes,
+  getPersonalNotes,
   deleteNote,
   createNote,
   editNote,
@@ -12,6 +12,7 @@ import {
   deleteBookmark,
   createBookmark,
   editBookmark,
+  getSharedNotes,
 } from "api";
 
 const initialState = {
@@ -52,12 +53,23 @@ export const fetchSingleBook = createAsyncThunk(
     let book = books.data[0][0];
     if (page) {
       const pageUrl = await getBookPage({ book, page });
-      const notes = await getAllNotes({ book });
+      const sharedNotes = await getSharedNotes({ book });
+      const personalNotes = await getPersonalNotes({ book });
       const bookmarks = await getAllBookmarks({ book });
+
+      let notes = sharedNotes.data.concat(
+        personalNotes.data.filter(
+          (personalNote) =>
+            !sharedNotes.data.some(
+              (sharedNote) => sharedNote.id === personalNote.id
+            )
+        )
+      );
+
       return {
         book: book,
         pageUrl: pageUrl.data,
-        notes: notes.data,
+        notes: notes,
         bookmarks: bookmarks.data,
       };
     }
@@ -83,11 +95,22 @@ export const fetchBookData = createAsyncThunk(
   "data/books",
   async ({ book, page }) => {
     const pageUrl = await getBookPage({ book, page });
-    const notes = await getAllNotes({ book });
+    const sharedNotes = await getSharedNotes({ book });
+    const personalNotes = await getPersonalNotes({ book });
     const bookmarks = await getAllBookmarks({ book });
+
+    let notes = sharedNotes.data.concat(
+      personalNotes.data.filter(
+        (personalNote) =>
+          !sharedNotes.data.some(
+            (sharedNote) => sharedNote.id === personalNote.id
+          )
+      )
+    );
+
     return {
       pageUrl: pageUrl.data,
-      notes: notes.data,
+      notes: notes,
       bookmarks: bookmarks.data,
     };
   }
@@ -148,8 +171,27 @@ const booksSlice = createSlice({
     unsetError: (state) => {
       state.error = { error: false, variant: "error", message: "" };
     },
+    setError: (state, action) => {
+      state.error = {
+        error: true,
+        variant: "error",
+        message: action.payload,
+      };
+    },
     selectBook: (state, action) => {
       state.selectedBook = action.payload;
+    },
+    addSharedNote: (state, action) => {
+      let updatedNotes = state.notes.map((note) =>
+        note.id === action.payload.id ? action.payload : note
+      );
+      state.notes = [...updatedNotes];
+    },
+    removeUnsharedNote: (state, action) => {
+      let updatedNotes = state.notes.map((note) =>
+        note.id === action.payload ? { ...note, group: undefined } : note
+      );
+      state.notes = [...updatedNotes];
     },
   },
   extraReducers: (builder) => {
@@ -269,6 +311,12 @@ const booksSlice = createSlice({
 
 const { actions, reducer } = booksSlice;
 
-export const { unsetError, selectBook } = actions;
+export const {
+  unsetError,
+  selectBook,
+  setError,
+  addSharedNote,
+  removeUnsharedNote,
+} = actions;
 
 export default reducer;

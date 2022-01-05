@@ -4,6 +4,7 @@ import { getMockBookmark } from "./models/Bookmark";
 import { getMockGroup } from "./models/Group";
 import { getMockLibraries } from "./models/Library";
 import { getMockNotes } from "./models/Note";
+import { getMockSharedNotes } from "./models/SharedNote";
 import { getMockUser } from "./models/User";
 
 export const handlers = [
@@ -53,10 +54,7 @@ export const handlers = [
     )
   ),
   rest.post("/note/add", (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json(getMockNotes(["CreateMockNote"], 1)[0])
-    );
+    return res(ctx.status(200), ctx.json(getMockNotes([req.body.title], 1)[0]));
   }),
   rest.post("/note/edit", (req, res, ctx) => {
     return res(ctx.status(200));
@@ -65,6 +63,12 @@ export const handlers = [
     res(
       ctx.status(200),
       ctx.json(getMockNotes(["MockNote", "MockNote", "MockNote"]))
+    )
+  ),
+  rest.post("/note/all/shared", (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json(getMockSharedNotes(["MockNote", "MockNote", "MockNote"]))
     )
   ),
   rest.delete("/note/delete/:id", (req, res, ctx) => res(ctx.status(200))),
@@ -115,4 +119,16 @@ export const handlers = [
   ),
   rest.delete("/book/saved/delete", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/book/saved/add", (req, res, ctx) => res(ctx.status(200))),
+  rest.post("/group/share/:groupId/:noteId", (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(getMockSharedNotes(["NewSharedNote"])[0]))
+  ),
+  rest.delete("/group/share/:groupId/:noteId", (req, res, ctx) =>
+    res(ctx.status(200))
+  ),
+  rest.get("/group/shared/:groupId", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json(getMockSharedNotes(["MockNote", "MockNote", "MockNote"]))
+    );
+  }),
 ];

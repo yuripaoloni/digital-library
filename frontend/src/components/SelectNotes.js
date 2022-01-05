@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import ArticleIcon from "@mui/icons-material/Article";
 import AddIcon from "@mui/icons-material/Add";
+import GroupIcon from "@mui/icons-material/Group";
+
 import { useSelector } from "react-redux";
 
 const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
@@ -36,7 +38,7 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
               >
                 <ListItemAvatar>
                   <Avatar>
-                    <ArticleIcon />
+                    {note?.group ? <GroupIcon /> : <ArticleIcon />}
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={note.title} secondary={note.timestamp} />

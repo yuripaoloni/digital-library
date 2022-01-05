@@ -70,8 +70,14 @@ export const editNote = ({ id, title, description }) => {
   );
 };
 
-export const getAllNotes = ({ book }) => {
+export const getPersonalNotes = ({ book }) => {
   return axios.post("/note/all", book, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getSharedNotes = ({ book }) => {
+  return axios.post("/note/all/shared", book, {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
@@ -199,6 +205,28 @@ export const deleteBook = (book) => {
     method: "delete",
     url: "/book/saved/delete",
     data: { ...book },
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const getGroupSharedNotes = (groupId) => {
+  return axios.get(`/group/shared/${groupId}`, {
+    headers: { Authorization: localStorage.getItem("authToken") },
+  });
+};
+
+export const shareNote = (groupId, noteId) => {
+  return axios.post(
+    `/group/share/${groupId}/${noteId}`,
+    {},
+    {
+      headers: { Authorization: localStorage.getItem("authToken") },
+    }
+  );
+};
+
+export const unshareNote = (groupId, noteId) => {
+  return axios.delete(`/group/share/${groupId}/${noteId}`, {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };

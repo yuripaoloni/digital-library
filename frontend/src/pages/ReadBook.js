@@ -131,6 +131,29 @@ const ReadBook = () => {
             {loading ? <Skeleton variant="text" width={100} /> : book?.author}
           </Typography>
         </Grid>
+        {!loading && (
+          <Grid pb="2vh">
+            <IconButton
+              data-testid="bookmark-icon-button"
+              onClick={() => setShowModal(true)}
+            >
+              <BookmarkBorderIcon />
+            </IconButton>
+            <IconButton
+              data-testid="note-icon-button"
+              LinkComponent={Link}
+              to={`/books/notes/${libraryId}/${title}/${readingPage}`}
+            >
+              <ModeIcon />
+            </IconButton>
+            <IconButton
+              data-testid="favorite-icon-button"
+              onClick={() => handleFavoriteBook()}
+            >
+              <FavoriteIcon sx={{ color: isFavorite ? "red" : "primary" }} />
+            </IconButton>
+          </Grid>
+        )}
         <Grid container justifyContent="center">
           {loading ? (
             <Skeleton
@@ -176,29 +199,6 @@ const ReadBook = () => {
               onChange={(e, page) => setReadingPage(page)}
             />
           </Grid>
-          {!loading && (
-            <Grid paddingTop="2vh">
-              <IconButton
-                data-testid="bookmark-icon-button"
-                onClick={() => setShowModal(true)}
-              >
-                <BookmarkBorderIcon />
-              </IconButton>
-              <IconButton
-                data-testid="note-icon-button"
-                LinkComponent={Link}
-                to={`/books/notes/${libraryId}/${title}/${readingPage}`}
-              >
-                <ModeIcon />
-              </IconButton>
-              <IconButton
-                data-testid="favorite-icon-button"
-                onClick={() => handleFavoriteBook()}
-              >
-                <FavoriteIcon sx={{ color: isFavorite ? "red" : "primary" }} />
-              </IconButton>
-            </Grid>
-          )}
         </Grid>
       </Grid>
     </PageWrapper>

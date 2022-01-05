@@ -3,8 +3,19 @@ import MUIRichTextEditor from "mui-rte";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import SendIcon from "@mui/icons-material/Send";
+import CancelScheduleSendIcon from "@mui/icons-material/CancelScheduleSend";
 
-const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
+const TextEditor = ({
+  note,
+  onSave,
+  onDelete,
+  onSelectNotes,
+  onShare,
+  onUnshare,
+  shared,
+  removable,
+}) => {
   const editorTheme = createTheme();
   Object.assign(editorTheme, {
     overrides: {
@@ -12,9 +23,7 @@ const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
         root: {
           maxHeight: "800px",
           maxWidth: "700px",
-          //border: "1px solid grey",
           marginBottom: 15,
-          marginTop: 10,
         },
         editor: {
           height: 380,
@@ -45,6 +54,8 @@ const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
     },
   });
 
+  let controls = ["bold", "italic", "bulletList", "save", "selectNotes"];
+
   return (
     <ThemeProvider theme={editorTheme}>
       <MUIRichTextEditor
@@ -52,14 +63,7 @@ const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
         defaultValue={note && note.toString()}
         label="Nuova nota..."
         onSave={onSave}
-        controls={[
-          "bold",
-          "italic",
-          "bulletList",
-          "save",
-          "delete",
-          "selectNotes",
-        ]}
+        controls={removable ? [...controls, "share", "delete"] : [...controls]}
         customControls={[
           {
             name: "delete",
@@ -72,6 +76,16 @@ const TextEditor = ({ note, onSave, onDelete, onSelectNotes }) => {
             icon: <LibraryBooksIcon data-testid="select-note" />,
             type: "callback",
             onClick: () => onSelectNotes(),
+          },
+          {
+            name: "share",
+            icon: shared ? (
+              <CancelScheduleSendIcon data-testid="unshare-note" />
+            ) : (
+              <SendIcon data-testid="share-note" />
+            ),
+            type: "callback",
+            onClick: () => (shared ? onUnshare() : onShare()),
           },
         ]}
       />

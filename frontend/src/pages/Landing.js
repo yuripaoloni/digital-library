@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import BookItem from "components/BookItem";
 import Footer from "components/Footer";
+import Logo from "../assets/logo.ico";
+import { Divider, Grid } from "@mui/material";
 
 export default function Landing() {
   const books = useSelector((state) => state.books.books);
@@ -17,17 +19,27 @@ export default function Landing() {
     <>
       <Box
         sx={{
-          bgcolor: "background.paper",
+          bgcolor: " #F3F4F7",
           pb: 6,
           justifyContent: "center",
         }}
       >
+        <Container
+          component="img"
+          sx={{
+            height: "25vh",
+            width: "30vh",
+          }}
+          alt="The house from the offer."
+          src={Logo}
+        />
+
         <Container maxWidth="sm">
           <Typography
             variant="h2"
             align="center"
             color="text.primary"
-            sx={{ fontWeight: 400 }}
+            sx={{ fontWeight: 400, paddingTop: "2vh" }}
             gutterBottom
             data-testid="main_header"
           >
