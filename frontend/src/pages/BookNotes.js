@@ -84,8 +84,8 @@ const BookNotes = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    !book && dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
-  }, [book, dispatch, libraryId, title, pageUrl, readingPage]);
+    dispatch(fetchSingleBook({ libraryId, title, page: readingPage }));
+  }, [dispatch, libraryId, title, pageUrl, readingPage]);
 
   const handleShowTitleDialog = (data) => {
     setNote((prev) => {
@@ -222,7 +222,7 @@ const BookNotes = () => {
       />
       <Grid pl={2} pb={2}>
         {loading ? (
-          <Skeleton variant="text" width="80%" />
+          <Skeleton variant="text" width="60%" />
         ) : (
           <Typography variant="h5">{title}</Typography>
         )}
@@ -234,14 +234,14 @@ const BookNotes = () => {
         <Grid item xs={12}>
           <Grid item my={2}>
             {loading ? (
-              <Skeleton variant="text" width="60%" />
+              <Skeleton variant="text" width="30%" />
             ) : (
               <Typography variant="h6">
                 {note.title ? note.title : "Nuova nota"}
               </Typography>
             )}
             {loading ? (
-              <Skeleton variant="text" width="40%" />
+              <Skeleton variant="text" width="20%" />
             ) : (
               <Typography variant="subtitle2">
                 {note.group && `${note.group.name}, `}
