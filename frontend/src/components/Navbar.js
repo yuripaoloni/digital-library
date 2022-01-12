@@ -21,6 +21,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import GroupIcon from "@mui/icons-material/Group";
 import logo from "../assets/logo.ico";
 import LogoUnicam from "../assets/logoUnicam.png";
 import { Link } from "react-router-dom";
@@ -177,12 +178,19 @@ export default function Navbar({ test }) {
         <List>
           {isAuth ? (
             <>
-              <ListItem component={Link} to="/profile" button key="home">
+              <ListItem component={Link} to="/profile" button key="profile">
                 <ListItemIcon>
                   {" "}
                   <AccountCircleIcon />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Profilo" />
+              </ListItem>
+              <ListItem component={Link} to="/groups" button key="groups">
+                <ListItemIcon>
+                  {" "}
+                  <GroupIcon />{" "}
+                </ListItemIcon>
+                <ListItemText primary="Gruppi" />
               </ListItem>
               <ListItem
                 button
