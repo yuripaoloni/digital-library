@@ -25,14 +25,7 @@ const PersonalPage = () => {
   const renderBook = (book) => {
     return (
       <Grid
-        margin="20px"
-        maxWidth="00%"
-        minWidth="70%"
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-
+        width="70vw"
         key={book.id}
       >
         <BookItem book={book} />
