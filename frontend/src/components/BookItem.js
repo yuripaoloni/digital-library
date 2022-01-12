@@ -32,20 +32,22 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
   };
 
   return (
-    <Paper data-testid={`book-item-${index}`} elevation={4} sx={{ padding: "5px", margin: '10px 0 10px 0', width: '100%' }}>
-      <Grid container alignItems="center" flexDirection={{ xs: "column", sm: "row" }} columnSpacing={2}>
-        <Grid item sm={3} container direction="column" justifyContent="center" alignItems="center">
+    <Paper data-testid={`book-item-${index}`} elevation={4} sx={{ px: 2 }}>
+      <Grid container alignItems="center" mt={1.5} mb={0.5} columnSpacing={2}>
+        <Grid item lg={1} md={1.5} sm={2}>
           {!book ? (
             <Skeleton variant="rectangular" height={100} />
           ) : (
             <Img
               src={book.cover || DefaultImage}
+              onError={e => e.currentTarget.setAttribute("src", DefaultImage)}
               loading="lazy"
               style={{ borderRadius: "3px", width: '69px', height: "100px" }}
             />
           )}
         </Grid>
-        <Grid item sm={5} width={{ xs: "70%" }} container direction='column' justifyContent="center" alignItems="center">
+
+        <Grid item md={6} sm={10}>
           {!book ? (
             <>
               <Skeleton variant="text" />
@@ -75,7 +77,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
             </>
           )}
         </Grid>
-        <Grid item sm={2}>
+        <Grid item md={3} sm={8}>
           {!book ? (
             <Skeleton variant="text" />
           ) : (
@@ -84,7 +86,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
             </MaterialLink>
           )}
         </Grid>
-        <Grid item lg={2} sm={2}>
+        <Grid item lg={2} md={1.5} sm={4}>
           {!book ? (
             <Skeleton variant="rectangle" />
           ) : (
