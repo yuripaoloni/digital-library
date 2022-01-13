@@ -13,32 +13,13 @@ import IconButton from "@mui/material/IconButton";
 import PageWrapper from "components/PageWrapper";
 import { Link } from "react-router-dom";
 import { Divider } from "@mui/material";
-
-
+import Stack from "@mui/material/Stack";
 
 const PersonalPage = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.userLoading);
 
   if (loading) return <Spinner />;
-
-  const renderBook = (book) => {
-    return (
-      <Grid
-        margin="20px"
-        maxWidth="00%"
-        minWidth="70%"
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        width="70vw"
-        key={book.id}
-      >
-        <BookItem book={book} />
-      </Grid>
-    );
-  };
 
   return (
     <PageWrapper reducer="auth">
@@ -85,7 +66,6 @@ const PersonalPage = () => {
               <Typography variant="body2" component="h2">
                 {user.name} & {user.surname}
               </Typography>
-
             </Grid>
             <Divider />
 
@@ -96,7 +76,7 @@ const PersonalPage = () => {
               direction="column"
               justifyContent="center"
               alignItems="center"
-            //margin="10px 0 10px 0"
+              //margin="10px 0 10px 0"
             >
               <IconButton
                 data-testid="groups-link-icon"
@@ -106,7 +86,11 @@ const PersonalPage = () => {
               >
                 <GroupIcon />
               </IconButton>
-              {loading ? <Spinner /> : user?.savedBooks?.map(renderBook)}
+              <Stack spacing={2}>
+                {user?.savedBooks?.map((book, index) => (
+                  <BookItem key={index} book={book} index={index} />
+                ))}
+              </Stack>
             </Grid>
           </Grid>
         </Box>
