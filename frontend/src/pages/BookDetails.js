@@ -16,6 +16,7 @@ import { styled } from "@mui/material/styles";
 import PageWrapper from "components/PageWrapper";
 import { formatBookKeys, getBookIcons } from "utils/bookUtils";
 import { fetchSingleBook, selectBook } from "states/booksSlice";
+import DefaultImage from "assets/book.jpg";
 
 const Img = styled("img")({
   height: 400,
@@ -109,7 +110,14 @@ const BookDetails = () => {
                   {loading ? (
                     <Skeleton variant="rectangle" height={400} width={280} />
                   ) : (
-                    <Img src={book?.cover} loading="eager" />
+                    <Img
+                      src={book?.cover || DefaultImage}
+                      loading="eager"
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = DefaultImage;
+                      }}
+                    />
                   )}
                 </Grid>
               </Grid>

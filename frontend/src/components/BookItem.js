@@ -9,8 +9,7 @@ import MaterialLink from "@mui/material/Link";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { selectBook } from "states/booksSlice";
-import DefaultImage from '../assets/book.jpg'
-
+import DefaultImage from "assets/book.jpg";
 
 const Img = styled("img")({
   height: 100,
@@ -40,9 +39,12 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
           ) : (
             <Img
               src={book.cover || DefaultImage}
-              onError={e => e.currentTarget.setAttribute("src", DefaultImage)}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = DefaultImage;
+              }}
               loading="lazy"
-              style={{ borderRadius: "3px", width: '69px', height: "100px" }}
+              style={{ borderRadius: "3px", width: "69px", height: "100px" }}
             />
           )}
         </Grid>

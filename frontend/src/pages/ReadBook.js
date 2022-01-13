@@ -18,6 +18,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ModeIcon from "@mui/icons-material/Mode";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { isFavoriteBook, onDeleteBook, onSaveBook } from "states/authSlice";
+import DefaultImage from "assets/book.jpg";
 
 const Img = styled("img")({
   height: 700,
@@ -177,7 +178,11 @@ const ReadBook = () => {
                   height: 450,
                 },
               }}
-              src={pageUrl}
+              src={pageUrl || DefaultImage}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null; // prevents looping
+                currentTarget.src = DefaultImage;
+              }}
               loading="eager"
             />
           )}

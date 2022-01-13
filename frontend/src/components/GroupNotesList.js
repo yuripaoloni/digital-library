@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
+import DefaultImage from "assets/book.jpg";
 
 const Img = styled("img")({
   height: 50,
@@ -46,7 +47,14 @@ const GroupNotesList = ({ show, onClose }) => {
                   }
                 >
                   <ListItemAvatar>
-                    <Img src={note.book?.cover} loading="eager" />
+                    <Img
+                      src={note.book?.cover || DefaultImage}
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = DefaultImage;
+                      }}
+                      loading="eager"
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={note.title}
