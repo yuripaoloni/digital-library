@@ -6,7 +6,7 @@
   <h2 align="center">Digital Library</h2>
     
    ![backend test & deploy](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/heroku.yml/badge.svg)
-   ![frontend test](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/test.yaml/badge.svg)
+   ![frontend test](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/frontend_tests.yaml/badge.svg)
 </div>
 
 Digital Library is a web application for studying and taking notes on ancient books. Users can even create and join "study groups" to share notes with the group members.
