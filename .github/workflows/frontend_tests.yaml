@@ -1,13 +1,13 @@
-name: run test
+name: frontend tests
 
 on:
   push:
     paths:
-      - 'frontend/**'
+      - "frontend/**"
     branches: [main]
   pull_request:
-    paths: 
-      - 'frontend/**'
+    paths:
+      - "frontend/**"
     branches: [main]
 
   workflow_dispatch:
