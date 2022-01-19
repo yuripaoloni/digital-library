@@ -5,7 +5,8 @@
 
   <h2 align="center">Digital Library</h2>
     
-   ![backend test & deploy](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/heroku.yml/badge.svg)
+   ![backend deploy](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/heroku.yml/badge.svg)
+   ![backend test](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/backend_tests.yaml/badge.svg)
    ![frontend test](https://github.com/FabrizioFornari/SPM2021-YMLA/actions/workflows/frontend_tests.yaml/badge.svg)
 </div>
 
