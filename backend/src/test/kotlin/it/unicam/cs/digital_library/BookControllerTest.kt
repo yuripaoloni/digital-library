@@ -1,20 +1,53 @@
 package it.unicam.cs.digital_library
 
 import it.unicam.cs.digital_library.controller.BookController
-import it.unicam.cs.digital_library.model.Note
-import it.unicam.cs.digital_library.repository.LibraryRepository
-import it.unicam.cs.digital_library.repository.NoteRepository
-import it.unicam.cs.digital_library.repository.UserRepository
+import it.unicam.cs.digital_library.controller.model.*
+import it.unicam.cs.digital_library.init.BaseTest
+import it.unicam.cs.digital_library.init.DatabaseInitializer.USER1
+import it.unicam.cs.digital_library.init.DatabaseInitializer.USER2
+import it.unicam.cs.digital_library.init.Method
+import it.unicam.cs.digital_library.init.withLogin
+import it.unicam.cs.digital_library.network.LibraryService
+import it.unicam.cs.digital_library.repository.*
+import it.unicam.cs.digital_library.utils.fromJson
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
 class BookControllerTest(
+    @Autowired private val mockMvc: MockMvc,
     @Autowired private val bookController: BookController,
-    @Autowired private val userRepository: UserRepository,
-    @Autowired private val noteRepository: NoteRepository,
-    @Autowired private val libraryRepository: LibraryRepository
+    @Autowired libraryService: LibraryService,
+    @Autowired libraryRepository: LibraryRepository,
+    @Autowired userRepository: UserRepository,
+    @Autowired bookRepository: BookRepository,
+    @Autowired bookmarkRepository: BookmarkRepository,
+    @Autowired noteRepository: NoteRepository,
+    @Autowired sharedNoteRepository: SharedNoteRepository,
+    @Autowired groupRepository: GroupRepository,
+    @Autowired groupMemberRepository: GroupMemberRepository,
+    @Autowired favoriteBookRepository: FavoriteBookRepository,
+    @Autowired bCryptPasswordEncoder: BCryptPasswordEncoder
+) : BaseTest(
+    libraryService,
+    libraryRepository,
+    userRepository,
+    bookRepository,
+    bookmarkRepository,
+    noteRepository,
+    sharedNoteRepository,
+    groupRepository,
+    groupMemberRepository,
+    favoriteBookRepository,
+    bCryptPasswordEncoder
 ) {
 
     @Test
@@ -38,4 +71,158 @@ class BookControllerTest(
         assert(randomBooks.isNotEmpty())
         assert(randomBooks.first().size <= 10)
     }
+
+    @Test
+    @WithMockUser(USER1)
+    fun getBookPageTest() {
+        val book = bookController.getRandomBooks().first().first()
+        assert(bookController.getBookPage(BookPageRequest(book, 1)).isNotEmpty())
+    }
+
+    @Test
+    fun bookmarkTest() {
+        val book = bookController.getRandomBooks().first().first()
+
+        // bookmark add
+        val bookmarkResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/bookmark/add",
+            BookmarkCreation(book, 1, "Test")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<BookmarkResponse>()!!
+
+        // error bookmark on same page
+        mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/bookmark/add",
+            BookmarkCreation(book, 1, "Test")
+        ).andExpect {
+            status { is4xxClientError() }
+        }
+
+        // bookmark edit
+        mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/bookmark/edit",
+            BookmarkEdit(bookmarkResponse.id, "Test edit")
+        ).andExpect {
+            status { isOk() }
+        }
+
+        // bookmark all
+        mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/bookmark/all",
+            book
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<List<BookmarkResponse>>()!!.let { assert(it.isNotEmpty()) }
+
+        // bookmark edit
+        mockMvc.withLogin(
+            USER1,
+            Method.DELETE,
+            "/bookmark/delete/${bookmarkResponse.id}"
+        ).andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun savedBooksTest() {
+        val book = bookController.getRandomBooks().first().first()
+
+        // add to saved books
+        mockMvc.withLogin(
+            USER2,
+            Method.POST,
+            "/book/saved/add",
+            book
+        ).andExpect {
+            status { isOk() }
+        }
+
+        // remove from saved books
+        mockMvc.withLogin(
+            USER2,
+            Method.DELETE,
+            "/book/saved/delete",
+            book
+        ).andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
+    fun notesTest() {
+        val book = bookController.getRandomBooks().first().first()
+
+        // add note
+        var noteResponses = (1..10).map {
+            mockMvc.withLogin(
+                USER2,
+                Method.POST,
+                "/note/add",
+                NoteCreation(book, it, "Note $it", "Note $it description")
+            ).andExpect {
+                status { isOk() }
+            }.andReturn().response.contentAsString.fromJson<NoteResponse>()!!
+        }
+
+        // edit note
+        mockMvc.withLogin(
+            USER2,
+            Method.POST,
+            "/note/edit",
+            NoteEdit(noteResponses.first().id, "Note 1", "Note 1 description updated")
+        ).andExpect {
+            status { isOk() }
+        }
+
+        // delete note
+        mockMvc.withLogin(
+            USER2,
+            Method.DELETE,
+            "/note/delete/${noteResponses.first().id}"
+        ).andExpect {
+            status { isOk() }
+        }
+
+        // delete note error
+        mockMvc.withLogin(
+            USER2,
+            Method.DELETE,
+            "/note/delete/${noteResponses.first().id}"
+        ).andExpect {
+            status { is4xxClientError() }
+        }
+
+        noteResponses = noteResponses.subList(1, noteResponses.size - 1)
+
+        // get book notes on page
+        mockMvc.withLogin(
+            USER2,
+            Method.POST,
+            "/note/page",
+            BookPageRequest(book, noteResponses.first().page)
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<List<NoteResponse>>()!!.let { assert(it.isNotEmpty()) }
+
+        mockMvc.withLogin(
+            USER2,
+            Method.POST,
+            "/note/all",
+            book
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<List<NoteResponse>>()!!.let { assert(it.isNotEmpty()) }
+    }
+
+    // TODO share notes
 }
