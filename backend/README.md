@@ -35,7 +35,7 @@ SPRING_DATASOURCE_PASSWORD="password"
 
 - To run the server use: `./gradlew bootRun`
 
-By default the server is started on the 8080 port but if you want to change that you need to add the following line to
+By default, the server is started on the 8080 port but if you want to change that you need to add the following line to
 the `./src/main/resources/application.properties` file.
 
 ```shell script
