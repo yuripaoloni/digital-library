@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["library_id", "remoteId"])])
 data class Book(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long = 0,
     val title: String,
     val author: String,

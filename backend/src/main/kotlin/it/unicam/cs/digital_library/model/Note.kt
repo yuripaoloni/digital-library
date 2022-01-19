@@ -9,7 +9,7 @@ import javax.persistence.*
 @Entity
 data class Note(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)

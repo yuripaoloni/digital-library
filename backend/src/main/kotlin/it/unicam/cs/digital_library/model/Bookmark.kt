@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["book_id", "page", "user_id"])])
 data class Bookmark(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)

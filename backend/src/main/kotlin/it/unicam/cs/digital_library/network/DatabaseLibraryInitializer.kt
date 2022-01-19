@@ -8,7 +8,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
-class DatabaseInit(@Autowired val libraryRepository: LibraryRepository, @Autowired val libraryService: LibraryService) :
+class DatabaseLibraryInitializer(@Autowired val libraryRepository: LibraryRepository, @Autowired val libraryService: LibraryService) :
     ApplicationRunner {
     override fun run(args: ApplicationArguments?) {
         libraryService.getLibraries().forEach {

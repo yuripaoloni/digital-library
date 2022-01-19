@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(uniqueConstraints = [UniqueConstraint(columnNames = ["book_id", "user_id"])])
 data class FavoriteBook(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long = 0,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)

@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table(name = "\"group\"")
 data class Group(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long,
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
