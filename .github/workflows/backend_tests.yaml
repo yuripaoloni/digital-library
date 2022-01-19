@@ -2,17 +2,12 @@ name: backend tests
 
 on:
   push:
-    paths:
-      - 'backend/**'
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./backend
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -26,4 +21,4 @@ jobs:
         uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
           arguments: clean test
-          gradle-executable: ./backend/gradle/wrapper/gradle-wrapper.properties
+          gradle-executable: /backend/gradle
