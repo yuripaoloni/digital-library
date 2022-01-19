@@ -32,6 +32,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test:5.5.1")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
+    implementation("com.h2database:h2:2.0.204")
 }
 
 tasks.withType<KotlinCompile> {
@@ -43,6 +44,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "failed")
+    }
 }
 
 val mainClazz = "it.unicam.cs.digital_library.DigitalLibraryApplicationKt"
