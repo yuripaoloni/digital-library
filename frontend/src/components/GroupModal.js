@@ -47,6 +47,7 @@ const GroupModal = ({ show, onClose }) => {
 
   const groupsLoading = useSelector((state) => state.groups.loading);
   const selectedGroup = useSelector((state) => state.groups.selectedGroup);
+  const username = useSelector((state) => state.auth.user.username);
 
   useEffect(() => {
     if (selectedGroup) {
@@ -56,7 +57,7 @@ const GroupModal = ({ show, onClose }) => {
       setEditMode(true);
     } else {
       setGroupName("");
-      setAddedUsers("");
+      setAddedUsers([]);
       setEditMode(false);
     }
   }, [selectedGroup]);
@@ -79,7 +80,8 @@ const GroupModal = ({ show, onClose }) => {
   const fetchUsers = async (param) => {
     try {
       const res = await searchUser(param);
-      setUsers(res.data);
+      let users = res.data.filter((item) => item.username !== username);
+      setUsers(users);
       setSearchLoading(false);
     } catch (err) {
       dispatch(setError());

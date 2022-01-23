@@ -41,7 +41,10 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
                     {note?.group ? <GroupIcon /> : <ArticleIcon />}
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={note.title} secondary={note.timestamp} />
+                <ListItemText
+                  primary={note.title}
+                  secondary={note?.group ? note.group.name : note.timestamp}
+                />
               </ListItem>
             )
         )}

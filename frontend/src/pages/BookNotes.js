@@ -109,13 +109,6 @@ const BookNotes = () => {
   };
 
   const onSave = (noteTitle) => {
-    setNote((prev) => {
-      return {
-        ...prev,
-        title: noteTitle,
-      };
-    });
-
     //? id = -1 means new note
     note.id === -1
       ? dispatch(
@@ -128,15 +121,18 @@ const BookNotes = () => {
         )
       : dispatch(
           onEditNote({
-            book: book,
-            page: readingPage,
-            timestamp: note.timestamp,
-            title: noteTitle,
-            description: note.description,
-            id: note.id,
+            note: { ...note, book: book, page: readingPage, title: noteTitle },
           })
         );
 
+    setNote((prev) => {
+      return {
+        ...prev,
+        book: book,
+        page: readingPage,
+        title: noteTitle,
+      };
+    });
     setShowTitleDialog(false);
   };
 

@@ -23,21 +23,17 @@ const PersonalPage = () => {
 
   return (
     <PageWrapper reducer="auth">
-      <Container component="main" sx={{ maxWidth: "80vw" }}>
+      <Container component="main">
         <CssBaseline />
-
         <Box
           sx={{
-            //backgroundColor: "white",
             borderRadius: "2vh",
-            // boxShadow: 7,
-
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <Grid container direction="column" spacing={3}>
+          <Grid container direction="column">
             <Grid
               item
               xs={12}
@@ -64,20 +60,8 @@ const PersonalPage = () => {
                 {user.email}
               </Typography>
               <Typography variant="body2" component="h2">
-                {user.name} & {user.surname}
+                {user.name} {user.surname}
               </Typography>
-            </Grid>
-            <Divider />
-
-            <Grid
-              item
-              xs={12}
-              container
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
-              //margin="10px 0 10px 0"
-            >
               <IconButton
                 data-testid="groups-link-icon"
                 size="large"
@@ -86,12 +70,20 @@ const PersonalPage = () => {
               >
                 <GroupIcon />
               </IconButton>
-              <Stack spacing={2}>
-                {user?.savedBooks?.map((book, index) => (
-                  <BookItem key={index} book={book} index={index} />
-                ))}
-              </Stack>
             </Grid>
+            <Divider />
+
+            <Stack px={2} mt={2} spacing={2}>
+              {user?.savedBooks?.length > 0 ? (
+                user?.savedBooks?.map((book, index) => (
+                  <BookItem key={index} book={book} index={index} />
+                ))
+              ) : (
+                <Typography variant="subtitle2" textAlign="center">
+                  Nessun libro salvato
+                </Typography>
+              )}
+            </Stack>
           </Grid>
         </Box>
       </Container>

@@ -58,42 +58,64 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
             dense
             sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
           >
-            {group && group?.members.length > 0
-              ? group.members.map((member, index) => (
-                  <ListItem
-                    key={index}
-                    data-testid={`group-member-item-${index}`}
-                    disableGutters
-                    disablePadding
-                    secondaryAction={
-                      owned && (
-                        <IconButton
-                          data-testid="remove-member-icon"
-                          onClick={() =>
-                            handleShowConfirmDialog([member.email], group.id)
-                          }
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )
-                    }
-                  >
-                    <ListItemButton>
-                      <ListItemAvatar>
-                        <Avatar
-                          alt={`member-picture-${index}`}
-                          src={`data:image/jpeg;base64,${member.picture}`}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        id={`member-list-secondary-label-${index}`}
-                        primary={`${member.name} ${member.surname} (${member.username})`}
-                        secondary={`${member.email}`}
+            {group && (
+              <ListItem
+                key={"creator"}
+                data-testid={`group-member-item-creator`}
+                disableGutters
+                disablePadding
+              >
+                <ListItemButton>
+                  <ListItemAvatar>
+                    <Avatar
+                      alt={`member-picture-creator`}
+                      src={`data:image/jpeg;base64,${group.creator.picture}`}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    id={`member-list-secondary-label-owner`}
+                    primary={`${group.creator.name} ${group.creator.surname} (${group.creator.username})`}
+                    secondary={`${group.creator.email}`}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
+            {group &&
+              group?.members.length > 0 &&
+              group.members.map((member, index) => (
+                <ListItem
+                  key={index}
+                  data-testid={`group-member-item-${index}`}
+                  disableGutters
+                  disablePadding
+                  secondaryAction={
+                    owned && (
+                      <IconButton
+                        data-testid="remove-member-icon"
+                        onClick={() =>
+                          handleShowConfirmDialog([member.email], group.id)
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )
+                  }
+                >
+                  <ListItemButton>
+                    <ListItemAvatar>
+                      <Avatar
+                        alt={`member-picture-${index}`}
+                        src={`data:image/jpeg;base64,${member.picture}`}
                       />
-                    </ListItemButton>
-                  </ListItem>
-                ))
-              : "Nessun membro nel gruppo"}
+                    </ListItemAvatar>
+                    <ListItemText
+                      id={`member-list-secondary-label-${index}`}
+                      primary={`${member.name} ${member.surname} (${member.username})`}
+                      secondary={`${member.email}`}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
           </List>
         </DialogContent>
         <DialogActions>

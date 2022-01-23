@@ -35,7 +35,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
       <Grid container alignItems="center" mt={1.5} mb={0.5} columnSpacing={2}>
         <Grid item lg={1} md={1.5} sm={2}>
           {!book ? (
-            <Skeleton variant="rectangular" height={100} />
+            <Skeleton variant="rectangular" height={100} width={69} />
           ) : (
             <Img
               src={book.cover || DefaultImage}
@@ -52,7 +52,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
         <Grid item md={6} sm={10}>
           {!book ? (
             <>
-              <Skeleton variant="text" />
+              <Skeleton variant="text" width="80%" />
               <Skeleton variant="text" width="60%" />
             </>
           ) : (
@@ -81,7 +81,7 @@ const BookItem = ({ book, page = 1, index = 0 }) => {
         </Grid>
         <Grid item md={3} sm={8}>
           {!book ? (
-            <Skeleton variant="text" />
+            <Skeleton variant="text" width="80%" />
           ) : (
             <MaterialLink variant="subtitle1" href={book.library.url}>
               {book.library.name}

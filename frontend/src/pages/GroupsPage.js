@@ -119,7 +119,8 @@ const GroupsPage = () => {
             ? Array(3)
                 .fill(0)
                 .map((i, index) => <GroupItem key={index} group={false} />)
-            : createdGroups.map((createdGroup, index) => (
+            : createdGroups.length > 0
+            ? createdGroups.map((createdGroup, index) => (
                 <GroupItem
                   key={index}
                   owned
@@ -129,7 +130,8 @@ const GroupsPage = () => {
                   onEdit={handleEditGroup}
                   onShowNotes={handleShowSharedNotes}
                 />
-              ))}
+              ))
+            : "Nessun risultato"}
         </Stack>
         <Divider />
         <Grid item xs={12} mt={2}>
@@ -139,7 +141,8 @@ const GroupsPage = () => {
               ? Array(3)
                   .fill(0)
                   .map((i, index) => <GroupItem key={index} group={false} />)
-              : joinedGroups.map((joinedGroup, index) => (
+              : joinedGroups.length > 0
+              ? joinedGroups.map((joinedGroup, index) => (
                   <GroupItem
                     key={index}
                     group={joinedGroup}
@@ -147,7 +150,8 @@ const GroupsPage = () => {
                     onDelete={handleShowConfirmDialog}
                     onShowNotes={handleShowSharedNotes}
                   />
-                ))}
+                ))
+              : "Nessun risultato"}
           </Stack>
         </Grid>
       </Box>

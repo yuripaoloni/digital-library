@@ -92,7 +92,6 @@ export default function SignIn() {
               required
               fullWidth
               error={passwordError}
-              helperText="Lunghezza minima 6 caratteri"
               name="password"
               label="Password"
               type="password"
@@ -122,7 +121,7 @@ export default function SignIn() {
                   variant="body2"
                   style={{ color: "#222C4A" }}
                 >
-                  Forgot password?
+                  Password dimenticata?
                 </Typography>
               </Grid>
               <Grid item>
@@ -133,7 +132,7 @@ export default function SignIn() {
                   variant="body2"
                   style={{ color: "#222C4A" }}
                 >
-                  Don't have an account? Sign Up
+                  Non hai un account? Registrati
                 </Typography>
               </Grid>
             </Grid>

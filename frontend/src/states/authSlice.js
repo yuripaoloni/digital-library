@@ -124,17 +124,23 @@ const authSlice = createSlice({
         state.userLoading = true;
         state.error = { error: false, variant: "error", message: "" };
       })
-      .addMatcher(
-        (action) => action.type?.endsWith("auth/pending"),
-        (state) => {
-          state.loading = true;
-          state.error = { error: false, variant: "error", message: "" };
-        }
-      )
-      .addMatcher(
-        (action) =>
-          action.type?.endsWith("auth/rejected") ||
-          action.type?.endsWith("searchUser/user/rejected"),
+      .addCase(onSignIn.rejected, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message = "Credenziali errate";
+      })
+      .addCase(onSignUp.rejected, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore nei dati di registrazione. Prova di nuovo.";
+      })
+      .addCase(
+        (action) => onSearchUser.rejected,
         (state) => {
           state.loading = false;
           state.userLoading = false;
@@ -143,6 +149,13 @@ const authSlice = createSlice({
           state.error.message = localStorage.getItem("authToken")
             ? "Errore durante il recupero dei dati. Prova di nuovo."
             : "Effettua nuovamente il login.";
+        }
+      )
+      .addMatcher(
+        (action) => action.type?.endsWith("auth/pending"),
+        (state) => {
+          state.loading = true;
+          state.error = { error: false, variant: "error", message: "" };
         }
       );
   },

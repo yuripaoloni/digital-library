@@ -8,6 +8,7 @@ import {
   ListItemText,
   DialogContentText,
   DialogContent,
+  Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -33,36 +34,40 @@ const GroupNotesList = ({ show, onClose }) => {
           Seleziona una nota per andare alla pagina degli appunti
         </DialogContentText>
         <List dense>
-          {group && group.notes.length > 0
-            ? group.notes.map((note, index) => (
-                <ListItem
-                  key={index}
-                  disableGutters
-                  data-testid={`group-note-item-${index}`}
-                  button
-                  onClick={() =>
-                    navigate(
-                      `/books/notes/${note.book.library.id}/${note.book.title}/${note.page}`
-                    )
-                  }
-                >
-                  <ListItemAvatar>
-                    <Img
-                      src={note.book?.cover || DefaultImage}
-                      onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = DefaultImage;
-                      }}
-                      loading="eager"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={note.title}
-                    secondary={note.book.title}
+          {group && group?.notes?.length > 0 ? (
+            group.notes.map((note, index) => (
+              <ListItem
+                key={index}
+                disableGutters
+                data-testid={`group-note-item-${index}`}
+                button
+                onClick={() =>
+                  navigate(
+                    `/books/notes/${note.book.library.id}/${note.book.title}/${note.page}`
+                  )
+                }
+              >
+                <ListItemAvatar>
+                  <Img
+                    src={note.book?.cover || DefaultImage}
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = DefaultImage;
+                    }}
+                    loading="eager"
                   />
-                </ListItem>
-              ))
-            : "Nessuna nota condivisa in questo gruppo"}
+                </ListItemAvatar>
+                <ListItemText
+                  primary={note.title}
+                  secondary={`${note.book.title} (Pagina ${note.page})`}
+                />
+              </ListItem>
+            ))
+          ) : (
+            <Typography variant="subtitle2">
+              Nessuna nota condivisa in questo gruppo
+            </Typography>
+          )}
         </List>
       </DialogContent>
     </Dialog>

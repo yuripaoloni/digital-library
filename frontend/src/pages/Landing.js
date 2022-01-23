@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 import BookItem from "components/BookItem";
 import Footer from "components/Footer";
 import Logo from "../assets/logo.ico";
-import { Divider, Grid } from "@mui/material";
 
 export default function Landing() {
   const books = useSelector((state) => state.books.books);
@@ -27,8 +26,8 @@ export default function Landing() {
         <Container
           component="img"
           sx={{
-            height: "25vh",
-            width: "30vh",
+            height: "20vh",
+            width: "25vh",
           }}
           alt="The house from the offer."
           src={Logo}

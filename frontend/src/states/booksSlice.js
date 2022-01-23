@@ -134,9 +134,13 @@ export const onCreateNote = createAsyncThunk(
 
 export const onEditNote = createAsyncThunk(
   "editNote/books/notes",
-  async ({ book, id, title, description, timestamp, page }) => {
-    await editNote({ id, title, description });
-    return { book, id, title, description, timestamp, page };
+  async ({ note }) => {
+    await editNote({
+      id: note.id,
+      title: note.title,
+      description: note.description,
+    });
+    return note;
   }
 );
 
