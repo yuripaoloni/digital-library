@@ -19,7 +19,6 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - continue-on-error: true
       - uses: actions/checkout@v2
 
       - name: Install dependencies
@@ -27,3 +26,4 @@ jobs:
 
       - name: Run tests
         run: yarn test:ci
+        continue-on-error: true
