@@ -78,7 +78,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export default function Navbar({ test }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-
+  const user = useSelector((state) => state.auth.user);
   const isAuth = useSelector((state) => state.auth.isAuth);
 
   const dispatch = useDispatch();
@@ -183,7 +183,7 @@ export default function Navbar({ test }) {
                   {" "}
                   <AccountCircleIcon />{" "}
                 </ListItemIcon>
-                <ListItemText primary="Profilo" />
+                <ListItemText primary={user.username} />
               </ListItem>
               <ListItem component={Link} to="/groups" button key="groups">
                 <ListItemIcon>
