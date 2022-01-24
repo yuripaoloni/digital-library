@@ -100,9 +100,11 @@ const authSlice = createSlice({
         state.authToken = action.payload.authToken;
         state.user = action.payload.user;
         state.loading = false;
+        state.userLoading = false;
       })
       .addCase(onSignUp.fulfilled, (state, action) => {
         state.loading = false;
+        state.userLoading = false;
         state.isRegistered = true;
       })
       .addCase(onSearchUser.fulfilled, (state, action) => {

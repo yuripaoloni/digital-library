@@ -19,7 +19,9 @@ const SelectNotes = ({ show, onClose, readingPage, setNote }) => {
   const notes = useSelector((state) => state.books.notes);
 
   const handleSelection = (note) => {
-    setNote(note);
+    setNote((prev) => {
+      return { ...note };
+    });
     onClose();
   };
 

@@ -33,7 +33,7 @@ const SearchBooks = () => {
                 Array(8)
                   .fill(0)
                   .map((i, index) => <BookItem key={index} book={false} />)
-              ) : books.length > 0 ? (
+              ) : books && books?.length > 0 ? (
                 books[page - 1].map((book, index) => (
                   <BookItem key={index} book={book} page={page} index={index} />
                 ))
