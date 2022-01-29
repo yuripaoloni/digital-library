@@ -21,7 +21,6 @@ data class GroupMember(
     @JoinColumn(name = "user_id")
     val member: User,
 
-    @Column(columnDefinition = "boolean default false")
     val isAdmin: Boolean = false
 )
 

@@ -10,10 +10,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = [], locations = ["classpath:application-test.properties"])
 class LibraryControllerTest(
     @Autowired private val controller: LibraryController,
     @Autowired libraryService: LibraryService,

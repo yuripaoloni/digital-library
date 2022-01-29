@@ -19,11 +19,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = [], locations = ["classpath:application-test.properties"])
 class GroupControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val bookController: BookController,
@@ -59,7 +61,7 @@ class GroupControllerTest(
             USER1,
             Method.POST,
             "/group/create",
-            GroupCreation(listOf(USER2, USER3), "Group 1")
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, false)), "Group 1")
         ).andExpect {
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
@@ -69,7 +71,13 @@ class GroupControllerTest(
             USER1,
             Method.POST,
             "/group/create",
-            GroupCreation(listOf(USER1, USER2, USER3), "Group 2")
+            GroupCreation(
+                listOf(
+                    GroupMemberClient(USER1, false),
+                    GroupMemberClient(USER2, false),
+                    GroupMemberClient(USER3, false)
+                ), "Group 2"
+            )
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -79,7 +87,13 @@ class GroupControllerTest(
             USER1,
             Method.POST,
             "/group/create",
-            GroupCreation(listOf("prova@gmail.com", USER2, USER3), "Group 2")
+            GroupCreation(
+                listOf(
+                    GroupMemberClient("prova@gmail.com", false),
+                    GroupMemberClient(USER2, false),
+                    GroupMemberClient(USER3, false)
+                ), "Group 2"
+            )
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -97,18 +111,33 @@ class GroupControllerTest(
         groupResponse = mockMvc.withLogin(
             USER1,
             Method.POST,
-            "/group/edit/${groupResponse.id}",
-            GroupEdit(listOf(USER2, USER3, USER4), "Group 1")
+            "/group/${groupResponse.id}/edit",
+            GroupEdit(listOf(GroupMemberClient(USER2, true), GroupMemberClient(USER3), GroupMemberClient(USER4)), "Group 1")
         ).andExpect {
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
 
-        // group edit error
+        groupResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/${groupResponse.id}/edit",
+            GroupEdit(
+                listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3), GroupMemberClient(USER4)),
+                "Group 1"
+            )
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
+
+        // group edit error, not admin
         mockMvc.withLogin(
             USER2,
             Method.POST,
-            "/group/edit/${groupResponse.id}",
-            GroupEdit(listOf(USER3), "Group 1")
+            "/group/${groupResponse.id}/edit",
+            GroupEdit(
+                listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, true), GroupMemberClient(USER4)),
+                "Group 1"
+            )
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -117,8 +146,8 @@ class GroupControllerTest(
         mockMvc.withLogin(
             USER1,
             Method.POST,
-            "/group/edit/${groupResponse.id}",
-            GroupEdit(listOf("sample@gmail.com"), "Group 1")
+            "/group/${groupResponse.id}/edit",
+            GroupEdit(listOf(GroupMemberClient("sample@gmail.com")), "Group 1")
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -127,8 +156,8 @@ class GroupControllerTest(
         mockMvc.withLogin(
             USER1,
             Method.POST,
-            "/group/edit/${groupResponse.id}",
-            GroupEdit(listOf(USER1), "Group 1")
+            "/group/${groupResponse.id}/edit",
+            GroupEdit(listOf(GroupMemberClient(USER1)), "Group 1")
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -226,7 +255,7 @@ class GroupControllerTest(
         mockMvc.withLogin(
             USER1,
             Method.DELETE,
-            "/group/created/${groupResponse.id}"
+            "/group/${groupResponse.id}"
         ).andExpect {
             status { isOk() }
         }
@@ -235,7 +264,7 @@ class GroupControllerTest(
         mockMvc.withLogin(
             USER2,
             Method.DELETE,
-            "/group/created/${groupResponse.id}"
+            "/group/${groupResponse.id}"
         ).andExpect {
             status { is4xxClientError() }
         }
@@ -244,7 +273,7 @@ class GroupControllerTest(
         mockMvc.withLogin(
             USER1,
             Method.DELETE,
-            "/group/created/2000000"
+            "/group/2000000"
         ).andExpect {
             status { is4xxClientError() }
         }

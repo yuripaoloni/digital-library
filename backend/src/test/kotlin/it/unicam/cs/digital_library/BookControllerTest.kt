@@ -17,11 +17,13 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = [], locations = ["classpath:application-test.properties"])
 class BookControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val bookController: BookController,

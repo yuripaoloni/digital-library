@@ -20,12 +20,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = [], locations = ["classpath:application-test.properties"])
 class AuthControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired libraryService: LibraryService,
