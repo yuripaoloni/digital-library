@@ -13,4 +13,17 @@ class GroupUtils(
             group_id, user_id
         )) != null
     }
+
+    /**
+     * checks if the user is the creator of the group or an admin member
+     */
+    fun isGroupAdmin(
+        user_id: Int, group_id: Long
+    ): Boolean {
+        val isCreator = groupRepository.findByIdAndCreator_Id(group_id, user_id) != null
+        if (isCreator) return true
+        val isAdminMember = groupMemberRepository.findByGroup_IdAndMember_Id(group_id, user_id)?.isAdmin
+        if (isAdminMember != null && isAdminMember) return true
+        return false
+    }
 }

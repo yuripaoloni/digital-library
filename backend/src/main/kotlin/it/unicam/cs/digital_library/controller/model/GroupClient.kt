@@ -1,5 +1,7 @@
 package it.unicam.cs.digital_library.controller.model
 
-data class GroupCreation(val emails: List<String>, val name: String)
+data class GroupMemberClient(val email: String, val isAdmin: Boolean = false)
 
-data class GroupEdit(val emails: List<String>, val name: String)
+data class GroupCreation(val members: List<GroupMemberClient>, val name: String)
+
+data class GroupEdit(val members: List<GroupMemberClient>, val name: String)

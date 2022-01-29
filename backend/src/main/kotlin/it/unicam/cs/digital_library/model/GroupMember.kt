@@ -19,7 +19,10 @@ data class GroupMember(
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
-    val member: User
+    val member: User,
+
+    @Column(columnDefinition = "boolean default false")
+    val isAdmin: Boolean = false
 )
 
 
