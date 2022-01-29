@@ -50,4 +50,4 @@ The tests were written using the Spring Boot testing framework and H2 in-memory 
 
 ### Host
 
-The server is hosted at: https://digital-library-2021.herokuapp.com
+The server is hosted at the following url: https://digital-library-2021.herokuapp.com
