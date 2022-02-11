@@ -97,11 +97,11 @@ export const handlers = [
       ctx.json(getMockGroup(["MockCreatedGroup1", "MockCreatedGroup2"]))
     )
   ),
-  rest.delete("/group/created/:id", (req, res, ctx) => res(ctx.status(200))),
-  rest.post("/group/edit/:id", (req, res, ctx) =>
+  rest.delete("/group/:id", (req, res, ctx) => res(ctx.status(200))),
+  rest.post("/group/:id/edit", (req, res, ctx) =>
     res(ctx.status(200), ctx.json(getMockGroup([req.body.name])[0]))
   ),
-  rest.delete("/group/created/:id/remove", (req, res, ctx) =>
+  rest.delete("/group/:id/removeMember", (req, res, ctx) =>
     res(ctx.status(200), ctx.json(getMockGroup(["MockGroup"], true)[0]))
   ),
   rest.delete("/group/joined/:id", (req, res, ctx) => res(ctx.status(200))),

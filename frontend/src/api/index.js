@@ -147,14 +147,14 @@ export const getCreatedGroups = () => {
 };
 
 export const deleteGroup = (id) => {
-  return axios.delete(`/group/created/${id}`, {
+  return axios.delete(`/group/${id}`, {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
 
 export const editGroup = (id, emails, name) => {
   return axios.post(
-    `/group/edit/${id}`,
+    `/group/${id}/edit`,
     { emails, name },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
@@ -163,7 +163,7 @@ export const editGroup = (id, emails, name) => {
 export const removeUsersFromGroup = (emails, id) => {
   return axios({
     method: "delete",
-    url: `/group/created/${id}/remove`,
+    url: `/group/${id}/removeMember`,
     data: emails,
     headers: { Authorization: localStorage.getItem("authToken") },
   });
