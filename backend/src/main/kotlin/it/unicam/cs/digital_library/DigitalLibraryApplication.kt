@@ -1,5 +1,6 @@
 package it.unicam.cs.digital_library
 
+import it.unicam.cs.digital_library.email.EmailService
 import it.unicam.cs.digital_library.network.LibraryService
 import it.unicam.cs.digital_library.repository.GroupMemberRepository
 import it.unicam.cs.digital_library.repository.GroupRepository
@@ -25,6 +26,11 @@ class DigitalLibraryApplication {
     @Bean
     fun groupUtils(groupRepository: GroupRepository, groupMemberRepository: GroupMemberRepository): GroupUtils {
         return GroupUtils(groupRepository, groupMemberRepository)
+    }
+
+    @Bean
+    fun emailService(): EmailService {
+        return EmailService()
     }
 }
 
