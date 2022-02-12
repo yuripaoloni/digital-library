@@ -230,3 +230,11 @@ export const unshareNote = (groupId, noteId) => {
     headers: { Authorization: localStorage.getItem("authToken") },
   });
 };
+
+export const passwordRecovery = (email, redirect) => {
+  return axios.post("user/passwordRecovery", { email, redirect });
+};
+
+export const resetPassword = (password, token) => {
+  return axios.post("user/resetPassword", { password, token });
+};

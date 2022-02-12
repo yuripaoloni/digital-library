@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
-import { onSignIn } from "states/authSlice";
+import { onPasswordRecovery, onSignIn } from "states/authSlice";
 import { Navigate } from "react-router";
 import Spinner from "../components/Spinner";
 import { Link, useLocation } from "react-router-dom";
@@ -18,6 +18,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
 
   const { loading, isAuth } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -42,7 +43,14 @@ export default function SignIn() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(onSignIn({ email, password }));
+    forgotPassword
+      ? dispatch(
+          onPasswordRecovery({
+            email,
+            redirect: `${window.location.hostname}/resetPassword`,
+          })
+        )
+      : dispatch(onSignIn({ email, password }));
   };
 
   if (isAuth && !loading) return <Navigate to={from} />;
@@ -65,7 +73,7 @@ export default function SignIn() {
           }}
         >
           <Typography component="h1" variant="h5">
-            Sign in
+            {forgotPassword ? "Cambio password" : "Sign in"}
           </Typography>
           <Box
             component="form"
@@ -87,22 +95,23 @@ export default function SignIn() {
               onChange={(e) => changeEmail(e.target.value)}
               inputProps={{ "data-testid": "signin_email_field" }}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              error={passwordError}
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              value={password}
-              autoComplete="current-password"
-              style={{ color: "#222C4A" }}
-              onChange={(e) => changePassword(e.target.value)}
-              inputProps={{ "data-testid": "signin_password_field" }}
-            />
-
+            {!forgotPassword && (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                error={passwordError}
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                value={password}
+                autoComplete="current-password"
+                style={{ color: "#222C4A" }}
+                onChange={(e) => changePassword(e.target.value)}
+                inputProps={{ "data-testid": "signin_password_field" }}
+              />
+            )}
             <Button
               type="submit"
               fullWidth
@@ -111,31 +120,35 @@ export default function SignIn() {
               style={{ background: "#222C4A" }}
               data-testid="signin_submit_button"
             >
-              Sign In
+              {forgotPassword ? "Invia mail per cambio password" : "Sign in"}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Typography
-                  component={Link}
-                  to="#"
-                  variant="body2"
-                  style={{ color: "#222C4A" }}
-                >
-                  Password dimenticata?
-                </Typography>
+            {!forgotPassword && (
+              <Grid container>
+                <Grid item xs>
+                  <Typography
+                    component={Link}
+                    to="#"
+                    variant="body2"
+                    style={{ color: "#222C4A" }}
+                    onClick={() => setForgotPassword(true)}
+                    data-testid="change_password_button"
+                  >
+                    Password dimenticata?
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography
+                    component={Link}
+                    data-testid="signup_link"
+                    to="/signup"
+                    variant="body2"
+                    style={{ color: "#222C4A" }}
+                  >
+                    Non hai un account? Registrati
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item>
-                <Typography
-                  component={Link}
-                  data-testid="signup_link"
-                  to="/signup"
-                  variant="body2"
-                  style={{ color: "#222C4A" }}
-                >
-                  Non hai un account? Registrati
-                </Typography>
-              </Grid>
-            </Grid>
+            )}
           </Box>
         </Box>
       </Container>

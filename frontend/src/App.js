@@ -18,6 +18,7 @@ import RequireAuth from "components/RequireAuth";
 import { fetchRandomBooks, fetchLibraries } from "states/booksSlice";
 import { onSearchUser } from "states/authSlice";
 import { onFetchGroups } from "states/groupsSlice";
+import ResetPassword from "pages/ResetPassword";
 document.body.style = "background: #F3F4F7;";
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
         />
         <Route exact path="signin" element={<SignIn />} />
         <Route exact path="signup" element={<SignUp />} />
+        <Route exact path="resetPassword" element={<ResetPassword />} />
         <Route
           exact
           path="books/read/:libraryId/:title"

@@ -6,6 +6,8 @@ import {
   searchUser,
   signIn,
   signUp,
+  passwordRecovery,
+  resetPassword,
 } from "api";
 
 const initialState = {
@@ -21,6 +23,7 @@ const initialState = {
   authToken: localStorage.getItem("authToken"),
   user: {},
   isFavorite: false,
+  passwordReset: false,
 };
 
 export const onSignIn = createAsyncThunk(
@@ -61,6 +64,21 @@ export const onDeleteBook = createAsyncThunk(
   async ({ book }) => {
     await deleteBook(book);
     return book.id;
+  }
+);
+
+export const onPasswordRecovery = createAsyncThunk(
+  "passwordRecovery/auth",
+  async ({ email, redirect }) => {
+    await passwordRecovery(email, redirect);
+  }
+);
+
+export const onResetPassword = createAsyncThunk(
+  "resetPassword/auth",
+  async ({ password, resetToken }) => {
+    console.log(resetToken);
+    await resetPassword(password, resetToken);
   }
 );
 
@@ -122,6 +140,22 @@ const authSlice = createSlice({
         state.user.savedBooks = [...updatedBooks];
         state.isFavorite = false;
       })
+      .addCase(onPasswordRecovery.fulfilled, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "success";
+        state.error.message =
+          "Email inviata. Segui le istruzioni nella mail per cambiare la password";
+      })
+      .addCase(onResetPassword.fulfilled, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.passwordReset = true;
+        state.error.error = true;
+        state.error.variant = "success";
+        state.error.message = "Password cambiata con successo";
+      })
       .addCase(onSearchUser.pending, (state) => {
         state.userLoading = true;
         state.error = { error: false, variant: "error", message: "" };
@@ -141,22 +175,35 @@ const authSlice = createSlice({
         state.error.message =
           "Errore nei dati di registrazione. Prova di nuovo.";
       })
-      .addCase(
-        (action) => onSearchUser.rejected,
-        (state) => {
-          state.loading = false;
-          state.userLoading = false;
-          state.error.error = true;
-          state.error.variant = "error";
-          state.error.message = localStorage.getItem("authToken")
-            ? "Errore durante il recupero dei dati. Prova di nuovo."
-            : "Effettua nuovamente il login.";
-        }
-      )
+      .addCase(onPasswordRecovery.rejected, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message = "Errore nell'invio della mail. Prova di nuovo.";
+      })
+      .addCase(onResetPassword.rejected, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message =
+          "Errore nel cambio della password. Prova di nuovo.";
+      })
+      .addCase(onSearchUser.rejected, (state) => {
+        state.loading = false;
+        state.userLoading = false;
+        state.error.error = true;
+        state.error.variant = "error";
+        state.error.message = localStorage.getItem("authToken")
+          ? "Errore durante il recupero dei dati. Prova di nuovo."
+          : "Effettua nuovamente il login.";
+      })
       .addMatcher(
         (action) => action.type?.endsWith("auth/pending"),
         (state) => {
           state.loading = true;
+          state.passwordReset = false;
           state.error = { error: false, variant: "error", message: "" };
         }
       );
