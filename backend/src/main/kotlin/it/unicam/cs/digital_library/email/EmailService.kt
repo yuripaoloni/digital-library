@@ -26,7 +26,7 @@ class EmailService {
     }
 
     fun sendEmail(email: Email): Boolean {
-        val response =
+        return try {
             restTemplate.exchange<Any>(url = "/messages", method = HttpMethod.POST, requestEntity = object : HttpEntity<MultiValueMap<String, String>>(LinkedMultiValueMap<String, String>().apply {
                 add("from", FROM)
                 add("to", email.to)
@@ -35,7 +35,9 @@ class EmailService {
             }, HttpHeaders().apply {
                 contentType = MediaType.APPLICATION_FORM_URLENCODED
             }) {})
-
-        return response.statusCode.is2xxSuccessful
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
