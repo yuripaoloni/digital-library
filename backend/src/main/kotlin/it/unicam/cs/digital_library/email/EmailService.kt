@@ -15,7 +15,7 @@ class EmailService {
     private val restTemplate: RestTemplate
 
     companion object {
-        private val FROM = "Digial Library <noreply@digitallibrary.com>"
+        private val FROM = "Digital Library <noreply@digitallibrary.com>"
     }
 
     init {
