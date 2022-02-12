@@ -40,3 +40,18 @@ test("should perform sign in and logout", async () => {
 
   expect(screen.getByText(/login/i)).toBeDefined();
 });
+
+test("should show reset password", async () => {
+  render(<App />);
+
+  //? await for Landing to be rendered
+  expect(await screen.findByTestId(/book-item-0/i)).toBeDefined();
+
+  userEvent.click(screen.getByTestId("menu-button"));
+
+  userEvent.click(screen.getByText(/login/i));
+
+  userEvent.click(screen.getByTestId("change_password_button"));
+
+  expect(screen.getAllByText(/cambio password/i)).toBeDefined();
+});
