@@ -178,13 +178,21 @@ export default function Navbar({ test }) {
         <List>
           {isAuth ? (
             <>
-              <ListItem component={Link} to="/profile" button key="profile">
-                <ListItemIcon>
-                  {" "}
-                  <AccountCircleIcon />{" "}
-                </ListItemIcon>
-                <ListItemText primary={user.username} />
-              </ListItem>
+              {user.username && (
+                <ListItem
+                  component={Link}
+                  to="/profile"
+                  button
+                  key="profile"
+                  data-testid="profile-link"
+                >
+                  <ListItemIcon>
+                    {" "}
+                    <AccountCircleIcon />{" "}
+                  </ListItemIcon>
+                  <ListItemText primary={user.username} />
+                </ListItem>
+              )}
               <ListItem component={Link} to="/groups" button key="groups">
                 <ListItemIcon>
                   {" "}

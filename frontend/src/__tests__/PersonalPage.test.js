@@ -22,9 +22,9 @@ test("should show user info and saved books", async () => {
 
   userEvent.click(screen.getByTestId("menu-button"));
 
-  userEvent.click(screen.getByText(/profilo/i));
+  userEvent.click(screen.getByTestId("profile-link"));
 
-  expect(await screen.findByText("MockUsername")).toBeDefined();
+  expect(await screen.findAllByText("MockUsername")).toBeDefined();
   expect(await screen.findByText("MockEmail")).toBeDefined();
   expect(await screen.findAllByText(/MockSavedBook/i)).toBeDefined();
 });
