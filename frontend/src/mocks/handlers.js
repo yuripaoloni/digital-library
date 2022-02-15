@@ -99,7 +99,10 @@ export const handlers = [
   ),
   rest.delete("/group/:id", (req, res, ctx) => res(ctx.status(200))),
   rest.post("/group/:id/edit", (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(getMockGroup([req.body.name])[0]))
+    res(
+      ctx.status(200),
+      ctx.json(getMockGroup([req.body.name], false, true)[0])
+    )
   ),
   rest.delete("/group/:id/removeMember", (req, res, ctx) =>
     res(ctx.status(200), ctx.json(getMockGroup(["MockGroup"], true)[0]))

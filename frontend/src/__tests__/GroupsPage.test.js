@@ -29,9 +29,9 @@ test("should load joined and created groups", async () => {
 
   userEvent.click(screen.getByTestId("menu-button"));
 
-  userEvent.click(screen.getByText(/profilo/i));
+  userEvent.click(screen.getByTestId("profile-link"));
 
-  expect(await screen.findByText("MockUsername")).toBeDefined();
+  expect(await screen.findAllByText("MockUsername")).toBeDefined();
   expect(await screen.findByText("MockEmail")).toBeDefined();
   expect(await screen.findAllByText(/MockSavedBook/i)).toBeDefined();
 
@@ -125,7 +125,7 @@ test("should edit an existing group", async () => {
 
   await waitForElementToBeRemoved(screen.getAllByTestId("skeleton"));
 
-  expect(await screen.findByText("MockEditedGroup")).toBeDefined();
+  expect(await screen.findAllByText("MockEditedGroup")).toBeDefined();
 });
 
 test("should remove a participant from a group", async () => {
@@ -158,6 +158,31 @@ test("should remove a participant from a group", async () => {
   expect(
     getAllByTestId(memberDialog, /group-member-item/i).length
   ).toBeLessThan(membersNumber);
+});
+
+test("should add a new admin", async () => {
+  render(<App />);
+
+  expect(await screen.findAllByTestId(/group-created-item/i)).toBeDefined();
+  expect(await screen.findAllByTestId(/group-joined-item/i)).toBeDefined();
+
+  userEvent.click(screen.getAllByText("Membri")[0]);
+
+  let memberDialog = screen.getByTestId("group-members-dialog");
+
+  userEvent.click(getAllByTestId(memberDialog, "add-admin-icon")[0]);
+
+  const confirmDialog = await screen.findByTestId("confirm-dialog");
+
+  userEvent.click(screen.getByText("Ok"));
+
+  await waitForElementToBeRemoved(confirmDialog);
+
+  userEvent.click(screen.getAllByText("Membri")[0]);
+
+  memberDialog = screen.getByTestId("group-members-dialog");
+
+  expect(getAllByTestId(memberDialog, "remove-admin-icon")[0]).toBeDefined();
 });
 
 test("should open a shared note", async () => {
