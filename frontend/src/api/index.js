@@ -132,10 +132,10 @@ export const searchUser = (param) => {
   });
 };
 
-export const createGroup = (emails, name) => {
+export const createGroup = (members, name) => {
   return axios.post(
     "/group/create",
-    { emails, name },
+    { members, name },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };
@@ -152,10 +152,10 @@ export const deleteGroup = (id) => {
   });
 };
 
-export const editGroup = (id, emails, name) => {
+export const editGroup = (id, members, name) => {
   return axios.post(
     `/group/${id}/edit`,
-    { emails, name },
+    { members, name },
     { headers: { Authorization: localStorage.getItem("authToken") } }
   );
 };

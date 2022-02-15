@@ -28,6 +28,7 @@ const GroupsPage = () => {
 
   const createdGroups = useSelector((state) => state.groups.createdGroups);
   const joinedGroups = useSelector((state) => state.groups.joinedGroups);
+  const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.groups.loading);
 
   const dispatch = useDispatch();
@@ -123,8 +124,8 @@ const GroupsPage = () => {
             ? createdGroups.map((createdGroup, index) => (
                 <GroupItem
                   key={index}
-                  owned
                   group={createdGroup}
+                  owned
                   onDelete={handleShowConfirmDialog}
                   onShowMembers={handleShowMembersDialog}
                   onEdit={handleEditGroup}
@@ -146,8 +147,12 @@ const GroupsPage = () => {
                   <GroupItem
                     key={index}
                     group={joinedGroup}
-                    onShowMembers={handleShowMembersDialog}
+                    owned={joinedGroup.members.find(
+                      (member) => member.email === user.email && member.isAdmin
+                    )}
                     onDelete={handleShowConfirmDialog}
+                    onShowMembers={handleShowMembersDialog}
+                    onEdit={handleEditGroup}
                     onShowNotes={handleShowSharedNotes}
                   />
                 ))

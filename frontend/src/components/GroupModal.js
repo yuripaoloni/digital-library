@@ -50,12 +50,17 @@ const GroupModal = ({ show, onClose }) => {
   const username = useSelector((state) => state.auth.user.username);
 
   useEffect(() => {
+    setSearch("");
+    setUsers([]);
     if (selectedGroup) {
-      let emails = selectedGroup.members.map((member) => member.email);
+      let emails = selectedGroup.members.map((member) => {
+        return { email: member.email, isAdmin: member.isAdmin };
+      });
       setGroupName(selectedGroup.name);
       setAddedUsers(emails);
       setEditMode(true);
     } else {
+      //? new group button clicked
       setGroupName("");
       setAddedUsers([]);
       setEditMode(false);
@@ -69,7 +74,7 @@ const GroupModal = ({ show, onClose }) => {
     const updatedUsers = [...addedUsers];
 
     if (currentIndex === -1) {
-      updatedUsers.push(email);
+      updatedUsers.push({ email: email, isAdmin: false });
     } else {
       updatedUsers.splice(currentIndex, 1);
     }
@@ -108,8 +113,8 @@ const GroupModal = ({ show, onClose }) => {
   const onSubmit = () => {
     dispatch(
       editMode
-        ? onEditGroup({ emails: addedUsers, name: groupName })
-        : onCreateGroup({ emails: addedUsers, name: groupName })
+        ? onEditGroup({ users: addedUsers, name: groupName })
+        : onCreateGroup({ users: addedUsers, name: groupName })
     );
     onClose();
     setSearch("");
@@ -175,7 +180,7 @@ const GroupModal = ({ show, onClose }) => {
                     size="small"
                     key={index}
                     sx={{ mb: 1, mr: 1 }}
-                    label={addedUser}
+                    label={addedUser.email}
                     onDelete={() => handleToggle(addedUser)}
                   />
                 ))}
@@ -219,7 +224,9 @@ const GroupModal = ({ show, onClose }) => {
                         <Checkbox
                           edge="end"
                           onChange={() => handleToggle(user.email)}
-                          checked={addedUsers.indexOf(user.email) !== -1}
+                          checked={addedUsers.some(
+                            (addedUser) => addedUser.email === user.email
+                          )}
                           inputProps={{
                             "aria-labelledby": `checkbox-list-secondary-label-${index}`,
                           }}

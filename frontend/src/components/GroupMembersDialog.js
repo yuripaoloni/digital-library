@@ -8,29 +8,41 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemButton from "@mui/material/ListItemButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
+import AddModeratorIcon from "@mui/icons-material/AddModerator";
+import RemoveModeratorIcon from "@mui/icons-material/RemoveModerator";
 import ConfirmDialog from "components/ConfirmDialog";
 import { useSelector, useDispatch } from "react-redux";
-import { onDeleteMember } from "states/groupsSlice";
+import { onDeleteMember, onEditGroup } from "states/groupsSlice";
 
 const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [member, setMember] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState({
+    show: false,
+    title: "",
+    description: "",
+    onConfirm: () => {},
+  });
 
   const group = useSelector((state) => state.groups.selectedGroup);
 
   const dispatch = useDispatch();
 
-  const handleShowConfirmDialog = (emails, id) => {
+  const handleShowConfirmDialog = (title, description, onConfirm) => {
+    setConfirmDialog({ title, description, onConfirm });
     setShowConfirmDialog(true);
-    setMember({ id: id, emails: emails });
   };
 
-  const handleDeleteMember = () => {
-    dispatch(onDeleteMember(member));
+  const handleDeleteMember = (id, emails) => {
+    dispatch(onDeleteMember({ id, emails }));
+    setShowConfirmDialog(false);
+    onClose();
+  };
+
+  const handleUserAdmin = (users) => {
+    dispatch(onEditGroup({ users, name: group.name }));
     setShowConfirmDialog(false);
     onClose();
   };
@@ -38,11 +50,11 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
   return (
     <>
       <ConfirmDialog
-        title="Elimina membro"
-        description="Procedere con l'eliminazione del membro ?"
+        title={confirmDialog.title}
+        description={confirmDialog.description}
         showDialog={showConfirmDialog}
         onCancel={() => setShowConfirmDialog(false)}
-        onConfirm={() => handleDeleteMember()}
+        onConfirm={confirmDialog.onConfirm}
       />
       <Dialog
         data-testid="group-members-dialog"
@@ -65,19 +77,17 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
                 disableGutters
                 disablePadding
               >
-                <ListItemButton>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt={`member-picture-creator`}
-                      src={`data:image/jpeg;base64,${group.creator.picture}`}
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    id={`member-list-secondary-label-owner`}
-                    primary={`${group.creator.name} ${group.creator.surname} (${group.creator.username})`}
-                    secondary={`${group.creator.email}`}
+                <ListItemAvatar>
+                  <Avatar
+                    alt={`member-picture-creator`}
+                    src={`data:image/jpeg;base64,${group.creator.picture}`}
                   />
-                </ListItemButton>
+                </ListItemAvatar>
+                <ListItemText
+                  id={`member-list-secondary-label-owner`}
+                  primary={`${group.creator.name} ${group.creator.surname} (${group.creator.username})`}
+                  secondary={`${group.creator.email}`}
+                />
               </ListItem>
             )}
             {group &&
@@ -88,32 +98,63 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
                   data-testid={`group-member-item-${index}`}
                   disableGutters
                   disablePadding
-                  secondaryAction={
-                    owned && (
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      alt={`member-picture-${index}`}
+                      src={`data:image/jpeg;base64,${member.picture}`}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    id={`member-list-secondary-label-${index}`}
+                    primary={`${member.name} ${member.surname} (${member.username})`}
+                    secondary={`${member.email}`}
+                  />
+                  {owned && (
+                    <>
                       <IconButton
                         data-testid="remove-member-icon"
                         onClick={() =>
-                          handleShowConfirmDialog([member.email], group.id)
+                          handleShowConfirmDialog(
+                            "Rimuovi membro",
+                            "Procedere con la rimozione del membro dal gruppo?",
+                            () => handleDeleteMember(group.id, [member.email])
+                          )
                         }
                       >
                         <DeleteIcon />
                       </IconButton>
-                    )
-                  }
-                >
-                  <ListItemButton>
-                    <ListItemAvatar>
-                      <Avatar
-                        alt={`member-picture-${index}`}
-                        src={`data:image/jpeg;base64,${member.picture}`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      id={`member-list-secondary-label-${index}`}
-                      primary={`${member.name} ${member.surname} (${member.username})`}
-                      secondary={`${member.email}`}
-                    />
-                  </ListItemButton>
+                      <IconButton
+                        data-testid={
+                          member.isAdmin
+                            ? "remove-admin-icon"
+                            : "add-admin-icon"
+                        }
+                        onClick={() =>
+                          handleShowConfirmDialog(
+                            "Gestisci admin",
+                            member.isAdmin
+                              ? "Procedere con la rimozione delle funzionalità admin all'utente selezionato?"
+                              : "Procedere con l'aggiunta delle funzionalità admin all'utente selezionato?",
+                            () =>
+                              handleUserAdmin([
+                                ...group.members,
+                                {
+                                  email: member.email,
+                                  isAdmin: !member.isAdmin,
+                                },
+                              ])
+                          )
+                        }
+                      >
+                        {member.isAdmin ? (
+                          <RemoveModeratorIcon />
+                        ) : (
+                          <AddModeratorIcon />
+                        )}
+                      </IconButton>
+                    </>
+                  )}
                 </ListItem>
               ))}
           </List>

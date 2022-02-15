@@ -23,17 +23,17 @@ const initialState = {
 
 export const onCreateGroup = createAsyncThunk(
   "createGroup/groups",
-  async ({ emails, name }) => {
-    const res = await createGroup(emails, name);
+  async ({ users, name }) => {
+    const res = await createGroup(users, name);
     return res.data;
   }
 );
 
 export const onEditGroup = createAsyncThunk(
   "editGroup/groups",
-  async ({ emails, name }, { getState }) => {
+  async ({ users, name }, { getState }) => {
     const state = getState();
-    const res = await editGroup(state.groups.selectedGroup.id, emails, name);
+    const res = await editGroup(state.groups.selectedGroup.id, users, name);
     let notes = await getGroupSharedNotes(state.groups.selectedGroup.id);
     res.data.notes = notes.data;
     return res.data;
@@ -136,11 +136,15 @@ const groupsSlice = createSlice({
         state.createdGroups = action.payload.createdGroups;
       })
       .addCase(onDeleteGroup.fulfilled, (state, action) => {
-        let updatedGroups = state.createdGroups.filter(
+        let updatedCreatedGroups = state.createdGroups.filter(
+          (group) => group.id !== action.payload
+        );
+        let updatedJoinedGroups = state.joinedGroups.filter(
           (group) => group.id !== action.payload
         );
         state.loading = false;
-        state.createdGroups = [...updatedGroups];
+        state.createdGroups = [...updatedCreatedGroups];
+        state.joinedGroups = [...updatedJoinedGroups];
       })
       .addCase(onExitGroup.fulfilled, (state, action) => {
         let updatedGroups = state.joinedGroups.filter(
@@ -150,11 +154,15 @@ const groupsSlice = createSlice({
         state.joinedGroups = [...updatedGroups];
       })
       .addCase(onEditGroup.fulfilled, (state, action) => {
-        let updatedGroups = state.createdGroups.map((group) =>
+        let updatedCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        let updatedJoinedGroups = state.joinedGroups.map((group) =>
           group.id === action.payload.id ? action.payload : group
         );
         state.loading = false;
-        state.createdGroups = [...updatedGroups];
+        state.createdGroups = [...updatedCreatedGroups];
+        state.joinedGroups = [...updatedJoinedGroups];
       })
       .addCase(onShareNote.fulfilled, (state, action) => {
         let updateCreatedGroups = state.createdGroups.map((group) =>
@@ -197,11 +205,15 @@ const groupsSlice = createSlice({
         state.joinedGroups = [...updateJoinedGroups];
       })
       .addCase(onDeleteMember.fulfilled, (state, action) => {
-        let updatedGroups = state.createdGroups.map((group) =>
+        let updatedCreatedGroups = state.createdGroups.map((group) =>
+          group.id === action.payload.id ? action.payload : group
+        );
+        let updatedJoinedGroups = state.joinedGroups.map((group) =>
           group.id === action.payload.id ? action.payload : group
         );
         state.loading = false;
-        state.createdGroups = [...updatedGroups];
+        state.createdGroups = [...updatedCreatedGroups];
+        state.joinedGroups = [...updatedJoinedGroups];
       })
       .addMatcher(
         (action) => action.type?.endsWith("groups/pending"),
