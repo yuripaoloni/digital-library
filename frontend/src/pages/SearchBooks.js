@@ -38,7 +38,7 @@ const SearchBooks = () => {
                   <BookItem key={index} book={book} page={page} index={index} />
                 ))
               ) : (
-                <Typography variant="h2" textAlign="center">
+                <Typography variant="h4" textAlign="center">
                   Nessun risultato con i parametri di ricerca inseriti
                 </Typography>
               )}

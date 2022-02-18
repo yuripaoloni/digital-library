@@ -108,7 +108,6 @@ const ReadBook = () => {
           justifyContent="center"
           flexDirection="column"
           alignItems="center"
-          padding="1vh"
         >
           <Grid
             container
@@ -132,29 +131,33 @@ const ReadBook = () => {
             {loading ? <Skeleton variant="text" width={100} /> : book?.author}
           </Typography>
         </Grid>
-        {!loading && (
-          <Grid pb="2vh">
-            <IconButton
-              data-testid="bookmark-icon-button"
-              onClick={() => setShowModal(true)}
-            >
-              <BookmarkBorderIcon />
-            </IconButton>
-            <IconButton
-              data-testid="note-icon-button"
-              LinkComponent={Link}
-              to={`/books/notes/${libraryId}/${title}/${readingPage}`}
-            >
-              <ModeIcon />
-            </IconButton>
-            <IconButton
-              data-testid="favorite-icon-button"
-              onClick={() => handleFavoriteBook()}
-            >
-              <FavoriteIcon sx={{ color: isFavorite ? "red" : "primary" }} />
-            </IconButton>
-          </Grid>
-        )}
+        <Grid pb="2vh">
+          {!loading ? (
+            <>
+              <IconButton
+                data-testid="bookmark-icon-button"
+                onClick={() => setShowModal(true)}
+              >
+                <BookmarkBorderIcon />
+              </IconButton>
+              <IconButton
+                data-testid="note-icon-button"
+                LinkComponent={Link}
+                to={`/books/notes/${libraryId}/${title}/${readingPage}`}
+              >
+                <ModeIcon />
+              </IconButton>
+              <IconButton
+                data-testid="favorite-icon-button"
+                onClick={() => handleFavoriteBook()}
+              >
+                <FavoriteIcon sx={{ color: isFavorite ? "red" : "primary" }} />
+              </IconButton>
+            </>
+          ) : (
+            <Skeleton variant="text" width={90} />
+          )}
+        </Grid>
         <Grid container justifyContent="center">
           {loading ? (
             <Skeleton

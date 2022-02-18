@@ -116,8 +116,8 @@ const GroupMembersDialog = ({ showDialog, onClose, owned }) => {
                         data-testid="remove-member-icon"
                         onClick={() =>
                           handleShowConfirmDialog(
-                            "Rimuovi membro",
-                            "Procedere con la rimozione del membro dal gruppo?",
+                            "Rimuovi utente",
+                            "Procedere con la rimozione dell'utente dal gruppo?",
                             () => handleDeleteMember(group.id, [member.email])
                           )
                         }
