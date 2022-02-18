@@ -9,7 +9,7 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Input from "@mui/material/Input";
 import { useSelector, useDispatch } from "react-redux";
-import { onSignUp } from "states/authSlice";
+import { onSignUp, setError } from "states/authSlice";
 import Spinner from "components/Spinner";
 import { Link, Navigate } from "react-router-dom";
 import PageWrapper from "components/PageWrapper";
@@ -52,6 +52,13 @@ export default function SignUp() {
   const changeSurname = (surname) => {
     setSurname(surname);
     surname.length > 20 ? setSurnameErr(true) : setSurnameErr(false);
+  };
+
+  const handleImageUpload = (image) => {
+    console.log(image.size <= 1000000);
+    image.size <= 1000000
+      ? setImage(image)
+      : dispatch(setError("Massima dimensione 1MB"));
   };
 
   const handleSubmit = (e) => {
@@ -163,9 +170,7 @@ export default function SignUp() {
                     accept="image/*"
                     name="myImage"
                     disableUnderline
-                    onChange={(e) => {
-                      setImage(e.target.files[0]);
-                    }}
+                    onChange={(e) => handleImageUpload(e.target.files[0])}
                   />
                 </Grid>
               </Grid>

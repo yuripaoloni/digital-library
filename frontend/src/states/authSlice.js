@@ -89,6 +89,9 @@ const authSlice = createSlice({
     unsetError: (state) => {
       state.error = { error: false, variant: "error", message: "" };
     },
+    setError: (state, action) => {
+      state.error = { error: true, variant: "error", message: action.payload };
+    },
     onSignOut: (state) => {
       localStorage.removeItem("authToken");
       localStorage.removeItem("username");
@@ -119,6 +122,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.loading = false;
         state.userLoading = false;
+        state.isRegistered = false;
       })
       .addCase(onSignUp.fulfilled, (state, action) => {
         state.loading = false;
@@ -212,6 +216,6 @@ const authSlice = createSlice({
 
 const { actions, reducer } = authSlice;
 
-export const { unsetError, onSignOut, isFavoriteBook } = actions;
+export const { unsetError, setError, onSignOut, isFavoriteBook } = actions;
 
 export default reducer;
