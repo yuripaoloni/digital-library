@@ -55,9 +55,9 @@ class GroupControllerTest(
 ) {
 
     @Test
-    fun groupTest() {
+    fun createGroupTest() {
         // create group
-        var groupResponse = mockMvc.withLogin(
+        mockMvc.withLogin(
             USER1,
             Method.POST,
             "/group/create",
@@ -98,6 +98,19 @@ class GroupControllerTest(
             status { is4xxClientError() }
         }
 
+    }
+
+    @Test
+    fun groupCreatedTest() {
+        mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/create",
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, false)), "Group 1")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
+
         // group created by user
         mockMvc.withLogin(
             USER1,
@@ -106,6 +119,19 @@ class GroupControllerTest(
         ).andExpect {
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<List<GroupResponse>>()!!.let { assert(it.isNotEmpty()) }
+
+    }
+
+    @Test
+    fun groupEditTest() {
+        var groupResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/create",
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, false)), "Group 1")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
 
         // group edit
         groupResponse = mockMvc.withLogin(
@@ -162,6 +188,20 @@ class GroupControllerTest(
             status { is4xxClientError() }
         }
 
+    }
+
+    @Test
+    fun groupJoinedTest() {
+
+        val groupResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/create",
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, false)), "Group 1")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
+
         // group joined
         mockMvc.withLogin(
             USER3,
@@ -179,6 +219,20 @@ class GroupControllerTest(
         ).andExpect {
             status { isOk() }
         }
+
+    }
+
+    @Test
+    fun groupSharedTest() {
+
+        val groupResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/create",
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER4, false)), "Group 1")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
 
         val book = bookController.getRandomBooks().first().first()
 
@@ -250,6 +304,20 @@ class GroupControllerTest(
         ).andExpect {
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<List<NoteGroupResponse>>()!!.let { assert(it.isNotEmpty()) }
+
+    }
+
+    @Test
+    fun groupDeleteTest() {
+
+        val groupResponse = mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/group/create",
+            GroupCreation(listOf(GroupMemberClient(USER2, false), GroupMemberClient(USER3, false)), "Group 1")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<GroupResponse>()!!
 
         // group delete
         mockMvc.withLogin(
