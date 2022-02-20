@@ -28,8 +28,6 @@ class BookController(
     @Autowired val bookRepository: BookRepository,
     @Autowired val favoriteBookRepository: FavoriteBookRepository,
     @Autowired val sharedNoteRepository: SharedNoteRepository,
-    @Autowired val groupRepository: GroupRepository,
-    @Autowired val groupMemberRepository: GroupMemberRepository,
     @Autowired val groupUtils: GroupUtils,
     @Autowired val groupController: GroupController
 ) {
@@ -172,11 +170,11 @@ class BookController(
         @RequestBody book: Book,
         @ApiIgnore principal: Principal,
     ): List<NoteGroupResponse> {
-        val book = (libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find) ?: return emptyList()
+        val _book = (libraryService.parseBook(book) ?: return emptyList()).run(bookRepository::find) ?: return emptyList()
         val created = groupController.getCreatedGroups(principal)
         val joined = groupController.getJoinedGroups(principal)
         return (created + joined).flatMap { group ->
-            sharedNoteRepository.findAllByGroup_IdAndNote_Book_Id(group.id, book.id).map {
+            sharedNoteRepository.findAllByGroup_IdAndNote_Book_Id(group.id, _book.id).map {
                 it.note.toNoteGroupResponse(group)
             }
         }.distinctBy {
@@ -310,9 +308,9 @@ class BookController(
         @ApiIgnore principal: Principal,
     ) {
         val user = userRepository.findByEmail(principal.name)!!
-        val book =
+        val _book =
             (libraryService.parseBook(book) ?: throw GENERIC_ERROR).run(bookRepository::find) ?: throw GENERIC_ERROR
-        val favoriteBook = favoriteBookRepository.findByBook_IdAndUser_Id(book.id, user.id)
+        val favoriteBook = favoriteBookRepository.findByBook_IdAndUser_Id(_book.id, user.id)
             ?: throw ErrorException(HttpStatus.BAD_REQUEST, "Il libro non è tra i libri salvati")
         try {
             favoriteBookRepository.delete(favoriteBook)

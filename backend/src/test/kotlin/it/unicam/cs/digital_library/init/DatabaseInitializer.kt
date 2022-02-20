@@ -1,8 +1,7 @@
 package it.unicam.cs.digital_library.init
 
 import it.unicam.cs.digital_library.model.User
-import it.unicam.cs.digital_library.network.LibraryService
-import it.unicam.cs.digital_library.repository.*
+import it.unicam.cs.digital_library.repository.UserRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 object DatabaseInitializer {
@@ -14,19 +13,9 @@ object DatabaseInitializer {
     const val USER2 = "user2@gmail.com"
     const val USER3 = "user3@gmail.com"
     const val USER4 = "user4@gmail.com"
-    const val USER5 = "user5@gmail.com"
 
     fun init(
-        libraryService: LibraryService,
-        libraryRepository: LibraryRepository,
         userRepository: UserRepository,
-        bookRepository: BookRepository,
-        bookmarkRepository: BookmarkRepository,
-        noteRepository: NoteRepository,
-        sharedNoteRepository: SharedNoteRepository,
-        groupRepository: GroupRepository,
-        groupMemberRepository: GroupMemberRepository,
-        favoriteBookRepository: FavoriteBookRepository,
         bCryptPasswordEncoder: BCryptPasswordEncoder
     ) {
         if (!isInitialized) {

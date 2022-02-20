@@ -29,30 +29,9 @@ import org.springframework.test.web.servlet.MockMvc
 class GroupControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val bookController: BookController,
-    @Autowired libraryService: LibraryService,
-    @Autowired libraryRepository: LibraryRepository,
     @Autowired userRepository: UserRepository,
-    @Autowired bookRepository: BookRepository,
-    @Autowired bookmarkRepository: BookmarkRepository,
-    @Autowired noteRepository: NoteRepository,
-    @Autowired sharedNoteRepository: SharedNoteRepository,
-    @Autowired groupRepository: GroupRepository,
-    @Autowired groupMemberRepository: GroupMemberRepository,
-    @Autowired favoriteBookRepository: FavoriteBookRepository,
     @Autowired bCryptPasswordEncoder: BCryptPasswordEncoder
-) : BaseTest(
-    libraryService,
-    libraryRepository,
-    userRepository,
-    bookRepository,
-    bookmarkRepository,
-    noteRepository,
-    sharedNoteRepository,
-    groupRepository,
-    groupMemberRepository,
-    favoriteBookRepository,
-    bCryptPasswordEncoder
-) {
+) : BaseTest(userRepository, bCryptPasswordEncoder) {
 
     @Test
     fun createGroupTest() {

@@ -8,8 +8,7 @@ import it.unicam.cs.digital_library.init.DatabaseInitializer.USER2
 import it.unicam.cs.digital_library.init.Method
 import it.unicam.cs.digital_library.init.withLogin
 import it.unicam.cs.digital_library.model.Book
-import it.unicam.cs.digital_library.network.LibraryService
-import it.unicam.cs.digital_library.repository.*
+import it.unicam.cs.digital_library.repository.UserRepository
 import it.unicam.cs.digital_library.utils.fromJson
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,30 +27,9 @@ import org.springframework.test.web.servlet.MockMvc
 class BookControllerTest(
     @Autowired private val mockMvc: MockMvc,
     @Autowired private val bookController: BookController,
-    @Autowired libraryService: LibraryService,
-    @Autowired libraryRepository: LibraryRepository,
     @Autowired userRepository: UserRepository,
-    @Autowired bookRepository: BookRepository,
-    @Autowired bookmarkRepository: BookmarkRepository,
-    @Autowired noteRepository: NoteRepository,
-    @Autowired sharedNoteRepository: SharedNoteRepository,
-    @Autowired groupRepository: GroupRepository,
-    @Autowired groupMemberRepository: GroupMemberRepository,
-    @Autowired favoriteBookRepository: FavoriteBookRepository,
     @Autowired bCryptPasswordEncoder: BCryptPasswordEncoder
-) : BaseTest(
-    libraryService,
-    libraryRepository,
-    userRepository,
-    bookRepository,
-    bookmarkRepository,
-    noteRepository,
-    sharedNoteRepository,
-    groupRepository,
-    groupMemberRepository,
-    favoriteBookRepository,
-    bCryptPasswordEncoder
-) {
+) : BaseTest(userRepository, bCryptPasswordEncoder) {
 
     @Test
     fun searchBookTest() {
