@@ -7,6 +7,7 @@ import it.unicam.cs.digital_library.init.DatabaseInitializer.USER1
 import it.unicam.cs.digital_library.init.DatabaseInitializer.USER2
 import it.unicam.cs.digital_library.init.Method
 import it.unicam.cs.digital_library.init.withLogin
+import it.unicam.cs.digital_library.model.Book
 import it.unicam.cs.digital_library.network.LibraryService
 import it.unicam.cs.digital_library.repository.*
 import it.unicam.cs.digital_library.utils.fromJson
@@ -82,11 +83,11 @@ class BookControllerTest(
     }
 
     @Test
-    fun bookmarkTest() {
+    fun bookmarkCreateTest() {
         val book = bookController.getRandomBooks().first().first()
 
         // bookmark add
-        val bookmarkResponse = mockMvc.withLogin(
+        mockMvc.withLogin(
             USER1,
             Method.POST,
             "/bookmark/add",
@@ -105,6 +106,26 @@ class BookControllerTest(
             status { is4xxClientError() }
         }
 
+    }
+
+    private fun createBookmark(book: Book): BookmarkResponse {
+        return mockMvc.withLogin(
+            USER1,
+            Method.POST,
+            "/bookmark/add",
+            BookmarkCreation(book, 1, "Test")
+        ).andExpect {
+            status { isOk() }
+        }.andReturn().response.contentAsString.fromJson<BookmarkResponse>()!!
+    }
+
+    @Test
+    fun bookmarkEditTest() {
+
+        val book = bookController.getRandomBooks().first().first()
+
+        val bookmarkResponse = createBookmark(book)
+
         // bookmark edit
         mockMvc.withLogin(
             USER1,
@@ -114,6 +135,15 @@ class BookControllerTest(
         ).andExpect {
             status { isOk() }
         }
+
+    }
+
+    @Test
+    fun bookmarkAllTest() {
+
+        val book = bookController.getRandomBooks().first().first()
+
+        createBookmark(book)
 
         // bookmark all
         mockMvc.withLogin(
@@ -125,7 +155,16 @@ class BookControllerTest(
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<List<BookmarkResponse>>()!!.let { assert(it.isNotEmpty()) }
 
-        // bookmark edit
+    }
+
+    @Test
+    fun bookmarkDeleteTest() {
+
+        val book = bookController.getRandomBooks().first().first()
+
+        val bookmarkResponse = createBookmark(book)
+
+        // bookmark delete
         mockMvc.withLogin(
             USER1,
             Method.DELETE,
@@ -161,11 +200,14 @@ class BookControllerTest(
     }
 
     @Test
-    fun notesTest() {
+    fun createNoteTest() {
+        createNotes()
+    }
+
+    private fun createNotes(): List<NoteResponse> {
         val book = bookController.getRandomBooks().first().first()
 
-        // add note
-        var noteResponses = (1..10).map {
+        return (1..10).map {
             mockMvc.withLogin(
                 USER2,
                 Method.POST,
@@ -175,6 +217,12 @@ class BookControllerTest(
                 status { isOk() }
             }.andReturn().response.contentAsString.fromJson<NoteResponse>()!!
         }
+    }
+
+    @Test
+    fun editNoteTest() {
+
+        val noteResponses = createNotes()
 
         // edit note
         mockMvc.withLogin(
@@ -185,6 +233,13 @@ class BookControllerTest(
         ).andExpect {
             status { isOk() }
         }
+
+    }
+
+    @Test
+    fun deleteNoteTest() {
+
+        val noteResponses = createNotes()
 
         // delete note
         mockMvc.withLogin(
@@ -204,7 +259,14 @@ class BookControllerTest(
             status { is4xxClientError() }
         }
 
-        noteResponses = noteResponses.subList(1, noteResponses.size - 1)
+    }
+
+    @Test
+    fun getNotesTest() {
+
+        val noteResponses = createNotes()
+
+        val book = noteResponses.first().book
 
         // get book notes on page
         mockMvc.withLogin(
@@ -225,6 +287,4 @@ class BookControllerTest(
             status { isOk() }
         }.andReturn().response.contentAsString.fromJson<List<NoteResponse>>()!!.let { assert(it.isNotEmpty()) }
     }
-
-    // TODO share notes
 }
