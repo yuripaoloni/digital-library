@@ -134,4 +134,5 @@ export const handlers = [
       ctx.json(getMockSharedNotes(["MockNote", "MockNote", "MockNote"]))
     );
   }),
+  rest.post("/user/resetPassword", (req, res, ctx) => res(ctx.status(200))),
 ];

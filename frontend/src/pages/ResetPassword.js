@@ -81,7 +81,7 @@ const ResetPassword = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               style={{ background: "#222C4A" }}
-              data-testid="signin_submit_button"
+              data-testid="reset_pwd_button"
             >
               Submit
             </Button>

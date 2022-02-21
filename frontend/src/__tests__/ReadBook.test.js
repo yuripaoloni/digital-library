@@ -145,7 +145,7 @@ test("should open the page of a bookmark", async () => {
 
   expect(await screen.findByTestId(/reading-page-image/i)).toBeDefined();
 
-  expect(screen.getByRole("button", { name: "page 1" })).toHaveAttribute(
+  expect(await screen.findByRole("button", { name: "page 1" })).toHaveAttribute(
     "aria-current",
     "true"
   );

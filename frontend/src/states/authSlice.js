@@ -77,7 +77,6 @@ export const onPasswordRecovery = createAsyncThunk(
 export const onResetPassword = createAsyncThunk(
   "resetPassword/auth",
   async ({ password, resetToken }) => {
-    console.log(resetToken);
     await resetPassword(password, resetToken);
   }
 );
