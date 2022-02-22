@@ -115,7 +115,7 @@ const GroupsPage = () => {
             </Button>
           </Grid>
         </Grid>
-        <Stack direction="row" spacing={2} my={3}>
+        <Stack direction="row" mt={3} mb={1} flexWrap="wrap">
           {loading
             ? Array(3)
                 .fill(0)
@@ -137,7 +137,7 @@ const GroupsPage = () => {
         <Divider />
         <Grid item xs={12} mt={2}>
           <Typography variant="h4">Altri gruppi</Typography>
-          <Stack direction="row" spacing={2} my={3}>
+          <Stack direction="row" mt={3} mb={1} flexWrap="wrap">
             {loading
               ? Array(3)
                   .fill(0)

@@ -19,7 +19,7 @@ const GroupItem = ({
 }) => {
   return (
     <Card
-      sx={{ minWidth: 275 }}
+      sx={{ minWidth: 275, mb: 2, mr: 2 }}
       elevation={4}
       data-testid={`group-${owned ? "created" : "joined"}-item`}
     >
