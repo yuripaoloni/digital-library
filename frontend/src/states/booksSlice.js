@@ -207,6 +207,7 @@ const booksSlice = createSlice({
         state.error = { error: false, variant: "error", message: "" };
       })
       .addCase(fetchSingleBook.fulfilled, (state, action) => {
+        state.loading = false;
         state.singleBookLoading = false;
         state.selectedBook = action.payload.book;
         state.pageUrl = action.payload?.pageUrl;

@@ -55,7 +55,6 @@ export default function SignUp() {
   };
 
   const handleImageUpload = (image) => {
-    console.log(image.size <= 1000000);
     image.size <= 1000000
       ? setImage(image)
       : dispatch(setError("Massima dimensione 1MB"));
